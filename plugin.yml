@@ -1,0 +1,8 @@
+main: Main.main
+name: SignEdit
+author: Omel
+version: 0.2
+description: Programmed by Omel
+commands:
+     sign:
+          description: Edit a Sign
