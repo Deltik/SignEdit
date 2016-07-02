@@ -1,18 +1,17 @@
 package Commands;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 
-import Main.main;
-
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import EventHandler.Interact;
+import Main.main;
 
 
 public class COMMAND_sign implements CommandExecutor{
@@ -32,9 +31,13 @@ public class COMMAND_sign implements CommandExecutor{
 			p.sendMessage(main.prefix + "§c/sign set <Line> <Text>");
 			return true;
 		}
+		
 		if(args.length >= 2){
 		String txt = "";
 		int line = Integer.valueOf(args[1]);
+		
+		HashMap<Integer, String> cur = new HashMap<>();
+		
 		if(line > 3){
 			
 			p.sendMessage(main.prefix + "§cLines Aviable: 0, 1, 2, 3");
@@ -42,14 +45,21 @@ public class COMMAND_sign implements CommandExecutor{
 		}
 		 for(int i = 2; i < args.length; i++) txt = txt + args[i].replace("&", "§") + " ";
 		 
-		 
+
+			if(main.instance.click() == true){
+				 cur.put(line, txt);
+				 Interact.sign.put(p, cur);
+				 p.sendMessage(main.prefix + "§cNow Right Click on a Block to Set the Line.");
+				 return true;
+			}
+		
+		
 		 Block b = p.getTargetBlock((HashSet<Byte>) null, 10);
 		 
 		 if(b.getState() instanceof Sign){
 		 
 		
 			 
-			
 		 
 		
 		
