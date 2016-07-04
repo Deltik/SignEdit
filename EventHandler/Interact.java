@@ -21,6 +21,7 @@ public class Interact implements Listener{
 		
 		if(!(e.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
 		
+		if(!(e.getClickedBlock().getState() instanceof Sign)) return;
 		Sign s = (Sign) e.getClickedBlock().getState();
 		
 		
