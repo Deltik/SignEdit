@@ -52,6 +52,9 @@ public class COMMAND_sign implements CommandExecutor{
 				 p.sendMessage(main.prefix + "§cNow Right Click on a Block to Set the Line.");
 				 return true;
 			}
+			
+			StringBuilder sb = new StringBuilder(txt);
+			txt = sb.deleteCharAt(sb.length() - 1).toString().replace("&", "§");
 		
 		
 		 Block b = p.getTargetBlock((HashSet<Byte>) null, 10);
@@ -66,7 +69,7 @@ public class COMMAND_sign implements CommandExecutor{
 		 Sign s = (Sign) b.getState();
 		 
 		 
-		 s.setLine(line, txt.replace("&", "§"));
+		 s.setLine(line, txt);
 		 s.update();
 		 p.sendMessage(main.prefix + "§cLine §e" + line + " §cchanged to: §r" + txt);
 		 }else{

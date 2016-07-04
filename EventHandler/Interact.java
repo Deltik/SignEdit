@@ -22,6 +22,8 @@ public class Interact implements Listener{
 		if(!(e.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
 		
 		if(!(e.getClickedBlock().getState() instanceof Sign)) return;
+		
+		
 		Sign s = (Sign) e.getClickedBlock().getState();
 		
 		
@@ -29,7 +31,10 @@ public class Interact implements Listener{
 		if(sign.containsKey(e.getPlayer())){
 			HashMap<Integer, String> cur = sign.get(e.getPlayer());
 			for(int i : cur.keySet()){
-			s.setLine(i, cur.get(i));
+				StringBuilder sb = new StringBuilder(cur.get(i));
+				sb = sb.deleteCharAt(sb.length() - 1);
+				
+			s.setLine(i, sb.toString());
 			e.getPlayer().sendMessage(main.prefix + "§cLine §e" + i + " §cchanged to: §r" + cur.get(i));
 			s.update();
 			cur.clear();
