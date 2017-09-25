@@ -24,11 +24,9 @@ public class Interact implements Listener {
         if (sign.containsKey(e.getPlayer())) {
             HashMap<Integer, String> cur = sign.get(e.getPlayer());
             for (int i : cur.keySet()) {
-                StringBuilder sb = new StringBuilder(cur.get(i));
-                sb = sb.deleteCharAt(sb.length() - 1);
-
-                s.setLine(i, sb.toString());
-                e.getPlayer().sendMessage(Main.prefix + "§cLine §e" + i + " §cchanged to: §r" + cur.get(i));
+                String after = cur.get(i);
+                s.setLine(i-1, after);
+                e.getPlayer().sendMessage(Main.prefix + "§cLine §e" + i + " §cchanged to: §r" + after);
                 s.update();
                 cur.clear();
                 sign.remove(e.getPlayer());
