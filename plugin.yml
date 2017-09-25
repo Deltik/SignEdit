@@ -1,8 +1,14 @@
-main: Main.main
+main: org.deltik.mc.SignEdit.Main
 name: SignEdit
-author: Omel
-version: 0.2
-description: Programmed by Omel
+author: Deltik
+version: 1.4.0
+description: Edit a sign by looking at it
 commands:
-     sign:
-          description: Edit a Sign
+  sign:
+    description: Edit the sign you are looking at
+  signedit:
+    description: Alias for /sign
+  editsign:
+    description: Alias for /sign
+  se:
+    description: Alias for /sign
