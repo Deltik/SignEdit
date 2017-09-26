@@ -14,15 +14,15 @@
 
 ### `/sign`
 
-**Aliases:** `/signedit`, `/editsign`, `/se`
+(_since `v1.4.0`_) **Aliases:** `/signedit`, `/editsign`, `/se`
 
 #### `/sign set <line> [<text>]`
 
-Change the line *line* of the selected sign to *text*.  If *text* is blank, erase the line *line*.
+Change the line *line* of the selected sign to *text*.  All `&` characters are replaced with `§` for formatting codes.  (_since `v1.4.0`_) If *text* is blank, erase the line *line*.  
 
 #### `/sign clear <line>`
 
-Erase the line *line*.
+(_since `v1.4.0`_) Erase the line *line* of the selected sign.
 
 ## Permissions
 
@@ -32,15 +32,29 @@ SignEdit for Bukkit will only work if the player has the following permission en
 
 ## Configuration
 
-SignEdit for Bukkit currently supports one legacy feature known as "clicking".  By default, you edit signs by looking at them and then typing a `/signedit` command.  In the legacy "clicking" mode, you edit signs by typing a `/signedit` command and then right-mouse clicking a sign.
+All configuration is in the file `plugins/SignEdit/config.yml`.
 
-To enable "clicking" mode, open the file `plugins/SignEdit/config.yml` and set this setting:
+(_since `v1.1`_) The configuration file is created with default values when the plugin is loaded and the file does not already exist.
 
-    clicking: true
-    
-To revert to the default behavior, delete the `clicking` setting or write this setting instead:
+(_since `v1.5.0`_) The configuration file is sanitized when the plugin is loaded and unloaded and rewritten when the plugin is unloaded.
 
-    clicking: false
+### `clicking: [auto|false|true]`
+
+_Added in `v1.1`_
+
+(_since `v1.7.0`_) **auto** (default): Behave like `clicking: true` when you are not looking at a sign and behave like `clicking: false` when you are looking at a sign.
+
+**false** (default _until `v1.7.0`_): Edit signs by looking at them and then typing a `/sign` command, which will then instantly edit the sign you are looking at.
+
+**true**: Edit signs by typing a `/sign` command and then right-mouse clicking a sign.
+
+### `line-starts-at: [1|0]`
+
+_Added in `v1.5.0`_
+
+**1** (default): Line number 1 corresponds to the top-most line of sign blocks.
+
+**0**: Line number 0 corresponds to the top-most line of sign blocks.
 
 ## Features
 
@@ -51,8 +65,8 @@ To revert to the default behavior, delete the `clicking` setting or write this s
 
 ### Planned
 
-* `/sign {1,2,3,4} [<text>]` as a shorthand for `/sign set {1,2,3,4} [<text>]`
-* Default `clicking: auto` mode, which will edit a sign if the player is looking at one or will prompt for a right-click on a sign if the player is not looking at a sign.
+* (_`v1.6.0`_) `/sign <line> [<text>]` as a shorthand for `/sign set <line> [<text>]`
+* (_`v1.7.0`_) Default `clicking: auto` mode, which will edit a sign if the player is looking at one or will prompt for a right-click on a sign if the player is not looking at a sign.
 * `/sign ui` invokes the native Minecraft text editor for signs on the target sign.
 
 ## Compatibility
@@ -61,7 +75,18 @@ This plugin is a fork of [Omel's SignEdit](https://www.spigotmc.org/resources/si
 
 Since this plugin does not use deprecated methods, it is expected to be compatible with Bukkit v1.7 and newer.  Unit tests and continuous integration have not been implemented in this project yet.
 
-### Backwards-Incompatible Changes
+### Backwards Compatibility with Omel's SignEdit v1.3
 
-* Sign line numbers range from 1 to 4 in this plugin instead of 0 to 3 in the original plugin.
-  **Note:** In the future, a `lineStartsAt` configuration option may be added to restore backwards compatibility.
+SignEdit for Bukkit versions `>= 1.5.0, < 2.0.0` are backwards-compatible with Omel's SignEdit v1.3, but the following caveats apply:
+
+* (_since `v1.5.0`_) By default, sign line numbers range from 1 to 4 in this plugin instead of 0 to 3 in the original plugin.
+
+  To restore the original behavior and start line numbers at 0, set `line-starts-at: 0` in `plugins/SignEdit/config.yml`.
+* (_since `v1.7.0`_) By default, `clicking` mode is activated when the player is not looking at a sign.
+
+  To force `clicking` mode on at all times, set `clicking: true` in `plugins/SignEdit/config.yml`.
+
+  To force `clicking` mode off at all times, set `clicking: false`.
+* (_`v1.4.0` only_) Sign line numbers range from 1 to 4, whereas they ranged from 0 to 3 in older versions.
+
+  Upgrade to SignEdit for Bukkit v1.5.0 to have the possibility of restoring the original line number range.

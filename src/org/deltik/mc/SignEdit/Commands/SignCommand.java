@@ -7,6 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.deltik.mc.SignEdit.Configuration;
 import org.deltik.mc.SignEdit.EventHandler.Interact;
 import org.deltik.mc.SignEdit.Main;
 
@@ -17,6 +18,12 @@ import java.util.Set;
 
 
 public class SignCommand implements CommandExecutor {
+    Configuration config;
+
+    public SignCommand(Configuration config) {
+        this.config = config;
+    }
+
     @Override
     public boolean onCommand(CommandSender cs, Command arg1, String arg2,
                              String[] args) {
@@ -34,48 +41,39 @@ public class SignCommand implements CommandExecutor {
             p.sendMessage(Main.prefix + "§a§6/" + arg2 + "§r §eclear§r §7<line>");
             return true;
         } else {
-            int line = Integer.valueOf(args[1]);
+            int lineRelative = Integer.valueOf(args[1]);
 
-            HashMap<Integer, String> cur = new HashMap<>();
 
-            if (line > 4 || line < 1) {
-                p.sendMessage(Main.prefix + "§cLine numbers: 1, 2, 3, 4");
+            int minLine = config.getMinLine();
+            int maxLine = config.getMaxLine();
+            if (lineRelative > maxLine || lineRelative < minLine) {
+                p.sendMessage(Main.prefix + "§cLine numbers are from §e" + minLine + "§c to §e" + maxLine);
                 return true;
             }
+            int line = lineRelative - minLine;
 
             String txt = getTextFromArgs(args);
 
-            if (Main.instance.click()) {
-                cur.put(line, txt);
-                Interact.sign.put(p, cur);
+            if (config.allowedToEditSignByRightClick()) {
+                HashMap<Integer, String> pendingSignEdit = new HashMap<>();
+                pendingSignEdit.put(line, txt);
+                Interact.pendingSignEdits.put(p, pendingSignEdit);
                 p.sendMessage(Main.prefix + "§cNow right-click a block to set the line");
                 return true;
             }
 
-            Block b = p.getTargetBlock((Set<Material>) null, 10);
+            Block b = p.getTargetBlock(null, 10);
 
             if (b.getState() instanceof Sign) {
                 Sign s = (Sign) b.getState();
-
-                String before = s.getLine(line-1);
-                s.setLine(line-1, txt);
-                s.update();
-                if (txt.isEmpty())
-                    p.sendMessage(Main.prefix + "§cLine §e" + line + "§c blanked");
-                else if (txt.equals(before))
-                    p.sendMessage(Main.prefix + "§cLine §e" + line + "§c unchanged");
-                else {
-                    p.sendMessage(Main.prefix + "§cLine §e" + line + "§c changed");
-                    p.sendMessage(Main.prefix + "§c§lBefore: §r" + before);
-                    p.sendMessage(Main.prefix + "§c §l After: §r" + txt);
-                }
+                Main.instance.playerEditSignLine(p, s, line, txt);
             } else {
                 p.sendMessage(Main.prefix + "§cYou must be looking at a sign to edit it!");
             }
         }
 
         return false;
-    }
+}
 
     private String getTextFromArgs(String[] args) {
         String txt = "";

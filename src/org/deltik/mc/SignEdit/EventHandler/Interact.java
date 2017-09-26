@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 public class Interact implements Listener {
 
-    public static HashMap<Player, HashMap<Integer, String>> sign = new HashMap<>();
+    public static HashMap<Player, HashMap<Integer, String>> pendingSignEdits = new HashMap<>();
 
     @EventHandler
     public void onInt(PlayerInteractEvent e) {
@@ -21,17 +21,14 @@ public class Interact implements Listener {
 
         Sign s = (Sign) e.getClickedBlock().getState();
 
-        if (sign.containsKey(e.getPlayer())) {
-            HashMap<Integer, String> cur = sign.get(e.getPlayer());
-            for (int i : cur.keySet()) {
-                String after = cur.get(i);
-                s.setLine(i-1, after);
-                e.getPlayer().sendMessage(Main.prefix + "§cLine §e" + i + " §cchanged to: §r" + after);
-                s.update();
-                cur.clear();
-                sign.remove(e.getPlayer());
-                break;
+        Player p = e.getPlayer();
+        if (pendingSignEdits.containsKey(p)) {
+            HashMap<Integer, String> pendingSignEdit = pendingSignEdits.get(p);
+            for (int i : pendingSignEdit.keySet()) {
+                String after = pendingSignEdit.get(i);
+                Main.instance.playerEditSignLine(p, s, i, after);
             }
+            pendingSignEdits.remove(e.getPlayer());
         }
     }
 
