@@ -6,12 +6,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.deltik.mc.SignEdit.Commands.SignCommand;
+import org.deltik.mc.SignEdit.Configuration;
 import org.deltik.mc.SignEdit.Main;
 
 import java.util.HashMap;
 
 public class Interact implements Listener {
 
+    public static Configuration config;
     public static HashMap<Player, HashMap<Integer, String>> pendingSignEdits = new HashMap<>();
 
     @EventHandler
@@ -26,11 +29,10 @@ public class Interact implements Listener {
             HashMap<Integer, String> pendingSignEdit = pendingSignEdits.get(p);
             for (int i : pendingSignEdit.keySet()) {
                 String after = pendingSignEdit.get(i);
-                Main.instance.playerEditSignLine(p, s, i, after);
+                SignCommand.playerEditSignLine(p, s, i, after, config);
             }
             pendingSignEdits.remove(e.getPlayer());
         }
     }
-
 }
 

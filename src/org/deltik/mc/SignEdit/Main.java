@@ -29,20 +29,4 @@ public class Main extends JavaPlugin {
         Configuration endConfig = new Configuration();
         endConfig.writeFullConfig();
     }
-
-    public void playerEditSignLine(Player p, Sign s, int line, String text) {
-        String before = s.getLine(line);
-        s.setLine(line, text);
-        s.update();
-        int lineRelative = line + config.getMinLine();
-        if (text.isEmpty())
-            p.sendMessage(Main.prefix + "§cLine §e" + lineRelative + "§c blanked");
-        else if (text.equals(before))
-            p.sendMessage(Main.prefix + "§cLine §e" + lineRelative + "§c unchanged");
-        else {
-            p.sendMessage(Main.prefix + "§cLine §e" + lineRelative + "§c changed");
-            p.sendMessage(Main.prefix + "§c§lBefore: §r" + before);
-            p.sendMessage(Main.prefix + "§c §l After: §r" + text);
-        }
-    }
 }

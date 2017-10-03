@@ -43,7 +43,6 @@ public class SignCommand implements CommandExecutor {
         } else {
             int lineRelative = Integer.valueOf(args[1]);
 
-
             int minLine = config.getMinLine();
             int maxLine = config.getMaxLine();
             if (lineRelative > maxLine || lineRelative < minLine) {
@@ -57,23 +56,24 @@ public class SignCommand implements CommandExecutor {
             if (config.allowedToEditSignByRightClick()) {
                 HashMap<Integer, String> pendingSignEdit = new HashMap<>();
                 pendingSignEdit.put(line, txt);
+                Interact.config = config;
                 Interact.pendingSignEdits.put(p, pendingSignEdit);
-                p.sendMessage(Main.prefix + "§cNow right-click a block to set the line");
+                p.sendMessage(Main.prefix + "§cNow right-click a sign to set the line");
                 return true;
             }
 
-            Block b = p.getTargetBlock(null, 10);
+            Block b = p.getTargetBlock((Set<Material>) null, 10);
 
             if (b.getState() instanceof Sign) {
                 Sign s = (Sign) b.getState();
-                Main.instance.playerEditSignLine(p, s, line, txt);
+                playerEditSignLine(p, s, line, txt, config);
             } else {
                 p.sendMessage(Main.prefix + "§cYou must be looking at a sign to edit it!");
             }
         }
 
         return false;
-}
+    }
 
     private String getTextFromArgs(String[] args) {
         String txt = "";
@@ -83,5 +83,21 @@ public class SignCommand implements CommandExecutor {
         txt = String.join(" ", textArray).replace('&', '§');
 
         return txt;
+    }
+
+    public static void playerEditSignLine(Player p, Sign s, int line, String text, Configuration config) {
+        String before = s.getLine(line);
+        s.setLine(line, text);
+        s.update();
+        int lineRelative = line + config.getMinLine();
+        if (text.isEmpty())
+            p.sendMessage(Main.prefix + "§cLine §e" + lineRelative + "§c blanked");
+        else if (text.equals(before))
+            p.sendMessage(Main.prefix + "§cLine §e" + lineRelative + "§c unchanged");
+        else {
+            p.sendMessage(Main.prefix + "§cLine §e" + lineRelative + "§c changed");
+            p.sendMessage(Main.prefix + "§c§lBefore: §r" + before);
+            p.sendMessage(Main.prefix + "§c §l After: §r" + text);
+        }
     }
 }

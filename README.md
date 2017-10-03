@@ -1,6 +1,7 @@
 # SignEdit for Bukkit
 
 [![GitHub releases](https://img.shields.io/github/release/Deltik/SignEdit.svg)](https://github.com/Deltik/SignEdit/releases)
+[![CircleCI](https://img.shields.io/circleci/project/github/Deltik/SignEdit.svg)](https://circleci.com/gh/Deltik/SignEdit)
 
 **SignEdit for Bukkit** is a [Bukkit plugin](https://www.spigotmc.org/resources/categories/bukkit.4/) that allows players to edit sign objects by looking at them or clicking on them and typing in a SignEdit command.
 
@@ -75,7 +76,7 @@ _Added in `v1.5.0`_
 
 This plugin is a fork of [Omel's SignEdit](https://www.spigotmc.org/resources/signedit.25485/) v1.3.  Omel's SignEdit v1.3 and older are not compatible with Bukkit v1.12 and newer because a deprecated API method was removed ([see related issue in MyPet](https://github.com/xXKeyleXx/MyPet/issues/1033)).
 
-Since this plugin does not use deprecated methods, it is expected to be compatible with Bukkit v1.7 and newer.  Unit tests and continuous integration have not been implemented in this project yet.
+Since this plugin does not use deprecated methods, it is expected to be compatible with Bukkit v1.7 and newer.
 
 ### Backwards Compatibility with Omel's SignEdit v1.3
 

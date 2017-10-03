@@ -26,8 +26,16 @@ public class Configuration {
     }
 
     public Configuration() {
-        configFile = new File("plugins//" + Main.instance.getName() + "//", "config.yml");
-        if (!configFile.exists()) {
+        this("plugins//" + Main.instance.getName() + "//config.yml");
+    }
+
+    public Configuration(String f) {
+        this(new File(f));
+    }
+
+    public Configuration(File f) {
+        configFile = f;
+         if (!configFile.exists()) {
             writeDefaultConfig();
         }
         yamlConfig = YamlConfiguration.loadConfiguration(configFile);
@@ -50,6 +58,7 @@ public class Configuration {
 
     public boolean writeFullConfig(YamlConfiguration c) {
         mergeInDefaultConfig(c);
+        sanitizeConfig(c);
         try {
             c.save(configFile);
             return true;
@@ -67,6 +76,11 @@ public class Configuration {
         return yamlConfig.getString("clicking", (String) defaults.get("clicking"));
     }
 
+    public void setClicking(String newValue) {
+        yamlConfig.set("clicking", newValue);
+        writeFullConfig(yamlConfig);
+    }
+
     public boolean allowedToEditSignBySight() {
         String clicking = getClicking();
         return clicking.equalsIgnoreCase("false") || clicking.equalsIgnoreCase("auto");
@@ -79,6 +93,11 @@ public class Configuration {
 
     public int getLineStartsAt() {
         return yamlConfig.getInt("line-starts-at", (int) defaults.get("line-starts-at"));
+    }
+
+    public void setLineStartsAt(String newValue) {
+        yamlConfig.set("line-starts-at", Integer.parseInt(newValue));
+        writeFullConfig(yamlConfig);
     }
 
     public int getMinLine() {
@@ -94,7 +113,8 @@ public class Configuration {
         if (lineStartsAt < 0 || lineStartsAt > 1) setDefaultConfig("line-starts-at");
 
         String clicking = c.getString("clicking");
-        if (!(clicking.equalsIgnoreCase("true") ||
+        if (clicking == null ||
+                !(clicking.equalsIgnoreCase("true") ||
                 clicking.equalsIgnoreCase("false") ||
                 clicking.equalsIgnoreCase("auto"))) setDefaultConfig("clicking");
     }
