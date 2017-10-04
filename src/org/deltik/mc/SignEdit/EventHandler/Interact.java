@@ -8,7 +8,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.deltik.mc.SignEdit.Commands.SignCommand;
 import org.deltik.mc.SignEdit.Configuration;
-import org.deltik.mc.SignEdit.Main;
 
 import java.util.HashMap;
 

@@ -17,15 +17,25 @@
 
 ### `/sign`
 
+_Added in v1.0_
+
 (_since `v1.4.0`_) **Aliases:** `/signedit`, `/editsign`, `/se`
 
 #### `/sign set <line> [<text>]`
 
+_Added in v1.0_
+
 Change the line *line* of the selected sign to *text*.  All `&` characters are replaced with `§` for formatting codes.  (_since `v1.4.0`_) If *text* is blank, erase the line *line*.  
+
+(_since `v1.6.0`_) **Aliases:** `/sign <line> [<text>]`
 
 #### `/sign clear <line>`
 
-(_since `v1.4.0`_) Erase the line *line* of the selected sign.
+_Added in v1.4.0_
+
+Erase the line *line* of the selected sign.
+
+(_since `v1.6.0`_) **Aliases:** `/sign <line>`
 
 ## Permissions
 
@@ -63,12 +73,11 @@ _Added in `v1.5.0`_
 
 ### Currently Implemented
 
-* *(`clicking: false` mode only)* Look at a sign and edit one line with `/sign set`.
+* *(`clicking: false` mode only)* Look at a sign and edit one line with `/sign set <line> [<text>]` or (_since `v1.6.0`_) `/sign <line> [<text>]`.
 * *(`clicking: true` mode only)* Edit a sign with `/sign set` and then right-mouse clicking the target sign.
 
 ### Planned
 
-* (_`v1.6.0`_) `/sign <line> [<text>]` as a shorthand for `/sign set <line> [<text>]`
 * (_`v1.7.0`_) Default `clicking: auto` mode, which will edit a sign if the player is looking at one or will prompt for a right-click on a sign if the player is not looking at a sign.
 * `/sign ui` invokes the native Minecraft text editor for signs on the target sign.
 

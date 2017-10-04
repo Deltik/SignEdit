@@ -1,5 +1,6 @@
 package org.deltik.mc.SignEdit.Commands;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -11,11 +12,7 @@ import org.deltik.mc.SignEdit.Configuration;
 import org.deltik.mc.SignEdit.EventHandler.Interact;
 import org.deltik.mc.SignEdit.Main;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Set;
-
+import java.util.*;
 
 public class SignCommand implements CommandExecutor {
     Configuration config;
@@ -35,14 +32,26 @@ public class SignCommand implements CommandExecutor {
             return true;
         }
 
-        if (args.length <= 1) {
-            p.sendMessage(Main.prefix + "§f§lUsage:");
-            p.sendMessage(Main.prefix + "§a§6/" + arg2 + "§r §eset§r §7<line> [<text>]");
-            p.sendMessage(Main.prefix + "§a§6/" + arg2 + "§r §eclear§r §7<line>");
-            return true;
-        } else {
-            int lineRelative = Integer.valueOf(args[1]);
+        String subcommand;
+        int lineRelative;
+        List<String> argsArray = new LinkedList<>(Arrays.asList(args));
+        try {
+            subcommand = argsArray.remove(0).toLowerCase();
+            if (StringUtils.isNumeric(subcommand)) {
+                lineRelative = Integer.valueOf(subcommand);
+                subcommand = "set";
+            } else {
+                lineRelative = Integer.valueOf(argsArray.remove(0));
+            }
+        } catch (IndexOutOfBoundsException e) {
+            subcommand = "help";
+            lineRelative = -1;
+        } catch (NumberFormatException e) {
+            subcommand = "set";
+            lineRelative = -1;
+        }
 
+        if (subcommand.equals("set") || subcommand.equals("clear")) {
             int minLine = config.getMinLine();
             int maxLine = config.getMaxLine();
             if (lineRelative > maxLine || lineRelative < minLine) {
@@ -51,7 +60,12 @@ public class SignCommand implements CommandExecutor {
             }
             int line = lineRelative - minLine;
 
-            String txt = getTextFromArgs(args);
+            String txt;
+            if (subcommand.equals("clear")) {
+                txt = "";
+            } else {
+                txt = arrayToSignText(argsArray);
+            }
 
             if (config.allowedToEditSignByRightClick()) {
                 HashMap<Integer, String> pendingSignEdit = new HashMap<>();
@@ -70,19 +84,26 @@ public class SignCommand implements CommandExecutor {
             } else {
                 p.sendMessage(Main.prefix + "§cYou must be looking at a sign to edit it!");
             }
+        } else {
+            return sendHelpMessage(p, arg2);
         }
 
         return false;
     }
 
-    private String getTextFromArgs(String[] args) {
-        String txt = "";
-        if (args.length <= 2 || args[0].equals("clear")) return txt;
+    public static boolean sendHelpMessage(Player p) {
+        return sendHelpMessage(p, "signedit");
+    }
 
-        ArrayList<String> textArray = new ArrayList<String>(Arrays.asList(args).subList(2, args.length));
-        txt = String.join(" ", textArray).replace('&', '§');
+    public static boolean sendHelpMessage(Player p, String cmdString) {
+        p.sendMessage(Main.prefix + "§f§lUsage:");
+        p.sendMessage(Main.prefix + "§a§6/" + cmdString + "§r §e[set]§r §7<line> [<text>]");
+        p.sendMessage(Main.prefix + "§a§6/" + cmdString + "§r §e[clear]§r §7<line>");
+        return true;
+    }
 
-        return txt;
+    private String arrayToSignText(List<String> textArray) {
+        return String.join(" ", textArray).replace('&', '§');
     }
 
     public static void playerEditSignLine(Player p, Sign s, int line, String text, Configuration config) {
