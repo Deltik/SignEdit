@@ -10,11 +10,13 @@ import java.util.Map;
 public class Configuration {
     File configFile;
     YamlConfiguration yamlConfig;
+    public static final String CONFIG_LINE_STARTS_AT = "line-starts-at";
+    public static final String CONFIG_CLICKING = "clicking";
     private static final Map<String, Object> defaults;
     static {
-        defaults = new HashMap<String, Object>();
-        defaults.put("line-starts-at", 1);
-        defaults.put("clicking", "false");
+        defaults = new HashMap<>();
+        defaults.put(CONFIG_LINE_STARTS_AT, 1);
+        defaults.put(CONFIG_CLICKING, "auto");
     }
 
     public File getConfigFile() {
@@ -73,11 +75,11 @@ public class Configuration {
     }
 
     public String getClicking() {
-        return yamlConfig.getString("clicking", (String) defaults.get("clicking"));
+        return yamlConfig.getString(CONFIG_CLICKING, (String) defaults.get(CONFIG_CLICKING));
     }
 
     public void setClicking(String newValue) {
-        yamlConfig.set("clicking", newValue);
+        yamlConfig.set(CONFIG_CLICKING, newValue);
         writeFullConfig(yamlConfig);
     }
 
@@ -92,11 +94,11 @@ public class Configuration {
     }
 
     public int getLineStartsAt() {
-        return yamlConfig.getInt("line-starts-at", (int) defaults.get("line-starts-at"));
+        return yamlConfig.getInt(CONFIG_LINE_STARTS_AT, (int) defaults.get(CONFIG_LINE_STARTS_AT));
     }
 
     public void setLineStartsAt(String newValue) {
-        yamlConfig.set("line-starts-at", Integer.parseInt(newValue));
+        yamlConfig.set(CONFIG_LINE_STARTS_AT, Integer.parseInt(newValue));
         writeFullConfig(yamlConfig);
     }
 
@@ -109,14 +111,14 @@ public class Configuration {
     }
 
     private void sanitizeConfig(YamlConfiguration c) {
-        int lineStartsAt = c.getInt("line-starts-at");
-        if (lineStartsAt < 0 || lineStartsAt > 1) setDefaultConfig("line-starts-at");
+        int lineStartsAt = c.getInt(CONFIG_LINE_STARTS_AT);
+        if (lineStartsAt < 0 || lineStartsAt > 1) setDefaultConfig(CONFIG_LINE_STARTS_AT);
 
-        String clicking = c.getString("clicking");
+        String clicking = c.getString(CONFIG_CLICKING);
         if (clicking == null ||
                 !(clicking.equalsIgnoreCase("true") ||
                 clicking.equalsIgnoreCase("false") ||
-                clicking.equalsIgnoreCase("auto"))) setDefaultConfig("clicking");
+                clicking.equalsIgnoreCase("auto"))) setDefaultConfig(CONFIG_CLICKING);
     }
 
     private void setDefaultConfig(String path) {

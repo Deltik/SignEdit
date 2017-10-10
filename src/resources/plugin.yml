@@ -2,10 +2,12 @@ main: ${mainClassName}
 name: SignEdit
 author: Deltik
 version: ${pluginVersion}
-description: Edit a sign by looking at it
+description: Edit a line in an existing sign
 commands:
   sign:
-    description: Edit the sign you are looking at
+    description: Set or clear the line in the sign
+    usage: /<command> [{set,clear}] <line> [<text>]
+    permission: SignEdit.use
   signedit:
     description: Alias for /sign
   editsign:

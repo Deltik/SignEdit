@@ -67,18 +67,11 @@ public class SignCommand implements CommandExecutor {
                 txt = arrayToSignText(argsArray);
             }
 
-            if (config.allowedToEditSignByRightClick()) {
-                HashMap<Integer, String> pendingSignEdit = new HashMap<>();
-                pendingSignEdit.put(line, txt);
-                Interact.config = config;
-                Interact.pendingSignEdits.put(p, pendingSignEdit);
-                p.sendMessage(Main.prefix + "§cNow right-click a sign to set the line");
-                return true;
-            }
-
             Block b = p.getTargetBlock((Set<Material>) null, 10);
 
-            if (b.getState() instanceof Sign) {
+            if (shouldDoClickingMode(b)) {
+                return pendSignEdit(p, line, txt);
+            } else if (b.getState() instanceof Sign) {
                 Sign s = (Sign) b.getState();
                 playerEditSignLine(p, s, line, txt, config);
             } else {
@@ -89,6 +82,15 @@ public class SignCommand implements CommandExecutor {
         }
 
         return false;
+    }
+
+    private boolean pendSignEdit(Player player, int line, String text) {
+        HashMap<Integer, String> pendingSignEdit = new HashMap<>();
+        pendingSignEdit.put(line, text);
+        Interact.config = config;
+        Interact.pendingSignEdits.put(player, pendingSignEdit);
+        player.sendMessage(Main.prefix + "§cNow right-click a sign to set the line");
+        return true;
     }
 
     public static boolean sendHelpMessage(Player p) {
@@ -120,5 +122,15 @@ public class SignCommand implements CommandExecutor {
             p.sendMessage(Main.prefix + "§c§lBefore: §r" + before);
             p.sendMessage(Main.prefix + "§c §l After: §r" + text);
         }
+    }
+
+    private boolean shouldDoClickingMode(Block block) {
+        if (!config.allowedToEditSignByRightClick())
+            return false;
+        else if (block == null)
+            return true;
+        else if (config.allowedToEditSignBySight() && block.getState() instanceof Sign)
+            return false;
+        return true;
     }
 }

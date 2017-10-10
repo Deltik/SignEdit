@@ -281,4 +281,30 @@ public class SignCommandTest {
         verify(player, atLeastOnce()).sendMessage(matches("(?i)^.*look.*$"));
         verify(sign, never()).setLine(2, "xray yankee zulu");
     }
+
+    @Test
+    public void clickingAutoEditsSignOnSight() {
+        String argsString = "set 1 alpha bravo charlie";
+
+        when(player.getTargetBlock(null, 10)).thenReturn(block);
+        spyConfig.setClicking("auto");
+
+        signCommand.onCommand(player, command, cString, argsString.split(" "));
+
+        verify(sign).setLine(0, "alpha bravo charlie");
+    }
+
+    @Test
+    public void clickingAutoQueuesEditForRightClickWithoutSight() {
+        String argsString = "set 3 xray yankee zulu";
+
+        when(player.getTargetBlock(null, 10)).thenReturn(null);
+        spyConfig.setClicking("auto");
+
+        signCommand.onCommand(player, command, cString, argsString.split(" "));
+
+        Assert.assertTrue(Interact.pendingSignEdits.containsKey(player));
+        Assert.assertTrue(Interact.pendingSignEdits.get(player).containsKey(2));
+        Assert.assertTrue(Interact.pendingSignEdits.get(player).get(2).equals("xray yankee zulu"));
+    }
 }

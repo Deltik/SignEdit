@@ -25,7 +25,7 @@ _Added in v1.0_
 
 _Added in v1.0_
 
-Change the line *line* of the selected sign to *text*.  All `&` characters are replaced with `§` for formatting codes.  (_since `v1.4.0`_) If *text* is blank, erase the line *line*.  
+Change the line *line* of the targeted sign to *text*.  All `&` characters are replaced with `§` for formatting codes.  (_since `v1.4.0`_) If *text* is blank, erase the line *line*.  
 
 (_since `v1.6.0`_) **Aliases:** `/sign <line> [<text>]`
 
@@ -33,7 +33,7 @@ Change the line *line* of the selected sign to *text*.  All `&` characters are r
 
 _Added in v1.4.0_
 
-Erase the line *line* of the selected sign.
+Erase the line *line* of the targeted sign.
 
 (_since `v1.6.0`_) **Aliases:** `/sign <line>`
 
@@ -73,12 +73,13 @@ _Added in `v1.5.0`_
 
 ### Currently Implemented
 
-* *(`clicking: false` mode only)* Look at a sign and edit one line with `/sign set <line> [<text>]` or (_since `v1.6.0`_) `/sign <line> [<text>]`.
-* *(`clicking: true` mode only)* Edit a sign with `/sign set` and then right-mouse clicking the target sign.
+* Edit the line _line_ of the targeted sign to be _text_ with `/sign set <line> [<text>]` or (_since `v1.6.0`_) `/sign <line> [<text>]`.  Targeting a sign works as follows:
+  * In `clicking: false` mode or in `v1.0`, the sign you are looking at is edited.
+  * In `clicking: true` mode, after running the `/sign` command, right-click a sign to edit it.
+  * (_since `v1.7.0`_) In `clicking: auto` mode, the behavior is the same as `clicking: false` if you are looking at a sign and `clicking: true` if you are not looking at a sign.
 
 ### Planned
 
-* (_`v1.7.0`_) Default `clicking: auto` mode, which will edit a sign if the player is looking at one or will prompt for a right-click on a sign if the player is not looking at a sign.
 * `/sign ui` invokes the native Minecraft text editor for signs on the target sign.
 
 ## Compatibility

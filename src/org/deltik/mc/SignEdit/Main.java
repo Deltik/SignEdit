@@ -5,10 +5,11 @@ import org.deltik.mc.SignEdit.Commands.SignCommand;
 import org.deltik.mc.SignEdit.EventHandler.Interact;
 
 public class Main extends JavaPlugin {
-    public static String prefix = "§7[§cSignEdit§7]§r ";
+    public static final String prefix = "§7[§cSignEdit§7]§r ";
     public static Main instance;
     public static Configuration config;
 
+    @Override
     public void onEnable() {
         Main.instance = this;
         config = new Configuration();
@@ -18,6 +19,7 @@ public class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new Interact(), this);
     }
 
+    @Override
     public void onDisable() {
         Configuration endConfig = new Configuration();
         endConfig.writeFullConfig();

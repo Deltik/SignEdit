@@ -10,11 +10,12 @@ import org.deltik.mc.SignEdit.Commands.SignCommand;
 import org.deltik.mc.SignEdit.Configuration;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class Interact implements Listener {
 
     public static Configuration config;
-    public static HashMap<Player, HashMap<Integer, String>> pendingSignEdits = new HashMap<>();
+    public static Map<Player, Map<Integer, String>> pendingSignEdits = new HashMap<>();
 
     @EventHandler
     public void onInt(PlayerInteractEvent e) {
@@ -25,7 +26,7 @@ public class Interact implements Listener {
 
         Player p = e.getPlayer();
         if (pendingSignEdits.containsKey(p)) {
-            HashMap<Integer, String> pendingSignEdit = pendingSignEdits.get(p);
+            Map<Integer, String> pendingSignEdit = pendingSignEdits.get(p);
             for (int i : pendingSignEdit.keySet()) {
                 String after = pendingSignEdit.get(i);
                 SignCommand.playerEditSignLine(p, s, i, after, config);
