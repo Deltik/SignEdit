@@ -25,7 +25,7 @@ _Added in v1.0_
 
 _Added in v1.0_
 
-Change the line *line* of the targeted sign to *text*.  All `&` characters are replaced with `§` for formatting codes.  (_since `v1.4.0`_) If *text* is blank, erase the line *line*.  
+Change the line *line* of the targeted sign to *text*.  All `&` characters are replaced with `§` for formatting codes.  (_since `v1.4.0`_) If *text* is blank, erase the line *line*.
 
 (_since `v1.6.0`_) **Aliases:** `/sign <line> [<text>]`
 

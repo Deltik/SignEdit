@@ -1,4 +1,4 @@
-version '1.7.0'
+version '1.7.1-SNAPSHOT'
 
 // Set to '+' to use latest Bukkit
 // Otherwise, specify a version number like '1.12.2-R0.1-SNAPSHOT'
@@ -7,7 +7,7 @@ def bukkit_version = '+'
 apply plugin: 'java'
 apply plugin: 'application'
 
-mainClassName = 'org.deltik.mc.SignEdit.Main'
+mainClassName = 'org.deltik.mc.signedit.Main'
 
 sourceCompatibility = 1.8
 

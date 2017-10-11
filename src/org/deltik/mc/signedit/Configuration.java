@@ -1,4 +1,4 @@
-package org.deltik.mc.SignEdit;
+package org.deltik.mc.signedit;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 

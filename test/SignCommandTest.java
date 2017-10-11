@@ -5,9 +5,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.deltik.mc.SignEdit.Commands.SignCommand;
-import org.deltik.mc.SignEdit.Configuration;
-import org.deltik.mc.SignEdit.EventHandler.Interact;
+import org.deltik.mc.signedit.commands.SignCommand;
+import org.deltik.mc.signedit.Configuration;
+import org.deltik.mc.signedit.listeners.Interact;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -35,14 +35,16 @@ public class SignCommandTest {
     private Sign sign;
     private Block block;
     private Configuration spyConfig;
+    private Interact listener;
     private String cString = "signedit";
 
     @Before
     public void setUp() throws IOException {
         Configuration config = new Configuration(File.createTempFile("SignEdit-", "-config.yml"));
         spyConfig = spy(config);
+        listener = new Interact(spyConfig);
         doReturn(false).when(spyConfig).writeFullConfig(new YamlConfiguration());
-        signCommand = new SignCommand(spyConfig);
+        signCommand = new SignCommand(spyConfig, listener);
 
         player = mock(Player.class);
         command = mock(Command.class);
@@ -241,7 +243,7 @@ public class SignCommandTest {
 
         signCommand.onCommand(player, command, cString, argsString.split(" "));
 
-        Assert.assertTrue(Interact.pendingSignEdits.containsKey(player));
+        Assert.assertTrue(listener.pendingSignEdits.containsKey(player));
 
         PlayerInteractEvent interactEvent = spy(mock(PlayerInteractEvent.class));
 
@@ -249,8 +251,7 @@ public class SignCommandTest {
         when(interactEvent.getClickedBlock()).thenReturn(block);
         when(interactEvent.getPlayer()).thenReturn(player);
 
-        Interact interact = new Interact();
-        interact.onInt(interactEvent);
+        listener.onInt(interactEvent);
 
         verify(sign).setLine(2, "xray yankee zulu");
     }
@@ -276,7 +277,7 @@ public class SignCommandTest {
 
         signCommand.onCommand(player, command, cString, argsString.split(" "));
 
-        Assert.assertFalse(Interact.pendingSignEdits.containsKey(player));
+        Assert.assertFalse(listener.pendingSignEdits.containsKey(player));
         verify(block, never()).getState();
         verify(player, atLeastOnce()).sendMessage(matches("(?i)^.*look.*$"));
         verify(sign, never()).setLine(2, "xray yankee zulu");
@@ -303,8 +304,8 @@ public class SignCommandTest {
 
         signCommand.onCommand(player, command, cString, argsString.split(" "));
 
-        Assert.assertTrue(Interact.pendingSignEdits.containsKey(player));
-        Assert.assertTrue(Interact.pendingSignEdits.get(player).containsKey(2));
-        Assert.assertTrue(Interact.pendingSignEdits.get(player).get(2).equals("xray yankee zulu"));
+        Assert.assertTrue(listener.pendingSignEdits.containsKey(player));
+        Assert.assertTrue(listener.pendingSignEdits.get(player).containsKey(2));
+        Assert.assertTrue(listener.pendingSignEdits.get(player).get(2).equals("xray yankee zulu"));
     }
 }

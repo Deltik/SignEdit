@@ -1,4 +1,4 @@
-package org.deltik.mc.SignEdit.EventHandler;
+package org.deltik.mc.signedit.listeners;
 
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
@@ -6,20 +6,24 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.deltik.mc.SignEdit.Commands.SignCommand;
-import org.deltik.mc.SignEdit.Configuration;
+import org.deltik.mc.signedit.commands.SignCommand;
+import org.deltik.mc.signedit.Configuration;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class Interact implements Listener {
 
-    public static Configuration config;
-    public static Map<Player, Map<Integer, String>> pendingSignEdits = new HashMap<>();
+    private Configuration config;
+    public Map<Player, Map<Integer, String>> pendingSignEdits = new HashMap<>();
+
+    public Interact(Configuration config) {
+        this.config = config;
+    }
 
     @EventHandler
     public void onInt(PlayerInteractEvent e) {
-        if (!(e.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
+        if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if (!(e.getClickedBlock().getState() instanceof Sign)) return;
 
         Sign s = (Sign) e.getClickedBlock().getState();
@@ -27,12 +31,11 @@ public class Interact implements Listener {
         Player p = e.getPlayer();
         if (pendingSignEdits.containsKey(p)) {
             Map<Integer, String> pendingSignEdit = pendingSignEdits.get(p);
-            for (int i : pendingSignEdit.keySet()) {
-                String after = pendingSignEdit.get(i);
-                SignCommand.playerEditSignLine(p, s, i, after, config);
+            for (Map.Entry<Integer, String> i : pendingSignEdit.entrySet()) {
+                String after = i.getValue();
+                SignCommand.playerEditSignLine(p, s, i.getKey(), after, config);
             }
             pendingSignEdits.remove(e.getPlayer());
         }
     }
 }
-
