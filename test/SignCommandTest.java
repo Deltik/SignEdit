@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.deltik.mc.signedit.commands.SignCommand;
 import org.deltik.mc.signedit.Configuration;
 import org.deltik.mc.signedit.listeners.Interact;
@@ -251,7 +252,7 @@ public class SignCommandTest {
         when(interactEvent.getClickedBlock()).thenReturn(block);
         when(interactEvent.getPlayer()).thenReturn(player);
 
-        listener.onInt(interactEvent);
+        listener.onInteract(interactEvent);
 
         verify(sign).setLine(2, "xray yankee zulu");
     }
@@ -307,5 +308,35 @@ public class SignCommandTest {
         Assert.assertTrue(listener.pendingSignEdits.containsKey(player));
         Assert.assertTrue(listener.pendingSignEdits.get(player).containsKey(2));
         Assert.assertTrue(listener.pendingSignEdits.get(player).get(2).equals("xray yankee zulu"));
+    }
+
+    @Test
+    public void cancelPendingSignEditIfPlayerDisconnects() {
+        String argsString = "set 3 xray yankee zulu";
+
+        when(player.getTargetBlock(null, 10)).thenReturn(null);
+        spyConfig.setClicking("auto");
+        PlayerQuitEvent event = mock(PlayerQuitEvent.class);
+        when(event.getPlayer()).thenReturn(player);
+
+        signCommand.onCommand(player, command, cString, argsString.split(" "));
+
+        Assert.assertTrue(listener.pendingSignEdits.containsKey(player));
+
+        listener.onDisconnect(event);
+
+        Assert.assertFalse(listener.pendingSignEdits.containsKey(player));
+    }
+
+    @Test
+    public void commandOpensUIWithSight() {
+        String argsString = "ui";
+
+        when(player.getTargetBlock(null, 10)).thenReturn(block);
+        spyConfig.setClicking("auto");
+
+        signCommand.onCommand(player, command, cString, argsString.split(" "));
+
+        // TODO
     }
 }

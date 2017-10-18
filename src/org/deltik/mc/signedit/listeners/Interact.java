@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.deltik.mc.signedit.commands.SignCommand;
 import org.deltik.mc.signedit.Configuration;
 
@@ -22,20 +23,28 @@ public class Interact implements Listener {
     }
 
     @EventHandler
-    public void onInt(PlayerInteractEvent e) {
-        if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-        if (!(e.getClickedBlock().getState() instanceof Sign)) return;
+    public void onInteract(PlayerInteractEvent event) {
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        if (!(event.getClickedBlock().getState() instanceof Sign)) return;
 
-        Sign s = (Sign) e.getClickedBlock().getState();
+        Sign s = (Sign) event.getClickedBlock().getState();
 
-        Player p = e.getPlayer();
-        if (pendingSignEdits.containsKey(p)) {
-            Map<Integer, String> pendingSignEdit = pendingSignEdits.get(p);
+        Player player = event.getPlayer();
+        if (pendingSignEdits.containsKey(player)) {
+            Map<Integer, String> pendingSignEdit = pendingSignEdits.get(player);
             for (Map.Entry<Integer, String> i : pendingSignEdit.entrySet()) {
                 String after = i.getValue();
-                SignCommand.playerEditSignLine(p, s, i.getKey(), after, config);
+                SignCommand.playerEditSignLine(player, s, i.getKey(), after, config);
             }
-            pendingSignEdits.remove(e.getPlayer());
+            pendingSignEdits.remove(event.getPlayer());
+        }
+    }
+
+    @EventHandler
+    public void onDisconnect(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        if (pendingSignEdits.containsKey(player)) {
+            pendingSignEdits.remove(player);
         }
     }
 }

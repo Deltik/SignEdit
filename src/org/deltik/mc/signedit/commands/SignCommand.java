@@ -1,6 +1,5 @@
 package org.deltik.mc.signedit.commands;
 
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -8,11 +7,16 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.deltik.mc.signedit.ArgStruct;
 import org.deltik.mc.signedit.Configuration;
 import org.deltik.mc.signedit.listeners.Interact;
-import org.deltik.mc.signedit.Main;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+
+import static org.deltik.mc.signedit.Main.CHAT_PREFIX;
 
 public class SignCommand implements CommandExecutor {
     Configuration config;
@@ -29,47 +33,28 @@ public class SignCommand implements CommandExecutor {
         if (!(cs instanceof Player)) return true;
 
         Player p = (Player) cs;
+        Block b = p.getTargetBlock((Set<Material>) null, 10);
 
-        if (!p.hasPermission("SignEdit.use")) {
-            return true;
-        }
+        ArgStruct argStruct = new ArgStruct(args);
 
-        String subcommand;
-        int lineRelative;
-        List<String> argsArray = new LinkedList<>(Arrays.asList(args));
-        try {
-            subcommand = argsArray.remove(0).toLowerCase();
-            if (StringUtils.isNumeric(subcommand)) {
-                lineRelative = Integer.valueOf(subcommand);
-                subcommand = "set";
-            } else {
-                lineRelative = Integer.valueOf(argsArray.remove(0));
-            }
-        } catch (IndexOutOfBoundsException e) {
-            subcommand = "help";
-            lineRelative = -1;
-        } catch (NumberFormatException e) {
-            subcommand = "set";
-            lineRelative = -1;
-        }
+        if (!permitted(p, argStruct)) return true;
 
-        if (subcommand.equals("set") || subcommand.equals("clear")) {
+        if (Arrays.asList("set", "clear").contains(argStruct.subcommand)) {
             int minLine = config.getMinLine();
             int maxLine = config.getMaxLine();
-            if (lineRelative > maxLine || lineRelative < minLine) {
-                p.sendMessage(Main.CHAT_PREFIX + "§cLine numbers are from §e" + minLine + "§c to §e" + maxLine);
+            if (argStruct.lineRelative > maxLine || argStruct.lineRelative < minLine) {
+                p.sendMessage(CHAT_PREFIX + "§cLine numbers are from §e" + minLine + "§c to §e" + maxLine);
                 return true;
             }
-            int line = lineRelative - minLine;
+            int line = argStruct.lineRelative - minLine;
 
             String txt;
-            if (subcommand.equals("clear")) {
+            if (argStruct.subcommand.equals("clear")) {
                 txt = "";
             } else {
-                txt = arrayToSignText(argsArray);
+                txt = arrayToSignText(argStruct.remainder);
             }
 
-            Block b = p.getTargetBlock((Set<Material>) null, 10);
 
             if (shouldDoClickingMode(b)) {
                 return pendSignEdit(p, line, txt);
@@ -77,7 +62,7 @@ public class SignCommand implements CommandExecutor {
                 Sign s = (Sign) b.getState();
                 playerEditSignLine(p, s, line, txt, config);
             } else {
-                p.sendMessage(Main.CHAT_PREFIX + "§cYou must be looking at a sign to edit it!");
+                p.sendMessage(CHAT_PREFIX + "§cYou must be looking at a sign to edit it!");
             }
         } else {
             return sendHelpMessage(p, arg2);
@@ -86,11 +71,22 @@ public class SignCommand implements CommandExecutor {
         return false;
     }
 
+    private boolean permitted(Player player, ArgStruct args) {
+        // Legacy (<= 1.3) permissions
+        if (player.hasPermission("SignEdit.use")) return true;
+
+        // /sign <subcommand>
+        if (player.hasPermission("signedit.sign." + args.subcommand)) return true;
+
+        // Not permitted
+        return false;
+    }
+
     private boolean pendSignEdit(Player player, int line, String text) {
         HashMap<Integer, String> pendingSignEdit = new HashMap<>();
         pendingSignEdit.put(line, text);
         listener.pendingSignEdits.put(player, pendingSignEdit);
-        player.sendMessage(Main.CHAT_PREFIX + "§cNow right-click a sign to set the line");
+        player.sendMessage(CHAT_PREFIX + "§cNow right-click a sign to set the line");
         return true;
     }
 
@@ -99,9 +95,9 @@ public class SignCommand implements CommandExecutor {
     }
 
     public static boolean sendHelpMessage(Player p, String cmdString) {
-        p.sendMessage(Main.CHAT_PREFIX + "§f§lUsage:");
-        p.sendMessage(Main.CHAT_PREFIX + "§a§6/" + cmdString + "§r §e[set]§r §7<line> [<text>]");
-        p.sendMessage(Main.CHAT_PREFIX + "§a§6/" + cmdString + "§r §e[clear]§r §7<line>");
+        p.sendMessage(CHAT_PREFIX + "§f§lUsage:");
+        p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §e[set]§r §7<line> [<text>]");
+        p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §e[clear]§r §7<line>");
         return true;
     }
 
@@ -115,13 +111,13 @@ public class SignCommand implements CommandExecutor {
         s.update();
         int lineRelative = line + config.getMinLine();
         if (text.isEmpty())
-            p.sendMessage(Main.CHAT_PREFIX + "§cLine §e" + lineRelative + "§c blanked");
+            p.sendMessage(CHAT_PREFIX + "§cLine §e" + lineRelative + "§c blanked");
         else if (text.equals(before))
-            p.sendMessage(Main.CHAT_PREFIX + "§cLine §e" + lineRelative + "§c unchanged");
+            p.sendMessage(CHAT_PREFIX + "§cLine §e" + lineRelative + "§c unchanged");
         else {
-            p.sendMessage(Main.CHAT_PREFIX + "§cLine §e" + lineRelative + "§c changed");
-            p.sendMessage(Main.CHAT_PREFIX + "§c§lBefore: §r" + before);
-            p.sendMessage(Main.CHAT_PREFIX + "§c §l After: §r" + text);
+            p.sendMessage(CHAT_PREFIX + "§cLine §e" + lineRelative + "§c changed");
+            p.sendMessage(CHAT_PREFIX + "§c§lBefore: §r" + before);
+            p.sendMessage(CHAT_PREFIX + "§c §l After: §r" + text);
         }
     }
 
