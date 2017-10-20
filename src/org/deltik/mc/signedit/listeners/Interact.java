@@ -7,8 +7,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.deltik.mc.signedit.commands.SignCommand;
 import org.deltik.mc.signedit.Configuration;
+import org.deltik.mc.signedit.subcommands.SetSignSubcommand;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +34,7 @@ public class Interact implements Listener {
             Map<Integer, String> pendingSignEdit = pendingSignEdits.get(player);
             for (Map.Entry<Integer, String> i : pendingSignEdit.entrySet()) {
                 String after = i.getValue();
-                SignCommand.playerEditSignLine(player, s, i.getKey(), after, config);
+                SetSignSubcommand.playerEditSignLine(player, s, i.getKey(), after, config);
             }
             pendingSignEdits.remove(event.getPlayer());
         }
