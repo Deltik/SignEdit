@@ -10,13 +10,23 @@ import org.deltik.mc.signedit.listeners.Interact;
 import org.deltik.mc.signedit.subcommands.SetSignSubcommand;
 import org.deltik.mc.signedit.subcommands.SignSubcommand;
 
-import java.util.Arrays;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
 
+import static org.bukkit.Bukkit.getLogger;
 import static org.deltik.mc.signedit.Main.CHAT_PREFIX;
 
 public class SignCommand implements CommandExecutor {
     Configuration config;
     Interact listener;
+    private static final Map<String, Class<? extends SignSubcommand>> subcommands;
+
+    static {
+        subcommands = new HashMap<>();
+        subcommands.put("set", SetSignSubcommand.class);
+        subcommands.put("clear", ClearSignSubcommand.class);
+    }
 
     public SignCommand(Configuration config, Interact listener) {
         this.config = config;
@@ -33,8 +43,14 @@ public class SignCommand implements CommandExecutor {
 
         if (!permitted(p, argStruct)) return true;
 
-        if (Arrays.asList("set", "clear").contains(argStruct.subcommand)) {
-            SignSubcommand subcommand = new SetSignSubcommand(config, listener, argStruct, p);
+        if (subcommands.containsKey(argStruct.subcommand)) {
+            SignSubcommand subcommand;
+            try {
+                subcommand = subcommands.get(argStruct.subcommand).getConstructor(Configuration.class, Interact.class, ArgStruct.class, Player.class).newInstance(config, listener, argStruct, p);
+            } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                getLogger().warning("Could not construct SignSubcommand \"" + argStruct.subcommand + "\"");
+                return false;
+            }
             return subcommand.execute();
         } else {
             return sendHelpMessage(p, arg2);
@@ -43,13 +59,9 @@ public class SignCommand implements CommandExecutor {
 
     private boolean permitted(Player player, ArgStruct args) {
         // Legacy (<= 1.3) permissions
-        if (player.hasPermission("SignEdit.use")) return true;
-
-        // /sign <subcommand>
-        else if (player.hasPermission("signedit.sign." + args.subcommand)) return true;
-
-        // Not permitted
-        return false;
+        return (player.hasPermission("SignEdit.use") ||
+                // /sign <subcommand>
+                player.hasPermission("signedit.sign." + args.subcommand));
     }
 
     public static boolean sendHelpMessage(Player p) {
