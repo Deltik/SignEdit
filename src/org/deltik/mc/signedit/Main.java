@@ -14,7 +14,6 @@ public class Main extends JavaPlugin {
     private Configuration config;
     private Interact listener;
     private SignCommand signCommand;
-    public static final String MINECRAFT_SERVER_VERSION = getMinecraftServerVersion();
 
     @Override
     public void onEnable() {
@@ -26,29 +25,11 @@ public class Main extends JavaPlugin {
             this.getCommand(alias).setExecutor(signCommand);
         }
         getServer().getPluginManager().registerEvents(listener, this);
-        // XXX
-        getLogger().warning(MINECRAFT_SERVER_VERSION);
     }
 
     @Override
     public void onDisable() {
         Configuration endConfig = new Configuration();
         endConfig.writeFullConfig();
-    }
-
-    private static String getMinecraftServerVersion() {
-        String bukkitPackageName = Bukkit.getServer().getClass().getPackage().getName();
-        return bukkitPackageName.substring(bukkitPackageName.lastIndexOf('.') + 1);
-    }
-
-    public Class<?> getMinecraftServerClass(String className) {
-        try {
-            return Class.forName("net.minecraft.server." + MINECRAFT_SERVER_VERSION + "." + className);
-        } catch (ClassNotFoundException | NullPointerException e) {
-            PrintWriter w = new PrintWriter(new StringWriter());
-            e.printStackTrace(w);
-            getLogger().severe(w.toString());
-            return null;
-        }
     }
 }

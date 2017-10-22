@@ -1,16 +1,41 @@
 main: ${mainClassName}
 name: SignEdit
 author: Deltik
+website: https://github.com/Deltik/SignEdit
 version: ${pluginVersion}
-description: Edit a line in an existing sign
+description: Edit existing signs
 commands:
   sign:
-    description: Set or clear the line in the sign
-    usage: /<command> [{set,clear}] <line> [<text>]
-    permission: SignEdit.use
-  signedit:
-    description: Alias for /sign
-  editsign:
-    description: Alias for /sign
-  se:
-    description: Alias for /sign
+    aliases: [signedit, editsign, se]
+    description: Edit a targeted sign
+    usage: |
+      /<command> ui
+        Invoke the native Minecraft sign editor on the targeted sign.
+
+      /<command> set <line> [<text>]
+        Change the line <line> of the targeted sign to <text>. All `&` characters are treated as formatting code characters. If <text> is blank, erase the line <line>.
+
+      /<command> <line> [<text>]
+        Alias of /<command> set <line> [<text>]
+
+      /<command> clear <line>
+        Erase the line line of the targeted sign.
+
+      /<command> <line>
+        Alias of /<command> clear
+
+permissions:
+  SignEdit.use:
+    description: Legacy permission granting access to all commands in this plugin
+  signedit.sign.*:
+    description: Allow access to all /sign subcommands
+    children:
+      signedit.sign.ui: true
+      signedit.sign.set: true
+      signedit.sign.clear: true
+  signedit.sign.ui:
+    description: Allow /sign ui
+  signedit.sign.set:
+    description: Allow /sign set
+  signedit.sign.clear:
+    description: Allow /sign clear

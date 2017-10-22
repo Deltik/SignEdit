@@ -22,7 +22,7 @@ public class ArgStruct {
             if (StringUtils.isNumeric(subcommand)) {
                 lineRelative = Integer.valueOf(subcommand);
                 subcommand = "set";
-            } else {
+            } else if (subcommand.equals("set") || subcommand.equals("clear")) {
                 lineRelative = Integer.valueOf(argsArray.remove(0));
             }
         } catch (IndexOutOfBoundsException e) {

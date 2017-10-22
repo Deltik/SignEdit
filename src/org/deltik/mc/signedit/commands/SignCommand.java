@@ -7,53 +7,46 @@ import org.bukkit.entity.Player;
 import org.deltik.mc.signedit.ArgStruct;
 import org.deltik.mc.signedit.Configuration;
 import org.deltik.mc.signedit.listeners.Interact;
+import org.deltik.mc.signedit.subcommands.ClearSignSubcommand;
 import org.deltik.mc.signedit.subcommands.SetSignSubcommand;
 import org.deltik.mc.signedit.subcommands.SignSubcommand;
+import org.deltik.mc.signedit.subcommands.UiSignSubcommand;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.bukkit.Bukkit.getLogger;
 import static org.deltik.mc.signedit.Main.CHAT_PREFIX;
 
 public class SignCommand implements CommandExecutor {
-    Configuration config;
-    Interact listener;
-    private static final Map<String, Class<? extends SignSubcommand>> subcommands;
-
-    static {
-        subcommands = new HashMap<>();
-        subcommands.put("set", SetSignSubcommand.class);
-        subcommands.put("clear", ClearSignSubcommand.class);
-    }
+    private Configuration config;
+    private Interact listener;
+    private Map<String, SignSubcommand> subcommands;
 
     public SignCommand(Configuration config, Interact listener) {
         this.config = config;
         this.listener = listener;
+        subcommands = new HashMap<>();
+        subcommands.put("set", new SetSignSubcommand());
+        subcommands.put("clear", new ClearSignSubcommand());
+        subcommands.put("ui", new UiSignSubcommand());
     }
 
     @Override
     public boolean onCommand(CommandSender cs, Command arg1, String arg2,
                              String[] args) {
         if (!(cs instanceof Player)) return true;
-        Player p = (Player) cs;
+        Player player = (Player) cs;
 
         ArgStruct argStruct = new ArgStruct(args);
 
-        if (!permitted(p, argStruct)) return true;
+        if (!permitted(player, argStruct)) return true;
 
         if (subcommands.containsKey(argStruct.subcommand)) {
-            SignSubcommand subcommand;
-            try {
-                subcommand = subcommands.get(argStruct.subcommand).getConstructor(Configuration.class, Interact.class, ArgStruct.class, Player.class).newInstance(config, listener, argStruct, p);
-            } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                getLogger().warning("Could not construct SignSubcommand \"" + argStruct.subcommand + "\"");
-                return false;
-            }
+            SignSubcommand subcommand = subcommands.get(argStruct.subcommand);
+            subcommand.setDependencies(config, listener, argStruct, player);
             return subcommand.execute();
         } else {
-            return sendHelpMessage(p, arg2);
+            return sendHelpMessage(player, arg2);
         }
     }
 
@@ -72,6 +65,7 @@ public class SignCommand implements CommandExecutor {
         p.sendMessage(CHAT_PREFIX + "§f§lUsage:");
         p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §e[set]§r §7<line> [<text>]");
         p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §e[clear]§r §7<line>");
+        p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §eui");
         return true;
     }
 }

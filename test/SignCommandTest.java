@@ -6,19 +6,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.deltik.mc.signedit.commands.SignCommand;
 import org.deltik.mc.signedit.Configuration;
+import org.deltik.mc.signedit.commands.SignCommand;
+import org.deltik.mc.signedit.subcommands.UiSignSubcommand;
 import org.deltik.mc.signedit.listeners.Interact;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
-import java.io.IOException;
 
 import static org.mockito.ArgumentMatchers.matches;
 import static org.mockito.Mockito.*;
@@ -26,9 +23,10 @@ import static org.powermock.api.mockito.PowerMockito.doReturn;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.when;
+import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PlayerInteractEvent.class })
+@PrepareForTest({PlayerInteractEvent.class, SignCommand.class})
 public class SignCommandTest {
     private SignCommand signCommand;
     private Player player;
@@ -38,13 +36,18 @@ public class SignCommandTest {
     private Configuration spyConfig;
     private Interact listener;
     private String cString = "signedit";
+    private UiSignSubcommand uiSignSubcommand;
 
     @Before
-    public void setUp() throws IOException {
+    public void setUp() throws Exception {
         Configuration config = new Configuration(File.createTempFile("SignEdit-", "-config.yml"));
         spyConfig = spy(config);
         listener = new Interact(spyConfig);
         doReturn(false).when(spyConfig).writeFullConfig(new YamlConfiguration());
+
+        uiSignSubcommand = mock(UiSignSubcommand.class);
+        whenNew(UiSignSubcommand.class).withAnyArguments().thenReturn(uiSignSubcommand);
+
         signCommand = new SignCommand(spyConfig, listener);
 
         player = mock(Player.class);
@@ -164,7 +167,7 @@ public class SignCommandTest {
 
     @Test
     public void sayUsageWhenInsufficientArgumentsProvided() {
-        signCommand.onCommand(player, command, cString, new String[]{ "set" });
+        signCommand.onCommand(player, command, cString, new String[]{"set"});
 
         verify(player, atLeastOnce()).sendMessage(matches("^.*Usage.*$"));
     }
@@ -337,6 +340,6 @@ public class SignCommandTest {
 
         signCommand.onCommand(player, command, cString, argsString.split(" "));
 
-        // TODO
+        verify(uiSignSubcommand).execute();
     }
 }
