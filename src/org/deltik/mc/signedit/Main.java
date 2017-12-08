@@ -19,7 +19,7 @@ public class Main extends JavaPlugin {
     public void onEnable() {
         Main.instance = this;
         config = new Configuration();
-        listener = new Interact(config);
+        listener = new Interact();
         signCommand = new SignCommand(config, listener);
         for (String alias : new String[] {"sign", "signedit", "editsign", "se"}) {
             this.getCommand(alias).setExecutor(signCommand);

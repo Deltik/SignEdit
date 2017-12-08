@@ -8,9 +8,13 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.deltik.mc.signedit.Configuration;
 import org.deltik.mc.signedit.commands.SignCommand;
-import org.deltik.mc.signedit.subcommands.UiSignSubcommand;
+import org.deltik.mc.signedit.committers.SignEditCommit;
 import org.deltik.mc.signedit.listeners.Interact;
-import org.junit.*;
+import org.deltik.mc.signedit.subcommands.UiSignSubcommand;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -23,7 +27,7 @@ import static org.powermock.api.mockito.PowerMockito.doReturn;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.when;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
+import static org.powermock.api.mockito.PowerMockito.*;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({PlayerInteractEvent.class, SignCommand.class})
@@ -42,7 +46,7 @@ public class SignCommandTest {
     public void setUp() throws Exception {
         Configuration config = new Configuration(File.createTempFile("SignEdit-", "-config.yml"));
         spyConfig = spy(config);
-        listener = new Interact(spyConfig);
+        listener = new Interact();
         doReturn(false).when(spyConfig).writeFullConfig(new YamlConfiguration());
 
         uiSignSubcommand = mock(UiSignSubcommand.class);
@@ -245,9 +249,11 @@ public class SignCommandTest {
         when(player.getTargetBlock(null, 10)).thenReturn(null);
         doReturn(true).when(spyConfig).allowedToEditSignByRightClick();
 
+        Assert.assertFalse(listener.isCommitPending(player));
+
         signCommand.onCommand(player, command, cString, argsString.split(" "));
 
-        Assert.assertTrue(listener.pendingSignEdits.containsKey(player));
+        Assert.assertTrue(listener.isCommitPending(player));
 
         PlayerInteractEvent interactEvent = spy(mock(PlayerInteractEvent.class));
 
@@ -281,7 +287,7 @@ public class SignCommandTest {
 
         signCommand.onCommand(player, command, cString, argsString.split(" "));
 
-        Assert.assertFalse(listener.pendingSignEdits.containsKey(player));
+        Assert.assertFalse(listener.isCommitPending(player));
         verify(block, never()).getState();
         verify(player, atLeastOnce()).sendMessage(matches("(?i)^.*look.*$"));
         verify(sign, never()).setLine(2, "xray yankee zulu");
@@ -306,11 +312,15 @@ public class SignCommandTest {
         when(player.getTargetBlock(null, 10)).thenReturn(null);
         spyConfig.setClicking("auto");
 
+        Assert.assertFalse(listener.isCommitPending(player));
+
         signCommand.onCommand(player, command, cString, argsString.split(" "));
 
-        Assert.assertTrue(listener.pendingSignEdits.containsKey(player));
-        Assert.assertTrue(listener.pendingSignEdits.get(player).containsKey(2));
-        Assert.assertTrue(listener.pendingSignEdits.get(player).get(2).equals("xray yankee zulu"));
+        Assert.assertTrue(listener.isCommitPending(player));
+        SignEditCommit commit = listener.popSignEditCommit(player);
+        Assert.assertFalse(listener.isCommitPending(player));
+        commit.commit(player, sign);
+        verify(sign).setLine(2, "xray yankee zulu");
     }
 
     @Test
@@ -324,11 +334,11 @@ public class SignCommandTest {
 
         signCommand.onCommand(player, command, cString, argsString.split(" "));
 
-        Assert.assertTrue(listener.pendingSignEdits.containsKey(player));
+        Assert.assertTrue(listener.isCommitPending(player));
 
         listener.onDisconnect(event);
 
-        Assert.assertFalse(listener.pendingSignEdits.containsKey(player));
+        Assert.assertFalse(listener.isCommitPending(player));
     }
 
     @Test
