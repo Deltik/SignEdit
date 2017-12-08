@@ -32,58 +32,48 @@ public class UiSignSubcommand extends SignSubcommand {
         // TODO: Cleanly cancel sign edit when player uncleanly leaves UI
         if (block.getState() instanceof Sign) {
             sign = (Sign) block.getState();
-            for (int i = 0; i < 4; i++) {
-                sign.setLine(i, sign.getLine(i).replace('§', '&'));
-            }
-            sign.update();
+            formatSignForEdit(sign);
         } else {
             player.sendMessage(CHAT_PREFIX + "§cYou must be looking at a sign to invoke the editor!");
             return false;
         }
         try {
+            // Get implementation of Player (raw Bukkit player, EntityPlayer)
             Object entityPlayer = player.getClass().getMethod("getHandle").invoke(player);
+            // Get instance of net.minecraft.server.*.PlayerConnection from EntityPlayer
             Object connection = entityPlayer.getClass().getField("playerConnection").get(entityPlayer);
 
-            Object tileEntitySign;
-            Field tileField;
-            try {
-                // CraftBukkit v1.12.1 since commit 19507baf8b7903427bc3efab7118de6e7c1c931e and newer
-                // https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/diff/src/main/java/org/bukkit/craftbukkit/block/CraftSign.java?until=19507baf8b7903427bc3efab7118de6e7c1c931e
-                // commit 19507baf8b7903427bc3efab7118de6e7c1c931e
-                // Author: Lukas Hennig <lukas@wirsindwir.de>
-                // Date:   Sat Aug 5 14:37:19 2017 +1000
-                tileField = sign.getClass().getSuperclass().getDeclaredField("tileEntity");
-            } catch (NoSuchFieldException e) {
-                // CraftBukkit v1.12.1 before commit 19507baf8b7903427bc3efab7118de6e7c1c931e and earlier
-                tileField = sign.getClass().getDeclaredField("sign");
-            }
-            tileField.setAccessible(true);
-            tileEntitySign = tileField.get(sign);
+            Field tileEntityField = getTileEntityField(sign);
+            tileEntityField.setAccessible(true);
+            // Get instance of net.minecraft.server.*.TileEntitySign from Bukkit Sign implementation's tile entity
+            Object tileEntitySign = tileEntityField.get(sign);
 
             Field signIsEditable = tileEntitySign.getClass().getDeclaredField("isEditable");
             signIsEditable.setAccessible(true);
+            // Ensure TileEntitySign is editable
             signIsEditable.set(tileEntitySign, true);
 
-            Field handler = tileEntitySign.getClass().getDeclaredField("h");
-            handler.setAccessible(true);
-            handler.set(tileEntitySign, entityPlayer);
+            Field signEntityHumanField = tileEntitySign.getClass().getDeclaredField("h");
+            signEntityHumanField.setAccessible(true);
+            // Designate the EntityPlayer as the editor (EntityHuman) of the TileEntitySign
+            signEntityHumanField.set(tileEntitySign, entityPlayer);
 
+            // Instantiate a PooledBlockPosition at the Sign's coordinates
             Object position = reflector.getMinecraftServerClass("BlockPosition$PooledBlockPosition")
                     .getMethod("d", double.class, double.class, double.class)
                     .invoke(null, sign.getX(), sign.getY(), sign.getZ());
 
+            // Create a Packet to open the sign editor at the Sign's coordinates
             Object packet = reflector.getMinecraftServerClass("PacketPlayOutOpenSignEditor").getConstructor(
                     reflector.getMinecraftServerClass("BlockPosition"))
                     .newInstance(position);
 
+            // On the Player's connection, send the Packet we just created to open the sign editor client-side
             connection.getClass().getDeclaredMethod("sendPacket", reflector.getMinecraftServerClass("Packet")).invoke(connection, packet);
 
             return true;
         } catch (Exception e) {
-            for (int i = 0; i < 4; i++) {
-                sign.setLine(i, sign.getLine(i).replace('&', '§'));
-            }
-            sign.update();
+            formatSignForSave(sign);
             player.sendMessage(CHAT_PREFIX + "§c§lFailed to invoke sign editor!");
             player.sendMessage(CHAT_PREFIX + "§7Likely cause: §rMinecraft server API changed");
             player.sendMessage(CHAT_PREFIX + "§7Server admin: §rCheck for updates to this plugin");
@@ -93,5 +83,35 @@ public class UiSignSubcommand extends SignSubcommand {
             getLogger().severe(ExceptionUtils.getStackTrace(e));
         }
         return false;
+    }
+
+    private Field getTileEntityField(Sign sign) throws NoSuchFieldException {
+        Field tileEntityField;
+        try {
+            // CraftBukkit v1.12.1 since commit 19507baf8b7903427bc3efab7118de6e7c1c931e and newer
+            // https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/diff/src/main/java/org/bukkit/craftbukkit/block/CraftSign.java?until=19507baf8b7903427bc3efab7118de6e7c1c931e
+            // commit 19507baf8b7903427bc3efab7118de6e7c1c931e
+            // Author: Lukas Hennig <lukas@wirsindwir.de>
+            // Date:   Sat Aug 5 14:37:19 2017 +1000
+            tileEntityField = sign.getClass().getSuperclass().getDeclaredField("tileEntity");
+        } catch (NoSuchFieldException e) {
+            // CraftBukkit v1.12.1 before commit 19507baf8b7903427bc3efab7118de6e7c1c931e and earlier
+            tileEntityField = sign.getClass().getDeclaredField("sign");
+        }
+        return tileEntityField;
+    }
+
+    private void formatSignForEdit(Sign sign) {
+        for (int i = 0; i < 4; i++) {
+            sign.setLine(i, sign.getLine(i).replace('§', '&'));
+        }
+        sign.update();
+    }
+
+    private void formatSignForSave(Sign sign) {
+        for (int i = 0; i < 4; i++) {
+            sign.setLine(i, sign.getLine(i).replace('&', '§'));
+        }
+        sign.update();
     }
 }
