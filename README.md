@@ -95,6 +95,7 @@ _Added in `v1.5.0`_
   * In `clicking: false` mode or in `v1.0`, the sign you are looking at is edited.
   * In `clicking: true` mode, after running the `/sign` command, right-click a sign to edit it.
   * (_since `v1.7.0`_) In `clicking: auto` mode, the behavior is the same as `clicking: false` if you are looking at a sign and `clicking: true` if you are not looking at a sign.
+* (_since `v1.8.0`_) Before editing a sign, this plugin checks if the player is allowed to edit the sign by pretending to blank out the sign and seeing if the corresponding [SignChangeEvent](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/event/block/SignChangeEvent.html) is cancelled.
 
 ## Compatibility
 
