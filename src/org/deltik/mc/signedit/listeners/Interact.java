@@ -15,6 +15,7 @@ import java.util.Map;
 public class Interact implements Listener {
 
     private Map<Player, SignEditCommit> pendingSignEditCommits = new HashMap<>();
+    private Map<Player, SignEditCommit> inProgressCommits = new HashMap<>();
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
@@ -33,6 +34,9 @@ public class Interact implements Listener {
     @EventHandler
     public void onDisconnect(PlayerQuitEvent event) {
         Player player = event.getPlayer();
+        if (isInProgress(player)) {
+            popInProgressCommit(player).cleanup();
+        }
         popSignEditCommit(player);
     }
 
@@ -40,11 +44,23 @@ public class Interact implements Listener {
         pendingSignEditCommits.put(player, commit);
     }
 
+    public void registerInProgressCommit(Player player, SignEditCommit commit) {
+        inProgressCommits.put(player, commit);
+    }
+
     public boolean isCommitPending(Player player) {
         return pendingSignEditCommits.containsKey(player);
     }
 
+    public boolean isInProgress(Player player) {
+        return inProgressCommits.containsKey(player);
+    }
+
     public SignEditCommit popSignEditCommit(Player player) {
         return pendingSignEditCommits.remove(player);
+    }
+
+    public SignEditCommit popInProgressCommit(Player player) {
+        return inProgressCommits.remove(player);
     }
 }

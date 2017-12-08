@@ -5,4 +5,6 @@ import org.bukkit.entity.Player;
 
 public interface SignEditCommit {
     void commit(Player player, Sign sign);
+
+    default void cleanup() {}
 }
