@@ -1,12 +1,8 @@
 package org.deltik.mc.signedit;
 
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.deltik.mc.signedit.commands.SignCommand;
 import org.deltik.mc.signedit.listeners.Interact;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 public class Main extends JavaPlugin {
     public static final String CHAT_PREFIX = "§7[§cSignEdit§7]§r ";
@@ -21,7 +17,7 @@ public class Main extends JavaPlugin {
         config = new Configuration();
         listener = new Interact();
         signCommand = new SignCommand(config, listener);
-        for (String alias : new String[] {"sign", "signedit", "editsign", "se"}) {
+        for (String alias : new String[]{"sign", "signedit", "editsign", "se"}) {
             this.getCommand(alias).setExecutor(signCommand);
         }
         getServer().getPluginManager().registerEvents(listener, this);

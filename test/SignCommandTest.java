@@ -1,25 +1,10 @@
 import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
-import org.bukkit.command.Command;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.deltik.mc.signedit.Configuration;
-import org.deltik.mc.signedit.commands.SignCommand;
 import org.deltik.mc.signedit.committers.SignEditCommit;
-import org.deltik.mc.signedit.listeners.Interact;
-import org.deltik.mc.signedit.subcommands.UiSignSubcommand;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.io.File;
 
 import static org.mockito.ArgumentMatchers.matches;
 import static org.mockito.Mockito.*;
@@ -27,46 +12,8 @@ import static org.powermock.api.mockito.PowerMockito.doReturn;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.when;
-import static org.powermock.api.mockito.PowerMockito.*;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({PlayerInteractEvent.class, SignCommand.class})
-public class SignCommandTest {
-    private SignCommand signCommand;
-    private Player player;
-    private Command command;
-    private Sign sign;
-    private Block block;
-    private Configuration spyConfig;
-    private Interact listener;
-    private String cString = "signedit";
-    private UiSignSubcommand uiSignSubcommand;
-
-    @Before
-    public void setUp() throws Exception {
-        Configuration config = new Configuration(File.createTempFile("SignEdit-", "-config.yml"));
-        spyConfig = spy(config);
-        listener = new Interact();
-        doReturn(false).when(spyConfig).writeFullConfig(new YamlConfiguration());
-
-        uiSignSubcommand = mock(UiSignSubcommand.class);
-        whenNew(UiSignSubcommand.class).withAnyArguments().thenReturn(uiSignSubcommand);
-
-        signCommand = new SignCommand(spyConfig, listener);
-
-        player = mock(Player.class);
-        command = mock(Command.class);
-        sign = mock(Sign.class);
-        block = mock(Block.class);
-        when(player.hasPermission("SignEdit.use")).thenReturn(true);
-        when(block.getState()).thenReturn(sign);
-    }
-
-    @After
-    public void validate() {
-        validateMockitoUsage();
-    }
-
+public class SignCommandTest extends SignEditTest {
     @Test
     public void signLineShouldUpdateWhenLookingAtSignAndAllowedToEditBySight() {
         String argsString = "set 1 alpha bravo charlie";

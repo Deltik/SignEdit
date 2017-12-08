@@ -27,7 +27,7 @@ public class Interact implements Listener {
 
         if (isCommitPending(player)) {
             SignEditCommit commit = popSignEditCommit(player);
-            commit.commit(player, sign);
+            commit.validatedCommit(player, sign);
         }
     }
 

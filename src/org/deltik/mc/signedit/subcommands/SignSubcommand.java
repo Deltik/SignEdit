@@ -39,7 +39,7 @@ public abstract class SignSubcommand {
             player.sendMessage(CHAT_PREFIX + "§cNow right-click a sign to edit it");
         } else if (block.getState() instanceof Sign) {
             Sign sign = (Sign) block.getState();
-            commit.commit(player, sign);
+            commit.validatedCommit(player, sign);
         } else {
             player.sendMessage(CHAT_PREFIX + "§cYou must be looking at a sign to edit it!");
             return false;
