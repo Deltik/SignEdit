@@ -23,13 +23,13 @@ public class LineSignEditCommit implements SignEditCommit {
         sign.update();
         int lineRelative = lineNumber + lineOffset;
         if (text.isEmpty())
-            player.sendMessage(CHAT_PREFIX + "§cLine §e" + lineRelative + "§c blanked");
+            player.sendMessage(CHAT_PREFIX + "§6Line §e" + lineRelative + "§6 blanked");
         else if (text.equals(before))
-            player.sendMessage(CHAT_PREFIX + "§cLine §e" + lineRelative + "§c unchanged");
+            player.sendMessage(CHAT_PREFIX + "§6Line §e" + lineRelative + "§6 unchanged");
         else {
-            player.sendMessage(CHAT_PREFIX + "§cLine §e" + lineRelative + "§c changed");
-            player.sendMessage(CHAT_PREFIX + "§c§lBefore: §r" + before);
-            player.sendMessage(CHAT_PREFIX + "§c §l After: §r" + text);
+            player.sendMessage(CHAT_PREFIX + "§6Line §e" + lineRelative + "§6 changed");
+            player.sendMessage(CHAT_PREFIX + "§6§lBefore: §r" + before);
+            player.sendMessage(CHAT_PREFIX + "§6 §l After: §r" + text);
         }
     }
 }

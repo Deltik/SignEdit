@@ -1,4 +1,5 @@
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -241,6 +242,18 @@ public class SignCommandTest extends SignEditTest {
     }
 
     @Test
+    public void sayForbiddenOnEditWhileNotPermitted() {
+        String argsString = "set 2 no permission";
+        Player unauthorizedPlayer = mock(Player.class);
+        when(unauthorizedPlayer.hasPermission(anyString())).thenReturn(false);
+
+        signCommand.onCommand(unauthorizedPlayer, command, cString, argsString.split(" "));
+
+        verify(sign, never()).setLine(anyInt(), anyString());
+        verify(unauthorizedPlayer, atLeastOnce()).sendMessage(anyString());
+    }
+
+    @Test
     public void clickingAutoEditsSignOnSight() {
         String argsString = "set 1 alpha bravo charlie";
 
@@ -287,6 +300,24 @@ public class SignCommandTest extends SignEditTest {
 
         Assert.assertFalse(listener.isCommitPending(player));
     }
+
+//    @Test
+//    public void cancelPendingSignEditOnCancelSignSubcommand() {
+//        String argsString = "set 3 xray yankee zulu";
+//
+//        when(player.getTargetBlock(null, 10)).thenReturn(null);
+//        spyConfig.setClicking("auto");
+//        PlayerQuitEvent event = mock(PlayerQuitEvent.class);
+//        when(event.getPlayer()).thenReturn(player);
+//
+//        signCommand.onCommand(player, command, cString, argsString.split(" "));
+//
+//        Assert.assertTrue(listener.isCommitPending(player));
+//
+//        signCommand.onCommand(player, command, cString, "clear".split(" "));
+//
+//        Assert.assertFalse(listener.isCommitPending(player));
+//    }
 
     @Test
     public void commandOpensUIWithSight() {

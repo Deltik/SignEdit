@@ -5,7 +5,7 @@ import org.deltik.mc.signedit.commands.SignCommand;
 import org.deltik.mc.signedit.listeners.Interact;
 
 public class Main extends JavaPlugin {
-    public static final String CHAT_PREFIX = "§7[§cSignEdit§7]§r ";
+    public static final String CHAT_PREFIX = "§7[§6SignEdit§7]§r ";
     public static Main instance;
     private Configuration config;
     private Interact listener;

@@ -7,10 +7,7 @@ import org.bukkit.entity.Player;
 import org.deltik.mc.signedit.ArgStruct;
 import org.deltik.mc.signedit.Configuration;
 import org.deltik.mc.signedit.listeners.Interact;
-import org.deltik.mc.signedit.subcommands.ClearSignSubcommand;
-import org.deltik.mc.signedit.subcommands.SetSignSubcommand;
-import org.deltik.mc.signedit.subcommands.SignSubcommand;
-import org.deltik.mc.signedit.subcommands.UiSignSubcommand;
+import org.deltik.mc.signedit.subcommands.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +26,7 @@ public class SignCommand implements CommandExecutor {
         subcommands.put("set", new SetSignSubcommand());
         subcommands.put("clear", new ClearSignSubcommand());
         subcommands.put("ui", new UiSignSubcommand());
+        subcommands.put("cancel", new CancelSignSubcommand());
     }
 
     @Override
@@ -39,7 +37,10 @@ public class SignCommand implements CommandExecutor {
 
         ArgStruct argStruct = new ArgStruct(args);
 
-        if (!permitted(player, argStruct)) return true;
+        if (!permitted(player, argStruct)) {
+            informForbidden(player, argStruct);
+            return true;
+        }
 
         if (subcommands.containsKey(argStruct.subcommand)) {
             SignSubcommand subcommand = subcommands.get(argStruct.subcommand);
@@ -67,5 +68,9 @@ public class SignCommand implements CommandExecutor {
         p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §e[clear]§r §7<line>");
         p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §eui");
         return true;
+    }
+
+    public static void informForbidden(Player p, ArgStruct a) {
+        p.sendMessage(CHAT_PREFIX + "§cYou are not allowed to use the §e" + a.subcommand + "§c subcommand.");
     }
 }

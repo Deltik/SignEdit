@@ -36,7 +36,7 @@ public abstract class SignSubcommand {
         Block block = getTargetBlockOfPlayer(player);
         if (shouldDoClickingMode(block)) {
             listener.pendSignEditCommit(player, commit);
-            player.sendMessage(CHAT_PREFIX + "§cNow right-click a sign to edit it");
+            player.sendMessage(CHAT_PREFIX + "§6Now right-click a sign to edit it");
         } else if (block.getState() instanceof Sign) {
             Sign sign = (Sign) block.getState();
             commit.validatedCommit(player, sign);
