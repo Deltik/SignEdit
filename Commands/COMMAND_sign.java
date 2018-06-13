@@ -57,7 +57,7 @@ public class COMMAND_sign implements CommandExecutor{
 			txt = sb.deleteCharAt(sb.length() - 1).toString().replace("&", "§");
 		
 		
-		 Block b = p.getTargetBlock((HashSet<Byte>) null, 10);
+		 Block b = p.getTargetBlock(null, 10);
 		 
 		 if(b.getState() instanceof Sign){
 		 
