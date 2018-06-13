@@ -67,6 +67,7 @@ public class SignCommand implements CommandExecutor {
         p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §e[set]§r §7<line> [<text>]");
         p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §e[clear]§r §7<line>");
         p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §eui");
+        p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §ecancel");
         return true;
     }
 

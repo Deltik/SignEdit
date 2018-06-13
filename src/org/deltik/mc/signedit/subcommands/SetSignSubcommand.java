@@ -14,7 +14,7 @@ public class SetSignSubcommand extends SignSubcommand {
         int maxLine = config.getMaxLine();
         if (argStruct.lineRelative > maxLine || argStruct.lineRelative < minLine) {
             player.sendMessage(CHAT_PREFIX + "§cLine numbers are from §e" + minLine + "§c to §e" + maxLine);
-            return false;
+            return true;
         }
         int line = argStruct.lineRelative - minLine;
 

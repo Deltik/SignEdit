@@ -24,6 +24,9 @@ commands:
       /<command> <line>
         Alias of /<command> clear
 
+      /<command> cancel
+        Abort a pending right-click action
+
 permissions:
   SignEdit.use:
     description: Legacy permission granting access to all commands in this plugin

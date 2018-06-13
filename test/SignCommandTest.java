@@ -301,23 +301,31 @@ public class SignCommandTest extends SignEditTest {
         Assert.assertFalse(listener.isCommitPending(player));
     }
 
-//    @Test
-//    public void cancelPendingSignEditOnCancelSignSubcommand() {
-//        String argsString = "set 3 xray yankee zulu";
-//
-//        when(player.getTargetBlock(null, 10)).thenReturn(null);
-//        spyConfig.setClicking("auto");
-//        PlayerQuitEvent event = mock(PlayerQuitEvent.class);
-//        when(event.getPlayer()).thenReturn(player);
-//
-//        signCommand.onCommand(player, command, cString, argsString.split(" "));
-//
-//        Assert.assertTrue(listener.isCommitPending(player));
-//
-//        signCommand.onCommand(player, command, cString, "clear".split(" "));
-//
-//        Assert.assertFalse(listener.isCommitPending(player));
-//    }
+    @Test
+    public void cancelPendingSignEditOnCancelSignSubcommand() {
+        String argsString = "set 3 xray yankee zulu";
+
+        when(player.getTargetBlock(null, 10)).thenReturn(null);
+        spyConfig.setClicking("auto");
+
+        Assert.assertFalse(listener.isCommitPending(player));
+
+        signCommand.onCommand(player, command, cString, argsString.split(" "));
+
+        Assert.assertTrue(listener.isCommitPending(player));
+
+        signCommand.onCommand(player, command, cString, "cancel".split(" "));
+
+        Assert.assertFalse(listener.isCommitPending(player));
+    }
+
+    @Test
+    public void sayNothingToCancelIfNothingToCancelSignSubcommand() {
+        Assert.assertFalse(listener.isCommitPending(player));
+        signCommand.onCommand(player, command, cString, "cancel".split(" "));
+        Assert.assertFalse(listener.isCommitPending(player));
+        verify(player, atLeastOnce()).sendMessage(matches("(?i)^.*no.*cancel.*$"));
+    }
 
     @Test
     public void commandOpensUIWithSight() {
