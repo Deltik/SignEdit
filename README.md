@@ -43,6 +43,12 @@ Erase the line *line* of the targeted sign.
 
 (_since `v1.6.0`_) **Aliases:** `/sign <line>`
 
+#### `/sign cancel`
+
+_Added in `v1.9.0`_
+
+Abort your pending right-mouse click sign edit action.
+
 ## Permissions
 
 All features of SignEdit for Bukkit will be available if the player has the following permission:
@@ -55,8 +61,9 @@ All features of SignEdit for Bukkit will be available if the player has the foll
 
 Examples:
 
-    signedit.sign.set
+    signedit.sign.cancel
     signedit.sign.clear
+    signedit.sign.set
     signedit.sign.ui
 
 ## Configuration
