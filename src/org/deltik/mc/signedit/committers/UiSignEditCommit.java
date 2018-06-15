@@ -48,14 +48,14 @@ public class UiSignEditCommit implements SignEditCommit {
             // Designate the EntityPlayer as the editor (EntityHuman) of the TileEntitySign
             signEntityHumanField.set(tileEntitySign, entityPlayer);
 
-            // Instantiate a PooledBlockPosition at the Sign's coordinates
-            Object position = reflector.getMinecraftServerClass("BlockPosition$PooledBlockPosition")
-                    .getMethod("d", double.class, double.class, double.class)
-                    .invoke(null, sign.getX(), sign.getY(), sign.getZ());
+            // Instantiate a BlockPosition at the Sign's coordinates
+            Object position = reflector.getMinecraftServerClass("BlockPosition")
+                    .getConstructor(int.class, int.class, int.class)
+                    .newInstance(sign.getX(), sign.getY(), sign.getZ());
 
             // Create a Packet to open the sign editor at the Sign's coordinates
-            Object packet = reflector.getMinecraftServerClass("PacketPlayOutOpenSignEditor").getConstructor(
-                    reflector.getMinecraftServerClass("BlockPosition"))
+            Object packet = reflector.getMinecraftServerClass("PacketPlayOutOpenSignEditor")
+                    .getConstructor(reflector.getMinecraftServerClass("BlockPosition"))
                     .newInstance(position);
 
             // On the Player's connection, send the Packet we just created to open the sign editor client-side
