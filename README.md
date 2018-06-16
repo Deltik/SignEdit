@@ -5,6 +5,8 @@
 
 **SignEdit for Bukkit** is a [Bukkit plugin](https://www.spigotmc.org/resources/categories/bukkit.4/) that allows players to edit sign objects by looking at them or clicking on them and typing in a SignEdit command.
 
+![Screenshot of usage help in SignEdit for Bukkit v1.9.2](https://i.imgur.com/HSNhFPB.png)
+
 ## Installation
 
 1. Download the latest `.jar` file from [the Releases page](https://github.com/Deltik/SignEdit/releases) and upload it to your CraftBukkit/Spigot `plugins/` folder.
@@ -27,6 +29,8 @@ _Added in `v1.8.0`_
 
 Invoke the native Minecraft sign editor on the targeted sign.
 
+![GIF of `/sign ui` in action](https://i.imgur.com/TnVpy2v.gif)
+
 #### `/sign set <line> [<text>]`
 
 _Added in `v1.0`_
@@ -35,6 +39,8 @@ Change the line *line* of the targeted sign to *text*.  All `&` characters are r
 
 (_since `v1.6.0`_) **Aliases:** `/sign <line> [<text>]`
 
+![GIF of `/sign <line> <text>` in action](https://i.imgur.com/B1MNGXv.gif)
+
 #### `/sign clear <line>`
 
 _Added in `v1.4.0`_
@@ -42,6 +48,8 @@ _Added in `v1.4.0`_
 Erase the line *line* of the targeted sign.
 
 (_since `v1.6.0`_) **Aliases:** `/sign <line>`
+
+![GIF of `/sign clear <line>` in action](https://i.imgur.com/iVTGLra.gif)
 
 #### `/sign cancel`
 
@@ -98,6 +106,7 @@ _Added in `v1.5.0`_
   * No dependencies!
 * Edit the line _line_ of the targeted sign to be _text_ with `/sign set <line> [<text>]` or (_since `v1.6.0`_) `/sign <line> [<text>]`
 * All editing functions support formatting codes (`&` turns into `§`)
+  ![Screenshot of color code in `/sign <line> <text>`](https://i.imgur.com/Cdv7p2t.png)
 * Targeting a sign works as follows:
   * In `clicking: false` mode or in `v1.0`, the sign you are looking at is edited.
   * In `clicking: true` mode, after running the `/sign` command, right-click a sign to edit it.
