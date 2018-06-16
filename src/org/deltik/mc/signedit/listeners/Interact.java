@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.deltik.mc.signedit.committers.SignEditCommit;
@@ -38,6 +39,19 @@ public class Interact implements Listener {
             popInProgressCommit(player).cleanup();
         }
         popSignEditCommit(player);
+    }
+
+    @EventHandler
+    public void onSignChange(SignChangeEvent event) {
+        Player player = event.getPlayer();
+        if (isInProgress(player)) {
+            popInProgressCommit(player);
+            // Apply colors
+            String[] lines = event.getLines();
+            for (int i = 0 ; i < lines.length ; i ++) {
+                event.setLine(i, lines[i].replace('&', '§'));
+            }
+        }
     }
 
     public void pendSignEditCommit(Player player, SignEditCommit commit) {

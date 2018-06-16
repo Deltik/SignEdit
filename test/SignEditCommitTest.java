@@ -1,6 +1,8 @@
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.deltik.mc.signedit.committers.SignEditCommit;
 import org.deltik.mc.signedit.committers.UiSignEditCommit;
+import org.junit.Assert;
 import org.junit.Test;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 
@@ -36,5 +38,42 @@ public class SignEditCommitTest extends SignEditTest {
         spySignEditCommit.validatedCommit(player, sign);
 
         verify(spySignEditCommit).commit(player, sign);
+    }
+
+    @Test
+    public void removeInProgressEditIfPlayerEditsSign() throws Exception {
+        SignEditCommit spySignEditCommit = spy(new UiSignEditCommit(null, null));
+        SignChangeEvent event = mock(SignChangeEvent.class);
+        when(event.getPlayer()).thenReturn(player);
+        // Apply color
+        when(event.getLines()).thenReturn(new String[0]);
+
+        Assert.assertFalse(listener.isInProgress(player));
+
+        listener.registerInProgressCommit(player, spySignEditCommit);
+
+        Assert.assertTrue(listener.isInProgress(player));
+
+        listener.onSignChange(event);
+
+        Assert.assertFalse(listener.isInProgress(player));
+    }
+
+    @Test
+    public void cleanupInProgressEditIfPlayerDisconnects() throws Exception {
+        SignEditCommit spySignEditCommit = mock(UiSignEditCommit.class);
+        PlayerQuitEvent event = mock(PlayerQuitEvent.class);
+        when(event.getPlayer()).thenReturn(player);
+
+        Assert.assertFalse(listener.isInProgress(player));
+
+        listener.registerInProgressCommit(player, spySignEditCommit);
+
+        Assert.assertTrue(listener.isInProgress(player));
+
+        listener.onDisconnect(event);
+
+        Assert.assertFalse(listener.isInProgress(player));
+        verify(spySignEditCommit).cleanup();
     }
 }
