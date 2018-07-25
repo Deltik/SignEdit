@@ -1,6 +1,7 @@
 package org.deltik.mc.signedit.committers;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.deltik.mc.signedit.MinecraftReflector;
@@ -33,38 +34,7 @@ public class UiSignEditCommit implements SignEditCommit {
         formatSignForEdit(sign);
 
         try {
-            // Get implementation of Player (raw Bukkit player, EntityPlayer)
-            Object entityPlayer = player.getClass().getMethod("getHandle").invoke(player);
-            // Get instance of net.minecraft.server.*.PlayerConnection from EntityPlayer
-            Object connection = entityPlayer.getClass().getField("playerConnection").get(entityPlayer);
-
-            Field tileEntityField = getFirstFieldOfType(sign,
-                    reflector.getMinecraftServerClass("TileEntity"));
-            // Get instance of net.minecraft.server.*.TileEntitySign from Bukkit Sign implementation's tile entity
-            Object tileEntitySign = tileEntityField.get(sign);
-
-            Field signIsEditable = tileEntitySign.getClass().getDeclaredField("isEditable");
-            signIsEditable.setAccessible(true);
-            // Ensure TileEntitySign is editable
-            signIsEditable.set(tileEntitySign, true);
-
-            Field signEntityHumanField = getFirstFieldOfType(tileEntitySign,
-                    reflector.getMinecraftServerClass("EntityHuman"));
-            // Designate the EntityPlayer as the editor (EntityHuman) of the TileEntitySign
-            signEntityHumanField.set(tileEntitySign, entityPlayer);
-
-            // Instantiate a BlockPosition at the Sign's coordinates
-            Object position = reflector.getMinecraftServerClass("BlockPosition")
-                    .getConstructor(int.class, int.class, int.class)
-                    .newInstance(sign.getX(), sign.getY(), sign.getZ());
-
-            // Create a Packet to open the sign editor at the Sign's coordinates
-            Object packet = reflector.getMinecraftServerClass("PacketPlayOutOpenSignEditor")
-                    .getConstructor(reflector.getMinecraftServerClass("BlockPosition"))
-                    .newInstance(position);
-
-            // On the Player's connection, send the Packet we just created to open the sign editor client-side
-            connection.getClass().getDeclaredMethod("sendPacket", reflector.getMinecraftServerClass("Packet")).invoke(connection, packet);
+            openSignEditor(player, sign);
         } catch (Exception e) {
             formatSignForSave(sign);
             player.sendMessage(CHAT_PREFIX + "§c§lFailed to invoke sign editor!");
@@ -75,6 +45,69 @@ public class UiSignEditCommit implements SignEditCommit {
             player.sendMessage(CHAT_PREFIX + "§6(More details logged in server console)");
             getLogger().severe(ExceptionUtils.getStackTrace(e));
         }
+    }
+
+    private void openSignEditor(Player player, Sign sign) throws Exception {
+        // Get implementation of Player (raw Bukkit player, EntityPlayer)
+        Object entityPlayer = player.getClass().getMethod("getHandle").invoke(player);
+
+        attachEntityPlayerToSign(entityPlayer, sign);
+        Object position = getBlockPosition(sign.getBlock());
+        Object packet = createPositionalPacket(position, "PacketPlayOutOpenSignEditor");
+        sendPacketToEntityPlayer(packet, entityPlayer);
+    }
+
+    private void sendPacketToEntityPlayer(Object packet, Object entityPlayer) throws Exception {
+        // Get instance of net.minecraft.server.*.PlayerConnection from EntityPlayer
+        Object connection = entityPlayer.getClass().getField("playerConnection").get(entityPlayer);
+        // On the Player's connection, send the Packet we just created to open the sign editor client-side
+        connection
+                .getClass()
+                .getDeclaredMethod("sendPacket", reflector.getMinecraftServerClass("Packet"))
+                .invoke(connection, packet);
+    }
+
+    private Object createPositionalPacket(Object position, String typeOfPacket) throws Exception {
+        return createPositionalPacket(position, reflector.getMinecraftServerClass(typeOfPacket));
+    }
+
+    private Object createPositionalPacket(Object position, Class<?> typeOfPacket) throws Exception {
+        // Create a Packet to open the sign editor at the Sign's coordinates
+        return typeOfPacket
+                .getConstructor(reflector.getMinecraftServerClass("BlockPosition"))
+                .newInstance(position);
+    }
+
+    private Object getBlockPosition(Block block) throws Exception {
+        // Instantiate a BlockPosition at the Sign's coordinates
+        return reflector.getMinecraftServerClass("BlockPosition")
+                .getConstructor(int.class, int.class, int.class)
+                .newInstance(block.getX(), block.getY(), block.getZ());
+    }
+
+    private void attachEntityPlayerToSign(Object entityPlayer, Sign sign) throws Exception {
+        Object tileEntitySign = getTileEntitySign(sign);
+
+        maketileEntitySignEditable(tileEntitySign);
+
+        Field signEntityHumanField = getFirstFieldOfType(tileEntitySign,
+                reflector.getMinecraftServerClass("EntityHuman"));
+        // Designate the EntityPlayer as the editor (EntityHuman) of the TileEntitySign
+        signEntityHumanField.set(tileEntitySign, entityPlayer);
+    }
+
+    private Object getTileEntitySign(Sign sign) throws Exception {
+        Field tileEntityField = getFirstFieldOfType(sign,
+                reflector.getMinecraftServerClass("TileEntity"));
+        // Get instance of net.minecraft.server.*.TileEntitySign from Bukkit Sign implementation's tile entity
+        return tileEntityField.get(sign);
+    }
+
+    private void maketileEntitySignEditable(Object tileEntitySign) throws Exception {
+        Field signIsEditable = tileEntitySign.getClass().getDeclaredField("isEditable");
+        signIsEditable.setAccessible(true);
+        // Ensure TileEntitySign is editable
+        signIsEditable.set(tileEntitySign, true);
     }
 
     private Field getFirstFieldOfType(Object source, Class<?> desiredType) throws NoSuchFieldException {
