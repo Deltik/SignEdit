@@ -38,7 +38,8 @@ public class UiSignEditCommit implements SignEditCommit {
             // Get instance of net.minecraft.server.*.PlayerConnection from EntityPlayer
             Object connection = entityPlayer.getClass().getField("playerConnection").get(entityPlayer);
 
-            Field tileEntityField = getTileEntityField(sign);
+            Field tileEntityField = getFirstFieldOfType(sign,
+                    reflector.getMinecraftServerClass("TileEntity"));
             // Get instance of net.minecraft.server.*.TileEntitySign from Bukkit Sign implementation's tile entity
             Object tileEntitySign = tileEntityField.get(sign);
 
@@ -47,7 +48,8 @@ public class UiSignEditCommit implements SignEditCommit {
             // Ensure TileEntitySign is editable
             signIsEditable.set(tileEntitySign, true);
 
-            Field signEntityHumanField = getEntityHumanFieldFromTileEntity(tileEntitySign);
+            Field signEntityHumanField = getFirstFieldOfType(tileEntitySign,
+                    reflector.getMinecraftServerClass("EntityHuman"));
             // Designate the EntityPlayer as the editor (EntityHuman) of the TileEntitySign
             signEntityHumanField.set(tileEntitySign, entityPlayer);
 
@@ -75,34 +77,24 @@ public class UiSignEditCommit implements SignEditCommit {
         }
     }
 
-    private Field getTileEntityField(Sign sign) throws NoSuchFieldException {
-        Field tileEntityField;
-        try {
-            // CraftBukkit v1.12.1 since commit 19507baf8b7903427bc3efab7118de6e7c1c931e
-            // https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/diff/src/main/java/org/bukkit/craftbukkit/block/CraftSign.java?until=19507baf8b7903427bc3efab7118de6e7c1c931e
-            // commit 19507baf8b7903427bc3efab7118de6e7c1c931e
-            // Author: Lukas Hennig <lukas@wirsindwir.de>
-            // Date:   Sat Aug 5 14:37:19 2017 +1000
-            tileEntityField = sign.getClass().getSuperclass().getDeclaredField("tileEntity");
-        } catch (NoSuchFieldException e) {
-            // CraftBukkit v1.12.1 before commit 19507baf8b7903427bc3efab7118de6e7c1c931e
-            tileEntityField = sign.getClass().getDeclaredField("sign");
-        }
-        tileEntityField.setAccessible(true);
-        return tileEntityField;
+    private Field getFirstFieldOfType(Object source, Class<?> desiredType) throws NoSuchFieldException {
+        return getFirstFieldOfType(source.getClass(), desiredType);
     }
 
-    private Field getEntityHumanFieldFromTileEntity(Object tileEntity) throws ClassNotFoundException, NoSuchFieldException {
-        Class entityHumanClass = reflector.getMinecraftServerClass("EntityHuman");
-        Field[] tileEntityFields = tileEntity.getClass().getDeclaredFields();
-        for (Field tileEntityField : tileEntityFields) {
-            Class tileEntityFieldType = tileEntityField.getType();
-            if (tileEntityFieldType.equals(entityHumanClass)) {
-                tileEntityField.setAccessible(true);
-                return tileEntityField;
+    private Field getFirstFieldOfType(Class<?> source, Class<?> desiredType) throws NoSuchFieldException {
+        Class<?> ancestor = source;
+        while (ancestor != null) {
+            Field[] fields = ancestor.getDeclaredFields();
+            for (Field field : fields) {
+                Class<?> candidateType = field.getType();
+                if (desiredType.isAssignableFrom(candidateType)) {
+                    field.setAccessible(true);
+                    return field;
+                }
             }
+            ancestor = ancestor.getSuperclass();
         }
-        throw new NoSuchFieldException("Cannot find "+entityHumanClass.getName()+" in TileEntity");
+        throw new NoSuchFieldException("Cannot match " + desiredType.getName() + " in ancestry of " + source.getName());
     }
 
     private void formatSignForEdit(Sign sign) {
