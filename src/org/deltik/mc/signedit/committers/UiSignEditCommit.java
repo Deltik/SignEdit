@@ -48,19 +48,21 @@ public class UiSignEditCommit implements SignEditCommit {
     }
 
     private void openSignEditor(Player player, Sign sign) throws Exception {
-        // Get implementation of Player (raw Bukkit player, EntityPlayer)
-        Object entityPlayer = player.getClass().getMethod("getHandle").invoke(player);
-
+        Object entityPlayer = getEntityPlayer(player);
         attachEntityPlayerToSign(entityPlayer, sign);
         Object position = getBlockPosition(sign.getBlock());
         Object packet = createPositionalPacket(position, "PacketPlayOutOpenSignEditor");
         sendPacketToEntityPlayer(packet, entityPlayer);
     }
 
+    private Object getEntityPlayer(Player player) throws Exception {
+        Field entityPlayerField = getFirstFieldOfType(player,
+                reflector.getMinecraftServerClass("Entity"));
+        return entityPlayerField.get(player);
+    }
+
     private void sendPacketToEntityPlayer(Object packet, Object entityPlayer) throws Exception {
-        // Get instance of net.minecraft.server.*.PlayerConnection from EntityPlayer
         Object connection = entityPlayer.getClass().getField("playerConnection").get(entityPlayer);
-        // On the Player's connection, send the Packet we just created to open the sign editor client-side
         connection
                 .getClass()
                 .getDeclaredMethod("sendPacket", reflector.getMinecraftServerClass("Packet"))
@@ -72,14 +74,12 @@ public class UiSignEditCommit implements SignEditCommit {
     }
 
     private Object createPositionalPacket(Object position, Class<?> typeOfPacket) throws Exception {
-        // Create a Packet to open the sign editor at the Sign's coordinates
         return typeOfPacket
                 .getConstructor(reflector.getMinecraftServerClass("BlockPosition"))
                 .newInstance(position);
     }
 
     private Object getBlockPosition(Block block) throws Exception {
-        // Instantiate a BlockPosition at the Sign's coordinates
         return reflector.getMinecraftServerClass("BlockPosition")
                 .getConstructor(int.class, int.class, int.class)
                 .newInstance(block.getX(), block.getY(), block.getZ());
@@ -92,21 +92,18 @@ public class UiSignEditCommit implements SignEditCommit {
 
         Field signEntityHumanField = getFirstFieldOfType(tileEntitySign,
                 reflector.getMinecraftServerClass("EntityHuman"));
-        // Designate the EntityPlayer as the editor (EntityHuman) of the TileEntitySign
         signEntityHumanField.set(tileEntitySign, entityPlayer);
     }
 
     private Object getTileEntitySign(Sign sign) throws Exception {
         Field tileEntityField = getFirstFieldOfType(sign,
                 reflector.getMinecraftServerClass("TileEntity"));
-        // Get instance of net.minecraft.server.*.TileEntitySign from Bukkit Sign implementation's tile entity
         return tileEntityField.get(sign);
     }
 
     private void maketileEntitySignEditable(Object tileEntitySign) throws Exception {
         Field signIsEditable = tileEntitySign.getClass().getDeclaredField("isEditable");
         signIsEditable.setAccessible(true);
-        // Ensure TileEntitySign is editable
         signIsEditable.set(tileEntitySign, true);
     }
 
