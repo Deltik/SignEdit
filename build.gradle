@@ -1,4 +1,4 @@
-version '1.9.2'
+version '1.9.3-SNAPSHOT'
 
 // Set to '+' to use latest Bukkit
 // Otherwise, specify a version number like '1.12.2-R0.1-SNAPSHOT'

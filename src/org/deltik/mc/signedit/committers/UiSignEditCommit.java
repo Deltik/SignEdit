@@ -22,6 +22,11 @@ public class UiSignEditCommit implements SignEditCommit {
     }
 
     @Override
+    public void cleanup() {
+        formatSignForSave(sign);
+    }
+
+    @Override
     public void commit(Player player, Sign sign) {
         this.sign = sign;
         listener.registerInProgressCommit(player, this);
@@ -34,7 +39,6 @@ public class UiSignEditCommit implements SignEditCommit {
             Object connection = entityPlayer.getClass().getField("playerConnection").get(entityPlayer);
 
             Field tileEntityField = getTileEntityField(sign);
-            tileEntityField.setAccessible(true);
             // Get instance of net.minecraft.server.*.TileEntitySign from Bukkit Sign implementation's tile entity
             Object tileEntitySign = tileEntityField.get(sign);
 
@@ -43,8 +47,7 @@ public class UiSignEditCommit implements SignEditCommit {
             // Ensure TileEntitySign is editable
             signIsEditable.set(tileEntitySign, true);
 
-            Field signEntityHumanField = tileEntitySign.getClass().getDeclaredField("h");
-            signEntityHumanField.setAccessible(true);
+            Field signEntityHumanField = getEntityHumanFieldFromTileEntity(tileEntitySign);
             // Designate the EntityPlayer as the editor (EntityHuman) of the TileEntitySign
             signEntityHumanField.set(tileEntitySign, entityPlayer);
 
@@ -72,11 +75,6 @@ public class UiSignEditCommit implements SignEditCommit {
         }
     }
 
-    @Override
-    public void cleanup() {
-        formatSignForSave(sign);
-    }
-
     private Field getTileEntityField(Sign sign) throws NoSuchFieldException {
         Field tileEntityField;
         try {
@@ -90,7 +88,21 @@ public class UiSignEditCommit implements SignEditCommit {
             // CraftBukkit v1.12.1 before commit 19507baf8b7903427bc3efab7118de6e7c1c931e
             tileEntityField = sign.getClass().getDeclaredField("sign");
         }
+        tileEntityField.setAccessible(true);
         return tileEntityField;
+    }
+
+    private Field getEntityHumanFieldFromTileEntity(Object tileEntity) throws ClassNotFoundException, NoSuchFieldException {
+        Class entityHumanClass = reflector.getMinecraftServerClass("EntityHuman");
+        Field[] tileEntityFields = tileEntity.getClass().getDeclaredFields();
+        for (Field tileEntityField : tileEntityFields) {
+            Class tileEntityFieldType = tileEntityField.getType();
+            if (tileEntityFieldType.equals(entityHumanClass)) {
+                tileEntityField.setAccessible(true);
+                return tileEntityField;
+            }
+        }
+        throw new NoSuchFieldException("Cannot find "+entityHumanClass.getName()+" in TileEntity");
     }
 
     private void formatSignForEdit(Sign sign) {
