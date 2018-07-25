@@ -27,6 +27,7 @@ public class SignCommand implements CommandExecutor {
         subcommands.put("clear", new ClearSignSubcommand());
         subcommands.put("ui", new UiSignSubcommand());
         subcommands.put("cancel", new CancelSignSubcommand());
+        subcommands.put("version", new VersionSignSubcommand());
     }
 
     @Override
@@ -68,6 +69,7 @@ public class SignCommand implements CommandExecutor {
         p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §e[clear]§r §7<line>");
         p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §eui");
         p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §ecancel");
+        p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §eversion");
         return true;
     }
 

@@ -27,6 +27,9 @@ commands:
       /<command> cancel
         Abort a pending right-click action
 
+      /<command> version
+        Show the version of this plugin
+
 permissions:
   SignEdit.use:
     description: Legacy permission granting access to all commands in this plugin
@@ -42,3 +45,5 @@ permissions:
     description: Allow /sign set
   signedit.sign.clear:
     description: Allow /sign clear
+  signedit.sign.version:
+    description: Allow /sign version

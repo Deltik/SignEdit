@@ -57,6 +57,12 @@ _Added in `v1.9.0`_
 
 Abort your pending right-mouse click sign edit action.
 
+#### `/sign version`
+
+_Added in `v1.9.3`_
+
+Show the installed version of this plugin.
+
 ## Permissions
 
 All features of SignEdit for Bukkit will be available if the player has the following permission:
@@ -73,6 +79,7 @@ Examples:
     signedit.sign.clear
     signedit.sign.set
     signedit.sign.ui
+    signedit.sign.version
 
 ## Configuration
 
