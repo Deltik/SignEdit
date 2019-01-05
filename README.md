@@ -30,7 +30,8 @@
 | `/sign clear <lines>` | Erase the lines `<lines>` of the targeted sign. | _since `v1.4.0`_ |
 | `/sign cancel` | Abort your pending right-mouse click sign edit action. | _since `v1.9.0`_ |
 | `/sign status` | Show the pending action and what is in the copy buffer. | _since `v1.10.0`_ |
-| `/sign copy [<lines>]` | Copy the targeted sign.  If `<lines>` is specified, only those lines are copied. | _since `v1.10.0`_ |
+| `/sign copy [<lines>]` | Copy the targeted sign's text.  If `<lines>` is specified, only those lines are copied. | _since `v1.10.0`_ |
+| `/sign cut [<lines>]` | Copy the targeted sign's text and remove it from the sign.  If `<lines>` is specified, only those lines are cut. | _since `v1.10.0`_ |
 | `/sign paste` | Paste the lines buffered by the previous `/sign copy` command onto the targeted sign. | _since `v1.10.0`_ |
 | `/sign undo` | Revert the previous sign change. | _since `v1.10.0`_ |
 | `/sign redo` | Restore the most recent sign change that was undone by `/sign undo`. | _since `v1.10.0`_ |

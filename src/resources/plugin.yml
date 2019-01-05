@@ -32,8 +32,11 @@ commands:
 
       /<command> status
 
-      /<command> copy <lines>
-        Copy the targeted sign.  If <lines> is specified, only those lines are copied.
+      /<command> copy [<lines>]
+        Copy the targeted sign's text. If <lines> is specified, only those lines are copied.
+
+      /<command> cut [<lines>]
+        Copy the targeted sign's text and remove it from the sign. If <lines> is specified, only those lines are cut.
 
       /<command> paste
         Paste the lines buffered by the previous /sign copy command onto the targeted sign.
@@ -58,6 +61,7 @@ permissions:
       signedit.sign.clear: true
       signedit.sign.status: true
       signedit.sign.copy: true
+      signedit.sign.cut: true
       signedit.sign.paste: true
       signedit.sign.undo: true
       signedit.sign.redo: true
@@ -72,6 +76,8 @@ permissions:
     description: Allow /sign status
   signedit.sign.copy:
     description: Allow /sign copy
+  signedit.sign.cut:
+    description: Allow /sign cut
   signedit.sign.paste:
     description: Allow /sign paste
   signedit.sign.undo:
