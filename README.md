@@ -17,51 +17,69 @@
 
 ## Usage
 
-### `/sign`
+### Commands
 
-_Added in `v1.0`_
+| Command | Usage | Version |
+| --- | --- | --- |
+| `/sign` | Show the usage of the `/sign` subcommands. | _since `v1.0`_ |
+| `/sign ui` | Invoke the native Minecraft sign editor on the targeted sign. | _since `v1.8.0`_ |
+| `/sign set <line> <text>` | Change the line `<line>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. | _since `v1.0`_ |
+| `/sign set <line> [<text>]` | Change the line `<line>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. If `<text>` is blank, erase the line `<line>`. | _since `v1.4.0`_ |
+| `/sign set <lines> [<text>]` | Change each of the lines `<lines>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. If `<text>` is blank, erase the lines `<lines>`. | _since `v1.10.0`_ |
+| `/sign clear <line>` | Erase the line `<line>` of the targeted sign. | _since `v1.4.0`_ |
+| `/sign clear <lines>` | Erase the lines `<lines>` of the targeted sign. | _since `v1.4.0`_ |
+| `/sign cancel` | Abort your pending right-mouse click sign edit action. | _since `v1.9.0`_ |
+| `/sign status` | Show the pending action and what is in the copy buffer. | _since `v1.10.0`_ |
+| `/sign copy [<lines>]` | Copy the targeted sign.  If `<lines>` is specified, only those lines are copied. | _since `v1.10.0`_ |
+| `/sign paste` | Paste the lines buffered by the previous `/sign copy` command onto the targeted sign. | _since `v1.10.0`_ |
+| `/sign undo` | Revert the previous sign change. | _since `v1.10.0`_ |
+| `/sign redo` | Restore the most recent sign change that was undone by `/sign undo`. | _since `v1.10.0`_ |
+| `/sign version` | Show the installed version of this plugin. | _since `v1.9.3`_ |
 
-(_since `v1.4.0`_) **Aliases:** `/signedit`, `/editsign`, `/se`
+### Aliases
+
+| Alias | Command | Version |
+| --- | --- | --- |
+| `/signedit` | `/sign` | _since `v1.4.0`_ |
+| `/editsign` | `/sign` | _since `v1.4.0`_ |
+| `/se` | `/sign` | _since `v1.4.0`_ |
+| `/sign <line> [<text>]` | `/sign set <line> [<text>]` | _since `v1.6.0`_ |
+| `/sign <lines> [<text>]` | `/sign set <lines> [<text>]` | _since `v1.10.0`_ |
+| `/sign <line>` | `/sign clear <line>` | _since `v1.6.0`_ |
+| `/sign <lines>` | `/sign clear <lines>` | _since `v1.10.0`_ |
+
+### Visual Examples
 
 #### `/sign ui`
 
-_Added in `v1.8.0`_
-
-Invoke the native Minecraft sign editor on the targeted sign.
-
 ![GIF of `/sign ui` in action](https://i.imgur.com/TnVpy2v.gif)
 
-#### `/sign set <line> [<text>]`
-
-_Added in `v1.0`_
-
-Change the line *line* of the targeted sign to *text*.  All `&` characters are replaced with `§` for formatting codes.  (_since `v1.4.0`_) If *text* is blank, erase the line *line*.
-
-(_since `v1.6.0`_) **Aliases:** `/sign <line> [<text>]`
+#### `/sign 2 Deltik's`
 
 ![GIF of `/sign <line> <text>` in action](https://i.imgur.com/B1MNGXv.gif)
 
-#### `/sign clear <line>`
-
-_Added in `v1.4.0`_
-
-Erase the line *line* of the targeted sign.
-
-(_since `v1.6.0`_) **Aliases:** `/sign <line>`
+#### `/sign clear 4`
 
 ![GIF of `/sign clear <line>` in action](https://i.imgur.com/iVTGLra.gif)
 
-#### `/sign cancel`
+## Syntax
 
-_Added in `v1.9.0`_
+### Line Ranges
 
-Abort your pending right-mouse click sign edit action.
+_Added in `v1.10.0`_
 
-#### `/sign version`
+For commands that take a *lines* argument, the specified lines can be any combination of a comma-delimited list (e.g. `1,3` selects lines 1 and 3) and a hyphenated range (e.g. `1-3` selects lines 1, 2, and 3).
 
-_Added in `v1.9.3`_
+#### Examples
 
-Show the installed version of this plugin.
+- `1` selects line 1.
+- `1-1` selects line 1.
+- `1,3` selects lines 1 and 3.
+- `1-3` selects lines 1, 2, and 3.
+- `1-2,4` selects lines 1, 2, and 4.
+- `1,2,4` selects lines 1, 2, and 4.
+- `2-3,1,4` selects lines 1, 2, 3, and 4.
+- `2,2,2,3,3` selects lines 2 and 3.
 
 ## Permissions
 

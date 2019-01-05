@@ -9,26 +9,42 @@ commands:
     aliases: [signedit, editsign, se]
     description: Edit a targeted sign
     usage: |
+      See the online documentation for detailed usage help: https://github.com/Deltik/SignEdit/blob/master/README.md
+
       /<command> ui
         Invoke the native Minecraft sign editor on the targeted sign.
 
-      /<command> set <line> [<text>]
-        Change the line <line> of the targeted sign to <text>. All `&` characters are treated as formatting code characters. If <text> is blank, erase the line <line>.
+      /<command> set <lines> [<text>]
+        Change each of the lines <lines> of the targeted sign to <text>. All `&` characters are treated as formatting code characters. If <text> is blank, erase the lines <lines>.
 
-      /<command> <line> [<text>]
-        Alias of /<command> set <line> [<text>]
+      /<command> <lines> [<text>]
+        Alias of /<command> set <lines> [<text>]
 
-      /<command> clear <line>
-        Erase the line line of the targeted sign.
+      /<command> clear <lines>
+        Erase the lines <lines> of the targeted sign.
 
-      /<command> <line>
-        Alias of /<command> clear
+      /<command> <lines>
+        Alias of /<command> clear <lines>
 
       /<command> cancel
-        Abort a pending right-click action
+        Abort your pending right-click action.
+
+      /<command> status
+
+      /<command> copy <lines>
+        Copy the targeted sign.  If <lines> is specified, only those lines are copied.
+
+      /<command> paste
+        Paste the lines buffered by the previous /sign copy command onto the targeted sign.
+
+      /<command> undo
+        Revert the previous sign change.
+
+      /<command> redo
+        Restore the most recent sign change that was undone by /sign undo.
 
       /<command> version
-        Show the version of this plugin
+        Show the version of this plugin.
 
 permissions:
   SignEdit.use:
@@ -39,11 +55,27 @@ permissions:
       signedit.sign.ui: true
       signedit.sign.set: true
       signedit.sign.clear: true
+      signedit.sign.status: true
+      signedit.sign.copy: true
+      signedit.sign.paste: true
+      signedit.sign.undo: true
+      signedit.sign.redo: true
+      signedit.sign.version: true
   signedit.sign.ui:
     description: Allow /sign ui
   signedit.sign.set:
     description: Allow /sign set
   signedit.sign.clear:
     description: Allow /sign clear
+  signedit.sign.status:
+    description: Allow /sign status
+  signedit.sign.copy:
+    description: Allow /sign copy
+  signedit.sign.paste:
+    description: Allow /sign paste
+  signedit.sign.undo:
+    description: Allow /sign undo
+  signedit.sign.redo:
+    description: Allow /sign redo
   signedit.sign.version:
     description: Allow /sign version
