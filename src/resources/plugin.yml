@@ -9,7 +9,8 @@ commands:
     aliases: [signedit, editsign, se]
     description: Edit a targeted sign
     usage: |
-      See the online documentation for detailed usage help: https://github.com/Deltik/SignEdit/blob/master/README.md
+      See the online documentation for detailed usage help:
+      https://git.io/SignEdit-README
 
       /<command> ui
         Invoke the native Minecraft sign editor on the targeted sign.
