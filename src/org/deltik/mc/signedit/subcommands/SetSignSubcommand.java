@@ -26,7 +26,8 @@ public class SetSignSubcommand extends SignSubcommand {
         }
 
         SignEditCommit commit = new LineSignEditCommit(line, minLine, txt);
-        return autocommit(commit);
+        autocommit(commit);
+        return true;
     }
 
     private String arrayToSignText(List<String> textArray) {
