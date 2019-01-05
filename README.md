@@ -21,33 +21,33 @@
 
 | Command | Usage | Version |
 | --- | --- | --- |
-| `/sign` | Show the usage of the `/sign` subcommands. | _since `v1.0`_ |
-| `/sign ui` | Invoke the native Minecraft sign editor on the targeted sign. | _since `v1.8.0`_ |
-| `/sign set <line> <text>` | Change the line `<line>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. | _since `v1.0`_ |
-| `/sign set <line> [<text>]` | Change the line `<line>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. If `<text>` is blank, erase the line `<line>`. | _since `v1.4.0`_ |
-| `/sign set <lines> [<text>]` | Change each of the lines `<lines>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. If `<text>` is blank, erase the lines `<lines>`. | _since `v1.10.0`_ |
-| `/sign clear <line>` | Erase the line `<line>` of the targeted sign. | _since `v1.4.0`_ |
-| `/sign clear <lines>` | Erase the lines `<lines>` of the targeted sign. | _since `v1.4.0`_ |
-| `/sign cancel` | Abort your pending right-mouse click sign edit action. | _since `v1.9.0`_ |
-| `/sign status` | Show the pending action and what is in the copy buffer. | _since `v1.10.0`_ |
-| `/sign copy [<lines>]` | Copy the targeted sign's text.  If `<lines>` is specified, only those lines are copied. | _since `v1.10.0`_ |
-| `/sign cut [<lines>]` | Copy the targeted sign's text and remove it from the sign.  If `<lines>` is specified, only those lines are cut. | _since `v1.10.0`_ |
-| `/sign paste` | Paste the lines buffered by the previous `/sign copy` command onto the targeted sign. | _since `v1.10.0`_ |
-| `/sign undo` | Revert the previous sign change. | _since `v1.10.0`_ |
-| `/sign redo` | Restore the most recent sign change that was undone by `/sign undo`. | _since `v1.10.0`_ |
-| `/sign version` | Show the installed version of this plugin. | _since `v1.9.3`_ |
+| `/sign` | Show the usage of the `/sign` subcommands. | `>= 1.0` |
+| `/sign ui` | Invoke the native Minecraft sign editor on the targeted sign. | `>= 1.8` |
+| `/sign set <line> <text>` | Change the line `<line>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. | `>= 1.0, < 1.4` |
+| `/sign set <line> [<text>]` | Change the line `<line>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. If `<text>` is blank, erase the line `<line>`. | `>= 1.4, < 1.10` |
+| `/sign set <lines> [<text>]` | Change each of the lines `<lines>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. If `<text>` is blank, erase the lines `<lines>`. | `>= 1.10` |
+| `/sign clear <line>` | Erase the line `<line>` of the targeted sign. | `>= 1.4, < 1.10` |
+| `/sign clear <lines>` | Erase the lines `<lines>` of the targeted sign. | `>= 1.10` |
+| `/sign cancel` | Abort your pending right-mouse click sign edit action. | `>= 1.9` |
+| `/sign status` | Show the pending action and what is in the copy buffer. | `>= 1.10` |
+| `/sign copy [<lines>]` | Copy the targeted sign's text.  If `<lines>` is specified, only those lines are copied. | `>= 1.10` |
+| `/sign cut [<lines>]` | Copy the targeted sign's text and remove it from the sign.  If `<lines>` is specified, only those lines are cut. | `>= 1.10` |
+| `/sign paste` | Paste the lines buffered by the previous `/sign copy` command onto the targeted sign. | `>= 1.10` |
+| `/sign undo` | Revert the previous sign change. | `>= 1.10` |
+| `/sign redo` | Restore the most recent sign change that was undone by `/sign undo`. | `>= 1.10` |
+| `/sign version` | Show the installed version of this plugin. | `>= 1.9.3` |
 
 ### Aliases
 
 | Alias | Command | Version |
 | --- | --- | --- |
-| `/signedit` | `/sign` | _since `v1.4.0`_ |
-| `/editsign` | `/sign` | _since `v1.4.0`_ |
-| `/se` | `/sign` | _since `v1.4.0`_ |
-| `/sign <line> [<text>]` | `/sign set <line> [<text>]` | _since `v1.6.0`_ |
-| `/sign <lines> [<text>]` | `/sign set <lines> [<text>]` | _since `v1.10.0`_ |
-| `/sign <line>` | `/sign clear <line>` | _since `v1.6.0`_ |
-| `/sign <lines>` | `/sign clear <lines>` | _since `v1.10.0`_ |
+| `/signedit` | `/sign` | `>= 1.4` |
+| `/editsign` | `/sign` | `>= 1.4` |
+| `/se` | `/sign` | `>= 1.4` |
+| `/sign <line> [<text>]` | `/sign set <line> [<text>]` | `>= 1.6, < 1.10` |
+| `/sign <lines> [<text>]` | `/sign set <lines> [<text>]` | `>= 1.10` |
+| `/sign <line>` | `/sign clear <line>` | `>= 1.6, < 1.10` |
+| `/sign <lines>` | `/sign clear <lines>` | `>= 1.10` |
 
 ### Visual Examples
 
@@ -67,7 +67,7 @@
 
 ### Line Ranges
 
-_Added in `v1.10.0`_
+(`>= 1.10`)
 
 For commands that take a *lines* argument, the specified lines can be any combination of a comma-delimited list (e.g. `1,3` selects lines 1 and 3) and a hyphenated range (e.g. `1-3` selects lines 1, 2, and 3).
 
@@ -88,7 +88,7 @@ All features of SignEdit for Bukkit will be available if the player has the foll
 
     SignEdit.use
 
-(_since `v1.8.0`_) More refined permissions are available in this format:
+(`>= 1.8`) More refined permissions are available in this format:
 
     signedit.COMMAND.SUBCOMMAND
 
@@ -104,23 +104,23 @@ Examples:
 
 All configuration is in the file `plugins/SignEdit/config.yml`.
 
-(_since `v1.1`_) The configuration file is created with default values when the plugin is loaded and the file does not already exist.
+(`>= 1.1`) The configuration file is created with default values when the plugin is loaded and the file does not already exist.
 
-(_since `v1.5.0`_) The configuration file is sanitized when the plugin is loaded and unloaded and rewritten when the plugin is unloaded.
+(`>= 1.5`) The configuration file is sanitized when the plugin is loaded and unloaded and rewritten when the plugin is unloaded.
 
 ### `clicking: [auto|false|true]`
 
-_Added in `v1.1`_
+(`>= 1.1`)
 
-(_since `v1.7.0`_) **auto** (default): Behave like `clicking: true` when you are not looking at a sign and behave like `clicking: false` when you are looking at a sign.
-
-**false** (default _until `v1.7.0`_): Edit signs by looking at them and then typing a `/sign` command, which will then instantly edit the sign you are looking at.
+**false** (default `< 1.7`): Edit signs by looking at them and then typing a `/sign` command, which will then instantly edit the sign you are looking at.
 
 **true**: Edit signs by typing a `/sign` command and then right-mouse clicking a sign.
 
+(`>= 1.7`) **auto** (default): Behave like `clicking: true` when you are not looking at a sign and behave like `clicking: false` when you are looking at a sign.
+
 ### `line-starts-at: [1|0]`
 
-_Added in `v1.5.0`_
+(`>= 1.5`)
 
 **1** (default): Line number 1 corresponds to the top-most line of sign blocks.
 
@@ -128,16 +128,16 @@ _Added in `v1.5.0`_
 
 ## Features
 
-* (_since `v1.8.0`_) Edit the targeted sign in the native Minecraft sign editor with `/sign ui`
+* (`>= 1.8`) Edit the targeted sign in the native Minecraft sign editor with `/sign ui`.
   * No dependencies!
-* Edit the line _line_ of the targeted sign to be _text_ with `/sign set <line> [<text>]` or (_since `v1.6.0`_) `/sign <line> [<text>]`
+* Edit the line `<line>` of the targeted sign to be `<text>` with `/sign set <line> [<text>]` or (`>= 1.6`) `/sign <line> [<text>]`.
 * All editing functions support formatting codes (`&` turns into `§`)
   ![Screenshot of color code in `/sign <line> <text>`](https://i.imgur.com/Cdv7p2t.png)
 * Targeting a sign works as follows:
-  * In `clicking: false` mode or in `v1.0`, the sign you are looking at is edited.
+  * In `clicking: false` mode or in version `= 1.0`, the sign you are looking at is edited.
   * In `clicking: true` mode, after running the `/sign` command, right-click a sign to edit it.
-  * (_since `v1.7.0`_) In `clicking: auto` mode, the behavior is the same as `clicking: false` if you are looking at a sign and `clicking: true` if you are not looking at a sign.
-* (_since `v1.8.0`_) Before editing a sign, this plugin checks if the player is allowed to edit the sign by pretending to blank out the sign and seeing if the corresponding [SignChangeEvent](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/event/block/SignChangeEvent.html) is cancelled.
+  * (`>= 1.7`) In `clicking: auto` mode, the behavior is the same as `clicking: false` if you are looking at a sign and `clicking: true` if you are not looking at a sign.
+* (`>= 1.8`) Before editing a sign, this plugin checks if the player is allowed to edit the sign by pretending to blank out the sign and seeing if the corresponding [SignChangeEvent](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/event/block/SignChangeEvent.html) is cancelled.
 
 ## Compatibility
 
@@ -147,16 +147,16 @@ Since this plugin does not use deprecated methods, it is expected to be compatib
 
 ### Backwards Compatibility with Omel's SignEdit v1.3
 
-SignEdit for Bukkit versions `>= 1.5.0, < 2.0.0` are backwards-compatible with Omel's SignEdit v1.3, but the following caveats apply:
+SignEdit for Bukkit versions `~> 1.5` are backwards-compatible with Omel's SignEdit v1.3, but the following caveats apply:
 
-* (_since `v1.5.0`_) By default, sign line numbers range from 1 to 4 in this plugin instead of 0 to 3 in the original plugin.
+* (`~> 1.5`) By default, sign line numbers range from 1 to 4 in this plugin instead of 0 to 3 in the original plugin.
 
   To restore the original behavior and start line numbers at 0, set `line-starts-at: 0` in `plugins/SignEdit/config.yml`.
-* (_since `v1.7.0`_) By default, `clicking` mode is activated when the player is not looking at a sign.
+* (`~> 1.7`) By default, `clicking` mode is activated when the player is not looking at a sign.
 
   To force `clicking` mode on at all times, set `clicking: true` in `plugins/SignEdit/config.yml`.
 
   To force `clicking` mode off at all times, set `clicking: false`.
-* (_`v1.4.0` only_) Sign line numbers range from 1 to 4, whereas they ranged from 0 to 3 in older versions.
+* (`~> 1.4.0`) Sign line numbers range from 1 to 4, whereas they ranged from 0 to 3 in older versions.
 
-  Upgrade to SignEdit for Bukkit v1.5.0 to have the possibility of restoring the original line number range.
+  Upgrade to SignEdit for Bukkit version `~> 1.5` to have the possibility of restoring the original line number range.
