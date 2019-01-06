@@ -5,29 +5,23 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.deltik.mc.signedit.ArgStruct;
-import org.deltik.mc.signedit.Configuration;
-import org.deltik.mc.signedit.listeners.Interact;
+import org.deltik.mc.signedit.SubcommandComponent;
 import org.deltik.mc.signedit.subcommands.*;
 
-import java.util.HashMap;
+import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.inject.Singleton;
 import java.util.Map;
 
-import static org.deltik.mc.signedit.Main.CHAT_PREFIX;
+import static org.deltik.mc.signedit.SignEditPlugin.CHAT_PREFIX;
 
+@Singleton
 public class SignCommand implements CommandExecutor {
-    private Configuration config;
-    private Interact listener;
-    private Map<String, SignSubcommand> subcommands;
+    private Provider<SubcommandComponent.Builder> subcommandBuilder;
 
-    public SignCommand(Configuration config, Interact listener) {
-        this.config = config;
-        this.listener = listener;
-        subcommands = new HashMap<>();
-        subcommands.put("set", new SetSignSubcommand());
-        subcommands.put("clear", new ClearSignSubcommand());
-        subcommands.put("ui", new UiSignSubcommand());
-        subcommands.put("cancel", new CancelSignSubcommand());
-        subcommands.put("version", new VersionSignSubcommand());
+    @Inject
+    public SignCommand(Provider<SubcommandComponent.Builder> subcommandBuilder) {
+        this.subcommandBuilder = subcommandBuilder;
     }
 
     @Override
@@ -43,9 +37,15 @@ public class SignCommand implements CommandExecutor {
             return true;
         }
 
+        Map<String, Provider<SignSubcommand>> subcommands = subcommandBuilder
+                .get()
+                .player(player)
+                .argStruct(argStruct)
+                .build()
+                .subcommandMap();
+
         if (subcommands.containsKey(argStruct.subcommand)) {
-            SignSubcommand subcommand = subcommands.get(argStruct.subcommand);
-            subcommand.setDependencies(config, listener, argStruct, player);
+            SignSubcommand subcommand = subcommands.get(argStruct.subcommand).get();
             return subcommand.execute();
         } else {
             return sendHelpMessage(player, arg2);

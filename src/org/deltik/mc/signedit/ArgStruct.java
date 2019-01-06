@@ -2,6 +2,7 @@ package org.deltik.mc.signedit;
 
 import org.apache.commons.lang.StringUtils;
 
+import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;

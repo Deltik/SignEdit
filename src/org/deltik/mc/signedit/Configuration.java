@@ -2,11 +2,14 @@ package org.deltik.mc.signedit;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+@Singleton
 public class Configuration {
     File configFile;
     YamlConfiguration yamlConfig;
@@ -27,8 +30,9 @@ public class Configuration {
         return yamlConfig;
     }
 
+    @Inject
     public Configuration() {
-        this("plugins//" + Main.instance.getName() + "//config.yml");
+        this("plugins//" + SignEditPlugin.instance.getName() + "//config.yml");
     }
 
     public Configuration(String f) {

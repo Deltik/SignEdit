@@ -1,25 +1,33 @@
 package org.deltik.mc.signedit.subcommands;
 
+import org.bukkit.entity.Player;
+import org.deltik.mc.signedit.ArgStruct;
+import org.deltik.mc.signedit.Configuration;
 import org.deltik.mc.signedit.MinecraftReflector;
 import org.deltik.mc.signedit.committers.SignEditCommit;
 import org.deltik.mc.signedit.committers.UiSignEditCommit;
+import org.deltik.mc.signedit.listeners.Interact;
 
-public class UiSignSubcommand extends SignSubcommand {
+import javax.inject.Inject;
+
+public class UiSignSubcommand implements SignSubcommand {
+    private final Configuration config;
+    private final Interact listener;
+    private final Player player;
     private MinecraftReflector reflector;
 
-    // Create a MinecraftReflector (used in production)
-    public UiSignSubcommand() {
-        this(new MinecraftReflector());
-    }
-
-    // Provide a MinecraftReflector (useful in tests)
-    public UiSignSubcommand(MinecraftReflector r) {
-        reflector = r;
+    @Inject
+    public UiSignSubcommand(Configuration config, Interact listener, Player player, MinecraftReflector reflector) {
+        this.config = config;
+        this.listener = listener;
+        this.player = player;
+        this.reflector = reflector;
     }
 
     @Override
     public boolean execute() {
         SignEditCommit commit = new UiSignEditCommit(reflector, listener);
-        return autocommit(commit);
+        SignSubcommand.autocommit(commit, player, listener, config);
+        return true;
     }
 }

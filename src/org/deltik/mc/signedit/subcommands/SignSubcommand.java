@@ -11,30 +11,18 @@ import org.deltik.mc.signedit.listeners.Interact;
 
 import java.util.Set;
 
-import static org.deltik.mc.signedit.Main.CHAT_PREFIX;
+import static org.deltik.mc.signedit.SignEditPlugin.CHAT_PREFIX;
 
-public abstract class SignSubcommand {
-    Configuration config;
-    Interact listener;
-    ArgStruct argStruct;
-    Player player;
+public interface SignSubcommand {
+    boolean execute();
 
-    public abstract boolean execute();
-
-    public void setDependencies(Configuration c, Interact l, ArgStruct args, Player p) {
-        config = c;
-        listener = l;
-        argStruct = args;
-        player = p;
-    }
-
-    Block getTargetBlockOfPlayer(Player player) {
+    static Block getTargetBlockOfPlayer(Player player) {
         return player.getTargetBlock((Set<Material>) null, 10);
     }
 
-    boolean autocommit(SignEditCommit commit) {
+    static boolean autocommit(SignEditCommit commit, Player player, Interact listener, Configuration config) {
         Block block = getTargetBlockOfPlayer(player);
-        if (shouldDoClickingMode(block)) {
+        if (shouldDoClickingMode(block, config)) {
             listener.pendSignEditCommit(player, commit);
             player.sendMessage(CHAT_PREFIX + "§6Now right-click a sign to edit it");
         } else if (block.getState() instanceof Sign) {
@@ -47,7 +35,7 @@ public abstract class SignSubcommand {
         return true;
     }
 
-    boolean shouldDoClickingMode(Block block) {
+    static boolean shouldDoClickingMode(Block block, Configuration config) {
         if (!config.allowedToEditSignByRightClick())
             return false;
         else if (block == null)

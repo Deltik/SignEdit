@@ -1,13 +1,15 @@
+apply plugin: 'java'
+apply plugin: 'java-library'
+apply plugin: 'application'
+apply plugin: 'idea'
+
 version '1.10.0-SNAPSHOT'
 
 // Set to '+' to use latest Bukkit
 // Otherwise, specify a version number like '1.12.2-R0.1-SNAPSHOT'
-def bukkit_version = '+'
+def bukkit_version = '1.13.2-R0.1-SNAPSHOT'
 
-apply plugin: 'java'
-apply plugin: 'application'
-
-mainClassName = 'org.deltik.mc.signedit.Main'
+mainClassName = 'org.deltik.mc.signedit.SignEditPlugin'
 
 sourceCompatibility = 1.8
 
@@ -18,12 +20,24 @@ repositories {
     }
 }
 
+configurations {
+    extraLibs
+}
+
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.8.+'
-    testCompile group: 'org.powermock', name: 'powermock-module-junit4', version: '1.7.+'
-    testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '1.7.+'
     compile group: 'org.bukkit', name: 'bukkit', version: bukkit_version
+
+    compile 'com.google.dagger:dagger:2.20'
+    compile group: 'com.google.dagger', name: 'dagger', version: '2.20'
+    annotationProcessor group: 'com.google.dagger', name: 'dagger-compiler', version: '2.20'
+
+    extraLibs group: 'com.google.dagger', name: 'dagger', version: '2.20'
+    extraLibs group: 'javax.inject', name: 'javax.inject', version: '1'
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.23.4'
+    testCompile group: 'org.powermock', name: 'powermock-module-junit4', version: '1.7.4'
+    testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '1.7.4'
 }
 
 sourceSets {
@@ -43,6 +57,12 @@ sourceSets {
     }
 }
 
+jar {
+    from {
+        configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
 processResources {
     with copySpec {
         from 'src/resources'
@@ -50,5 +70,12 @@ processResources {
             pluginVersion: version,
             mainClassName: mainClassName
         )
+    }
+}
+
+idea {
+    module {
+        sourceDirs += files('build/classes/java/main')
+        generatedSourceDirs += files('build/classes/java/main')
     }
 }

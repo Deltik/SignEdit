@@ -10,7 +10,7 @@ import org.deltik.mc.signedit.listeners.Interact;
 import java.lang.reflect.Field;
 
 import static org.bukkit.Bukkit.getLogger;
-import static org.deltik.mc.signedit.Main.CHAT_PREFIX;
+import static org.deltik.mc.signedit.SignEditPlugin.CHAT_PREFIX;
 
 public class UiSignEditCommit implements SignEditCommit {
     private MinecraftReflector reflector;

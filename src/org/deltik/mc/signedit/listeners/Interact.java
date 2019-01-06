@@ -10,13 +10,19 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.deltik.mc.signedit.committers.SignEditCommit;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
 
+@Singleton
 public class Interact implements Listener {
 
     private Map<Player, SignEditCommit> pendingSignEditCommits = new HashMap<>();
     private Map<Player, SignEditCommit> inProgressCommits = new HashMap<>();
+
+    @Inject
+    public Interact() {}
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {

@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.SignChangeEvent;
 
 import static org.bukkit.Bukkit.getServer;
-import static org.deltik.mc.signedit.Main.CHAT_PREFIX;
+import static org.deltik.mc.signedit.SignEditPlugin.CHAT_PREFIX;
 
 public interface SignEditCommit {
     void commit(Player player, Sign sign);

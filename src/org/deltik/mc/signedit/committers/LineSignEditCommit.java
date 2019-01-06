@@ -3,7 +3,7 @@ package org.deltik.mc.signedit.committers;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 
-import static org.deltik.mc.signedit.Main.CHAT_PREFIX;
+import static org.deltik.mc.signedit.SignEditPlugin.CHAT_PREFIX;
 
 public class LineSignEditCommit implements SignEditCommit {
     private int lineNumber;

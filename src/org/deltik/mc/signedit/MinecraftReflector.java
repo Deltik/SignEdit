@@ -2,9 +2,12 @@ package org.deltik.mc.signedit;
 
 import org.bukkit.Bukkit;
 
+import javax.inject.Inject;
+
 public class MinecraftReflector {
     public String MINECRAFT_SERVER_VERSION;
 
+    @Inject
     public MinecraftReflector() {
         MINECRAFT_SERVER_VERSION = getMinecraftServerVersion();
     }
