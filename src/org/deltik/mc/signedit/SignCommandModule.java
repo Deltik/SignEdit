@@ -28,6 +28,36 @@ public interface SignCommandModule {
     @StringKey("cancel")
     SignSubcommand BindCancelSignSubcommand(CancelSignSubcommand command);
 
+//    @Binds
+//    @IntoMap
+//    @StringKey("status")
+//    SignSubcommand BindStatusSignSubcommand(StatusSignSubcommand command);
+//
+//    @Binds
+//    @IntoMap
+//    @StringKey("copy")
+//    SignSubcommand BindCopySignSubcommand(CopySignSubcommand command);
+//
+//    @Binds
+//    @IntoMap
+//    @StringKey("cut")
+//    SignSubcommand BindCutSignSubcommand(CutSignSubcommand command);
+//
+//    @Binds
+//    @IntoMap
+//    @StringKey("paste")
+//    SignSubcommand BindPasteSignSubcommand(PasteSignSubcommand command);
+//
+//    @Binds
+//    @IntoMap
+//    @StringKey("undo")
+//    SignSubcommand BindUndoSignSubcommand(UndoSignSubcommand command);
+//
+//    @Binds
+//    @IntoMap
+//    @StringKey("redo")
+//    SignSubcommand BindRedoSignSubcommand(RedoSignSubcommand command);
+
     @Binds
     @IntoMap
     @StringKey("version")

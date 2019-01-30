@@ -1,3 +1,5 @@
+package org.deltik.mc.signedit;
+
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;

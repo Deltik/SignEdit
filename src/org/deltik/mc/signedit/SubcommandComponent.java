@@ -13,7 +13,7 @@ public interface SubcommandComponent {
     Map<String, Provider<SignSubcommand>> subcommandMap();
 
     @Subcomponent.Builder
-    public interface Builder {
+    interface Builder {
         SubcommandComponent build();
 
         @BindsInstance

@@ -30,17 +30,18 @@ public class SetSignSubcommand implements SignSubcommand {
     public boolean execute() {
         int minLine = config.getMinLine();
         int maxLine = config.getMaxLine();
-        if (argStruct.lineRelative > maxLine || argStruct.lineRelative < minLine) {
+        int lineRelative = argStruct.getLineRelative();
+        if (lineRelative > maxLine || lineRelative < minLine) {
             player.sendMessage(CHAT_PREFIX + "§cLine numbers are from §e" + minLine + "§c to §e" + maxLine);
             return true;
         }
-        int line = argStruct.lineRelative - minLine;
+        int line = lineRelative - minLine;
 
         String txt;
-        if (argStruct.subcommand.equals("clear")) {
+        if (argStruct.getSubcommand().equals("clear")) {
             txt = "";
         } else {
-            txt = arrayToSignText(argStruct.remainder);
+            txt = arrayToSignText(argStruct.getRemainder());
         }
 
         SignEditCommit commit = new LineSignEditCommit(line, minLine, txt);

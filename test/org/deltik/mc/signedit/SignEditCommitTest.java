@@ -1,3 +1,5 @@
+package org.deltik.mc.signedit;
+
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.deltik.mc.signedit.committers.SignEditCommit;

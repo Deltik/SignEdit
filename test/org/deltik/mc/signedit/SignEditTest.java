@@ -1,3 +1,5 @@
+package org.deltik.mc.signedit;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.block.Block;
@@ -46,8 +48,6 @@ public abstract class SignEditTest {
 
         uiSignSubcommand = mock(UiSignSubcommand.class);
         whenNew(UiSignSubcommand.class).withAnyArguments().thenReturn(uiSignSubcommand);
-
-        signCommand = new SignCommand(spyConfig, listener);
 
         player = mock(Player.class);
         command = mock(Command.class);

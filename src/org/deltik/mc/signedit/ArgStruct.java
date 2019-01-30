@@ -8,12 +8,24 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ArgStruct {
-    public String subcommand;
-    public int lineRelative;
-    public List<String> remainder;
+    String subcommand;
+    int lineRelative;
+    List<String> remainder;
 
     public ArgStruct(String[] args) {
         parseArgs(args);
+    }
+
+    public String getSubcommand() {
+        return subcommand;
+    }
+
+    public int getLineRelative() {
+        return lineRelative;
+    }
+
+    public List<String> getRemainder() {
+        return remainder;
     }
 
     public ArgStruct parseArgs(String[] args) {
