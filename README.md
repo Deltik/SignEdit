@@ -138,6 +138,7 @@ All configuration is in the file `plugins/SignEdit/config.yml`.
   * In `clicking: true` mode, after running the `/sign` command, right-click a sign to edit it.
   * (`>= 1.7`) In `clicking: auto` mode, the behavior is the same as `clicking: false` if you are looking at a sign and `clicking: true` if you are not looking at a sign.
 * (`>= 1.8`) Before editing a sign, this plugin checks if the player is allowed to edit the sign by pretending to blank out the sign and seeing if the corresponding [SignChangeEvent](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/event/block/SignChangeEvent.html) is cancelled.
+* (`>= 1.10`) Tab completion for `/sign` subcommands
 
 ## Compatibility
 

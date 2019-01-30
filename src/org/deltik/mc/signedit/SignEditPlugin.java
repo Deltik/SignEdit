@@ -1,7 +1,9 @@
 package org.deltik.mc.signedit;
 
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.deltik.mc.signedit.commands.SignCommand;
+import org.deltik.mc.signedit.commands.SignCommandTabCompleter;
 import org.deltik.mc.signedit.listeners.Interact;
 
 import javax.inject.Inject;
@@ -20,13 +22,17 @@ public class SignEditPlugin extends JavaPlugin {
 
     @Inject
     public SignCommand signCommand;
+    @Inject
+    public SignCommandTabCompleter signCommandTabCompleter;
 
     @Override
     public void onEnable() {
         SignEditPlugin.instance = this;
         DaggerSignEditPluginComponent.create().injectSignEditPlugin(this);
         for (String alias : new String[]{"sign", "signedit", "editsign", "se"}) {
-            this.getCommand(alias).setExecutor(signCommand);
+            PluginCommand pluginCommand = this.getCommand(alias);
+            pluginCommand.setExecutor(signCommand);
+            pluginCommand.setTabCompleter(signCommandTabCompleter);
         }
         getServer().getPluginManager().registerEvents(listener, this);
     }
