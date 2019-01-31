@@ -1,5 +1,9 @@
 package org.deltik.mc.signedit;
 
+import org.deltik.mc.signedit.exceptions.NumberParseLineSelectionException;
+import org.deltik.mc.signedit.exceptions.OutOfBoundsLineSelectionException;
+import org.deltik.mc.signedit.exceptions.RangeOrderLineSelectionException;
+import org.deltik.mc.signedit.exceptions.RangeParseLineSelectionException;
 import org.deltik.mc.signedit.subcommands.SignSubcommand;
 import org.junit.Test;
 
@@ -202,48 +206,48 @@ public class ArgParserTest {
     public void parseSignLinesFailsRangeLowerHigherThanHigher() {
         parse("set 3-1 #NOPE");
 
-        assertTrue(selectedLinesError instanceof IllegalArgumentException);
+        assertTrue(selectedLinesError instanceof RangeOrderLineSelectionException);
     }
 
     @Test
     public void parseSignLinesFailsRangeOutOfBounds() {
         parse("set 0-4 #NOPE");
 
-        assertTrue(selectedLinesError instanceof IllegalArgumentException);
+        assertTrue(selectedLinesError instanceof OutOfBoundsLineSelectionException);
     }
 
     @Test
     public void parseSignLinesFailsLowerBoundWhenLineStartsAt0() {
         parse("set 4 #NOPE", 0);
 
-        assertTrue(selectedLinesError instanceof IllegalArgumentException);
+        assertTrue(selectedLinesError instanceof OutOfBoundsLineSelectionException);
     }
 
     @Test
     public void parseSignLinesFailsLowerBoundWhenLineStartsAt1() {
         parse("set 0 #NOPE", 1);
 
-        assertTrue(selectedLinesError instanceof IllegalArgumentException);
+        assertTrue(selectedLinesError instanceof OutOfBoundsLineSelectionException);
     }
 
     @Test
     public void parseSignLinesFailsGarbageRange() {
         parse("set 1-3-4 #NOPE");
 
-        assertTrue(selectedLinesError instanceof IllegalArgumentException);
+        assertTrue(selectedLinesError instanceof RangeParseLineSelectionException);
     }
 
     @Test
     public void parseSignLinesFailsNotANumber() {
         parse("set forgot to put a line number");
 
-        assertTrue(selectedLinesError instanceof IllegalArgumentException);
+        assertTrue(selectedLinesError instanceof NumberParseLineSelectionException);
     }
 
     @Test
     public void parseSignLinesFailsEmptyDelimiter() {
         parse("set 1,,3");
 
-        assertTrue(selectedLinesError instanceof IllegalArgumentException);
+        assertTrue(selectedLinesError instanceof NumberParseLineSelectionException);
     }
 }

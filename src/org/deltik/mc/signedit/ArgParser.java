@@ -1,5 +1,6 @@
 package org.deltik.mc.signedit;
 
+import org.deltik.mc.signedit.exceptions.*;
 import org.deltik.mc.signedit.subcommands.SignSubcommand;
 
 import javax.inject.Inject;
@@ -69,7 +70,7 @@ public class ArgParser {
         try {
             parseLineSelection(argsArray.get(0));
             argsArray.remove(0);
-        } catch (IllegalArgumentException e) {
+        } catch (LineSelectionException e) {
             selectedLines = NO_LINES_SELECTED;
             selectedLinesError = e;
         }
@@ -93,7 +94,7 @@ public class ArgParser {
                 int lowerBound = parseLineNumberFromString(lineRangeSplit[0]);
                 int upperBound = parseLineNumberFromString(lineRangeSplit[1]);
                 if (lowerBound > upperBound) {
-                    throw new IllegalArgumentException(
+                    throw new RangeOrderLineSelectionException(
                             "Lower bound " + lineRangeSplit[0] + " cannot be higher than higher bound " +
                                     lineRangeSplit[1] + " in requested selection: " + rawLineGroups
                     );
@@ -107,7 +108,7 @@ public class ArgParser {
                 selectedLinesMask |= 1 << lineNumber;
             }
             else if (lineRangeSplit.length > 2) {
-                throw new IllegalArgumentException(
+                throw new RangeParseLineSelectionException(
                         "Invalid range \"" + lineRange + "\" in requested selection: " + rawLineGroups
                 );
             }
@@ -128,13 +129,13 @@ public class ArgParser {
             unadjustedLineNumber = Integer.parseInt(rawLineNumber);
         }
         catch (NumberFormatException e) {
-            throw new IllegalArgumentException(
+            throw new NumberParseLineSelectionException(
                     "Cannot parse \"" + rawLineNumber + "\" as a line number"
             );
         }
         if (unadjustedLineNumber > config.getMaxLine() ||
                 unadjustedLineNumber < config.getMinLine()) {
-            throw new IllegalArgumentException(
+            throw new OutOfBoundsLineSelectionException(
                     "Line numbers must be between " + config.getMinLine() + " and " + config.getMaxLine() + ", but " +
                             unadjustedLineNumber + " was provided."
             );
