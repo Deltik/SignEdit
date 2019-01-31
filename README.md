@@ -65,7 +65,7 @@
 
 ## Syntax
 
-### Line Ranges
+### Selecting Multiple Lines
 
 (`>= 1.10`)
 
