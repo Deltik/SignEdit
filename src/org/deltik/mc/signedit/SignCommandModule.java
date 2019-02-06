@@ -2,64 +2,108 @@ package org.deltik.mc.signedit;
 
 import dagger.Binds;
 import dagger.Module;
+import dagger.Provides;
+import dagger.multibindings.ElementsIntoSet;
 import dagger.multibindings.IntoMap;
+import dagger.multibindings.IntoSet;
 import dagger.multibindings.StringKey;
 import org.deltik.mc.signedit.subcommands.*;
 
+import javax.inject.Named;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 @Module(subcomponents = {SubcommandComponent.class})
-public interface SignCommandModule {
+abstract class SignCommandModule {
+    @Provides
+    @ElementsIntoSet
+    static Set<Class<? extends SignSubcommand>> provideSignSubcommandClasses() {
+        HashSet<Class<? extends SignSubcommand>> signSubcommandClasses = new HashSet<>();
+
+        signSubcommandClasses.add(SetSignSubcommand.class);
+        signSubcommandClasses.add(ClearSignSubcommand.class);
+        signSubcommandClasses.add(UiSignSubcommand.class);
+        signSubcommandClasses.add(CancelSignSubcommand.class);
+        signSubcommandClasses.add(VersionSignSubcommand.class);
+
+        return signSubcommandClasses;
+    }
+
+    @Provides
+    static Map<String, Class<? extends SignSubcommand>> provideSignSubcommandClassMap(
+            Set<Class<? extends SignSubcommand>> signSubcommandClasses
+    ) {
+        HashMap<String, Class<? extends SignSubcommand>> signSubcommandClassMap = new HashMap<>();
+        for (Class<? extends SignSubcommand> signSubcommandClass : signSubcommandClasses) {
+            String name = signSubcommandClass.getSimpleName();
+            name = name.split("SignSubcommand")[0].toLowerCase();
+            signSubcommandClassMap.put(name, signSubcommandClass);
+        }
+
+        return signSubcommandClassMap;
+    }
+
+    @Provides
+    @ElementsIntoSet
+    @Named("subcommand names")
+    static Set<String> provideSignSubcommandNames(Map<String, Class<? extends SignSubcommand>> signSubcommandClassMap) {
+        return signSubcommandClassMap.keySet();
+    }
+
     @Binds
     @IntoMap
     @StringKey("set")
-    SignSubcommand BindSetSignSubcommand(SetSignSubcommand command);
+    abstract SignSubcommand BindSetSignSubcommand(SetSignSubcommand command);
 
     @Binds
     @IntoMap
     @StringKey("clear")
-    SignSubcommand BindClearSignSubcommand(ClearSignSubcommand command);
+    abstract SignSubcommand BindClearSignSubcommand(ClearSignSubcommand command);
 
     @Binds
     @IntoMap
     @StringKey("ui")
-    SignSubcommand BindUiSignSubcommand(UiSignSubcommand command);
+    abstract SignSubcommand BindUiSignSubcommand(UiSignSubcommand command);
 
     @Binds
     @IntoMap
     @StringKey("cancel")
-    SignSubcommand BindCancelSignSubcommand(CancelSignSubcommand command);
+    abstract SignSubcommand BindCancelSignSubcommand(CancelSignSubcommand command);
 
 //    @Binds
 //    @IntoMap
 //    @StringKey("status")
-//    SignSubcommand BindStatusSignSubcommand(StatusSignSubcommand command);
+//    abstract SignSubcommand BindStatusSignSubcommand(StatusSignSubcommand command);
 //
 //    @Binds
 //    @IntoMap
 //    @StringKey("copy")
-//    SignSubcommand BindCopySignSubcommand(CopySignSubcommand command);
+//    abstract SignSubcommand BindCopySignSubcommand(CopySignSubcommand command);
 //
 //    @Binds
 //    @IntoMap
 //    @StringKey("cut")
-//    SignSubcommand BindCutSignSubcommand(CutSignSubcommand command);
+//    abstract SignSubcommand BindCutSignSubcommand(CutSignSubcommand command);
 //
 //    @Binds
 //    @IntoMap
 //    @StringKey("paste")
-//    SignSubcommand BindPasteSignSubcommand(PasteSignSubcommand command);
+//    abstract SignSubcommand BindPasteSignSubcommand(PasteSignSubcommand command);
 //
 //    @Binds
 //    @IntoMap
 //    @StringKey("undo")
-//    SignSubcommand BindUndoSignSubcommand(UndoSignSubcommand command);
+//    abstract SignSubcommand BindUndoSignSubcommand(UndoSignSubcommand command);
 //
 //    @Binds
 //    @IntoMap
 //    @StringKey("redo")
-//    SignSubcommand BindRedoSignSubcommand(RedoSignSubcommand command);
+//    abstract SignSubcommand BindRedoSignSubcommand(RedoSignSubcommand command);
 
     @Binds
     @IntoMap
     @StringKey("version")
-    SignSubcommand BindVersionSignSubcommand(VersionSignSubcommand command);
+    abstract SignSubcommand BindVersionSignSubcommand(VersionSignSubcommand command);
 }
