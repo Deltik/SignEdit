@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.deltik.mc.signedit.committers.SignEditCommit;
+import org.deltik.mc.signedit.interactions.SignEditInteraction;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -199,11 +199,11 @@ public class SignCommandTest extends SignEditTest {
         when(player.getTargetBlock(null, 10)).thenReturn(null);
         doReturn(true).when(spyConfig).allowedToEditSignByRightClick();
 
-        Assert.assertFalse(listener.isCommitPending(player));
+        Assert.assertFalse(listener.isInteractionPending(player));
 
         signCommand.onCommand(player, command, cString, argsString.split(" "));
 
-        Assert.assertTrue(listener.isCommitPending(player));
+        Assert.assertTrue(listener.isInteractionPending(player));
 
         PlayerInteractEvent interactEvent = spy(mock(PlayerInteractEvent.class));
 
@@ -237,7 +237,7 @@ public class SignCommandTest extends SignEditTest {
 
         signCommand.onCommand(player, command, cString, argsString.split(" "));
 
-        Assert.assertFalse(listener.isCommitPending(player));
+        Assert.assertFalse(listener.isInteractionPending(player));
         verify(block, never()).getState();
         verify(player, atLeastOnce()).sendMessage(matches("(?i)^.*look.*$"));
         verify(sign, never()).setLine(2, "xray yankee zulu");
@@ -274,14 +274,14 @@ public class SignCommandTest extends SignEditTest {
         when(player.getTargetBlock(null, 10)).thenReturn(null);
         spyConfig.setClicking("auto");
 
-        Assert.assertFalse(listener.isCommitPending(player));
+        Assert.assertFalse(listener.isInteractionPending(player));
 
         signCommand.onCommand(player, command, cString, argsString.split(" "));
 
-        Assert.assertTrue(listener.isCommitPending(player));
-        SignEditCommit commit = listener.popSignEditCommit(player);
-        Assert.assertFalse(listener.isCommitPending(player));
-        commit.commit(player, sign);
+        Assert.assertTrue(listener.isInteractionPending(player));
+        SignEditInteraction interaction = listener.popSignEditInteraction(player);
+        Assert.assertFalse(listener.isInteractionPending(player));
+        interaction.interact(player, sign);
         verify(sign).setLine(2, "xray yankee zulu");
     }
 
@@ -296,11 +296,11 @@ public class SignCommandTest extends SignEditTest {
 
         signCommand.onCommand(player, command, cString, argsString.split(" "));
 
-        Assert.assertTrue(listener.isCommitPending(player));
+        Assert.assertTrue(listener.isInteractionPending(player));
 
         listener.onDisconnect(event);
 
-        Assert.assertFalse(listener.isCommitPending(player));
+        Assert.assertFalse(listener.isInteractionPending(player));
     }
 
     @Test
@@ -310,22 +310,22 @@ public class SignCommandTest extends SignEditTest {
         when(player.getTargetBlock(null, 10)).thenReturn(null);
         spyConfig.setClicking("auto");
 
-        Assert.assertFalse(listener.isCommitPending(player));
+        Assert.assertFalse(listener.isInteractionPending(player));
 
         signCommand.onCommand(player, command, cString, argsString.split(" "));
 
-        Assert.assertTrue(listener.isCommitPending(player));
+        Assert.assertTrue(listener.isInteractionPending(player));
 
         signCommand.onCommand(player, command, cString, "cancel".split(" "));
 
-        Assert.assertFalse(listener.isCommitPending(player));
+        Assert.assertFalse(listener.isInteractionPending(player));
     }
 
     @Test
     public void sayNothingToCancelIfNothingToCancelSignSubcommand() {
-        Assert.assertFalse(listener.isCommitPending(player));
+        Assert.assertFalse(listener.isInteractionPending(player));
         signCommand.onCommand(player, command, cString, "cancel".split(" "));
-        Assert.assertFalse(listener.isCommitPending(player));
+        Assert.assertFalse(listener.isInteractionPending(player));
         verify(player, atLeastOnce()).sendMessage(matches("(?i)^.*no.*cancel.*$"));
     }
 

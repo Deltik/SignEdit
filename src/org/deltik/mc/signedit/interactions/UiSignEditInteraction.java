@@ -1,4 +1,4 @@
-package org.deltik.mc.signedit.committers;
+package org.deltik.mc.signedit.interactions;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.block.Block;
@@ -12,12 +12,12 @@ import java.lang.reflect.Field;
 import static org.bukkit.Bukkit.getLogger;
 import static org.deltik.mc.signedit.SignEditPlugin.CHAT_PREFIX;
 
-public class UiSignEditCommit implements SignEditCommit {
+public class UiSignEditInteraction implements SignEditInteraction {
     private MinecraftReflector reflector;
     private SignEditListener listener;
     private Sign sign;
 
-    public UiSignEditCommit(MinecraftReflector reflector, SignEditListener listener) {
+    public UiSignEditInteraction(MinecraftReflector reflector, SignEditListener listener) {
         this.reflector = reflector;
         this.listener = listener;
     }
@@ -28,9 +28,9 @@ public class UiSignEditCommit implements SignEditCommit {
     }
 
     @Override
-    public void commit(Player player, Sign sign) {
+    public void interact(Player player, Sign sign) {
         this.sign = sign;
-        listener.registerInProgressCommit(player, this);
+        listener.registerInProgressInteraction(player, this);
         formatSignForEdit(sign);
 
         try {

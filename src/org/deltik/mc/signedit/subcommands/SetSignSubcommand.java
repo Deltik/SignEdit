@@ -3,8 +3,8 @@ package org.deltik.mc.signedit.subcommands;
 import org.bukkit.entity.Player;
 import org.deltik.mc.signedit.ArgParser;
 import org.deltik.mc.signedit.Configuration;
-import org.deltik.mc.signedit.committers.LineSignEditCommit;
-import org.deltik.mc.signedit.committers.SignEditCommit;
+import org.deltik.mc.signedit.interactions.LineSignEditInteraction;
+import org.deltik.mc.signedit.interactions.SignEditInteraction;
 import org.deltik.mc.signedit.listeners.SignEditListener;
 
 import javax.inject.Inject;
@@ -39,8 +39,8 @@ public class SetSignSubcommand implements SignSubcommand {
             txt = arrayToSignText(argParser.getRemainder());
         }
 
-        SignEditCommit commit = new LineSignEditCommit(selectedLines[0], minLine, txt);
-        SignSubcommand.autocommit(commit, player, listener, config);
+        SignEditInteraction interaction = new LineSignEditInteraction(selectedLines[0], minLine, txt);
+        SignSubcommand.autointeract(interaction, player, listener, config);
         return true;
     }
 

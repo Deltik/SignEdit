@@ -1,7 +1,7 @@
 package org.deltik.mc.signedit.subcommands;
 
 import org.bukkit.entity.Player;
-import org.deltik.mc.signedit.committers.SignEditCommit;
+import org.deltik.mc.signedit.interactions.SignEditInteraction;
 import org.deltik.mc.signedit.listeners.SignEditListener;
 
 import javax.inject.Inject;
@@ -20,8 +20,8 @@ public class CancelSignSubcommand implements SignSubcommand {
 
     @Override
     public boolean execute() {
-        SignEditCommit commit = listener.popSignEditCommit(player);
-        if (commit != null) {
+        SignEditInteraction interaction = listener.popSignEditInteraction(player);
+        if (interaction != null) {
             player.sendMessage(CHAT_PREFIX + "§6Cancelled pending right-click action");
         } else {
             player.sendMessage(CHAT_PREFIX + "§cNo right-click action to cancel!");

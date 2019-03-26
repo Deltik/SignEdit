@@ -3,8 +3,8 @@ package org.deltik.mc.signedit.subcommands;
 import org.bukkit.entity.Player;
 import org.deltik.mc.signedit.Configuration;
 import org.deltik.mc.signedit.MinecraftReflector;
-import org.deltik.mc.signedit.committers.SignEditCommit;
-import org.deltik.mc.signedit.committers.UiSignEditCommit;
+import org.deltik.mc.signedit.interactions.SignEditInteraction;
+import org.deltik.mc.signedit.interactions.UiSignEditInteraction;
 import org.deltik.mc.signedit.listeners.SignEditListener;
 
 import javax.inject.Inject;
@@ -25,8 +25,8 @@ public class UiSignSubcommand implements SignSubcommand {
 
     @Override
     public boolean execute() {
-        SignEditCommit commit = new UiSignEditCommit(reflector, listener);
-        SignSubcommand.autocommit(commit, player, listener, config);
+        SignEditInteraction interaction = new UiSignEditInteraction(reflector, listener);
+        SignSubcommand.autointeract(interaction, player, listener, config);
         return true;
     }
 }

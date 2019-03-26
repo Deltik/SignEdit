@@ -5,17 +5,16 @@ import org.bukkit.entity.Player;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
+import java.util.HashMap;
 import java.util.Map;
 
 @Singleton
 public class SignTextHistoryManager {
-    private Map<Player, SignTextHistory> playerHistoryMap;
+    private Map<Player, SignTextHistory> playerHistoryMap = new HashMap<>();
     private Provider<SignTextHistory> historyProvider;
 
     @Inject
-    public SignTextHistoryManager(Map<Player, SignTextHistory> playerHistoryMap,
-                                  Provider<SignTextHistory> historyProvider) {
-        this.playerHistoryMap = playerHistoryMap;
+    public SignTextHistoryManager(Provider<SignTextHistory> historyProvider) {
         this.historyProvider = historyProvider;
     }
 

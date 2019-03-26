@@ -8,7 +8,9 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.deltik.mc.signedit.committers.SignEditCommit;
+import org.deltik.mc.signedit.SignTextClipboardManager;
+import org.deltik.mc.signedit.SignTextHistoryManager;
+import org.deltik.mc.signedit.interactions.SignEditInteraction;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -18,11 +20,16 @@ import java.util.Map;
 @Singleton
 public class SignEditListener implements Listener {
 
-    private Map<Player, SignEditCommit> pendingSignEditCommits = new HashMap<>();
-    private Map<Player, SignEditCommit> inProgressCommits = new HashMap<>();
+    private SignTextClipboardManager clipboardManager;
+    private SignTextHistoryManager historyManager;
+
+    private Map<Player, SignEditInteraction> pendingInteractions = new HashMap<>();
+    private Map<Player, SignEditInteraction> inProgressInteractions = new HashMap<>();
 
     @Inject
-    public SignEditListener() {
+    public SignEditListener(SignTextClipboardManager clipboardManager, SignTextHistoryManager historyManager) {
+        this.clipboardManager = clipboardManager;
+        this.historyManager = historyManager;
     }
 
     @EventHandler
@@ -33,26 +40,31 @@ public class SignEditListener implements Listener {
         Sign sign = (Sign) event.getClickedBlock().getState();
         Player player = event.getPlayer();
 
-        if (isCommitPending(player)) {
-            SignEditCommit commit = popSignEditCommit(player);
-            commit.validatedCommit(player, sign);
+        if (isInteractionPending(player)) {
+            SignEditInteraction interaction = popSignEditInteraction(player);
+            interaction.validatedInteract(player, sign);
         }
     }
 
     @EventHandler
     public void onDisconnect(PlayerQuitEvent event) {
         Player player = event.getPlayer();
+
+        clipboardManager.forgetPlayer(player);
+        historyManager.forgetPlayer(player);
+
         if (isInProgress(player)) {
-            popInProgressCommit(player).cleanup();
+            popInProgressInteraction(player).cleanup();
         }
-        popSignEditCommit(player);
+        popSignEditInteraction(player);
     }
 
     @EventHandler
     public void onSignChange(SignChangeEvent event) {
         Player player = event.getPlayer();
+
         if (isInProgress(player)) {
-            popInProgressCommit(player);
+            popInProgressInteraction(player);
             // Apply colors
             String[] lines = event.getLines();
             for (int i = 0; i < lines.length; i++) {
@@ -61,27 +73,27 @@ public class SignEditListener implements Listener {
         }
     }
 
-    public void pendSignEditCommit(Player player, SignEditCommit commit) {
-        pendingSignEditCommits.put(player, commit);
+    public void pendSignEditInteraction(Player player, SignEditInteraction interaction) {
+        pendingInteractions.put(player, interaction);
     }
 
-    public void registerInProgressCommit(Player player, SignEditCommit commit) {
-        inProgressCommits.put(player, commit);
+    public void registerInProgressInteraction(Player player, SignEditInteraction interaction) {
+        inProgressInteractions.put(player, interaction);
     }
 
-    public boolean isCommitPending(Player player) {
-        return pendingSignEditCommits.containsKey(player);
+    public boolean isInteractionPending(Player player) {
+        return pendingInteractions.containsKey(player);
     }
 
     public boolean isInProgress(Player player) {
-        return inProgressCommits.containsKey(player);
+        return inProgressInteractions.containsKey(player);
     }
 
-    public SignEditCommit popSignEditCommit(Player player) {
-        return pendingSignEditCommits.remove(player);
+    public SignEditInteraction popSignEditInteraction(Player player) {
+        return pendingInteractions.remove(player);
     }
 
-    public SignEditCommit popInProgressCommit(Player player) {
-        return inProgressCommits.remove(player);
+    public SignEditInteraction popInProgressInteraction(Player player) {
+        return inProgressInteractions.remove(player);
     }
 }
