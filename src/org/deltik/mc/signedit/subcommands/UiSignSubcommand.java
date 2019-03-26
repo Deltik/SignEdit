@@ -1,7 +1,6 @@
 package org.deltik.mc.signedit.subcommands;
 
 import org.bukkit.entity.Player;
-import org.deltik.mc.signedit.ArgStruct;
 import org.deltik.mc.signedit.Configuration;
 import org.deltik.mc.signedit.MinecraftReflector;
 import org.deltik.mc.signedit.committers.SignEditCommit;

@@ -1,9 +1,6 @@
 package org.deltik.mc.signedit.subcommands;
 
 import org.bukkit.entity.Player;
-import org.deltik.mc.signedit.ArgStruct;
-import org.deltik.mc.signedit.Configuration;
-import org.deltik.mc.signedit.listeners.Interact;
 import org.deltik.mc.signedit.SignEditPlugin;
 
 import javax.inject.Inject;

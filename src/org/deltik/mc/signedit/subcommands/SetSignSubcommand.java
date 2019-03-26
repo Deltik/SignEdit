@@ -1,7 +1,7 @@
 package org.deltik.mc.signedit.subcommands;
 
 import org.bukkit.entity.Player;
-import org.deltik.mc.signedit.ArgStruct;
+import org.deltik.mc.signedit.ArgParser;
 import org.deltik.mc.signedit.Configuration;
 import org.deltik.mc.signedit.committers.LineSignEditCommit;
 import org.deltik.mc.signedit.committers.SignEditCommit;
@@ -10,41 +10,36 @@ import org.deltik.mc.signedit.listeners.Interact;
 import javax.inject.Inject;
 import java.util.List;
 
-import static org.deltik.mc.signedit.SignEditPlugin.CHAT_PREFIX;
-
 public class SetSignSubcommand implements SignSubcommand {
     private final Configuration config;
     private final Interact listener;
-    private final ArgStruct argStruct;
+    private final ArgParser argParser;
     private final Player player;
 
     @Inject
-    public SetSignSubcommand(Configuration config, Interact listener, ArgStruct argStruct, Player player) {
+    public SetSignSubcommand(Configuration config, Interact listener, ArgParser argParser, Player player) {
         this.config = config;
         this.listener = listener;
-        this.argStruct = argStruct;
+        this.argParser = argParser;
         this.player = player;
     }
 
     @Override
     public boolean execute() {
         int minLine = config.getMinLine();
-        int maxLine = config.getMaxLine();
-        int lineRelative = argStruct.getLineRelative();
-        if (lineRelative > maxLine || lineRelative < minLine) {
-            player.sendMessage(CHAT_PREFIX + "§cLine numbers are from §e" + minLine + "§c to §e" + maxLine);
+        if (SignSubcommand.reportLineSelectionError(argParser.getSelectedLinesError(), player)) {
             return true;
         }
-        int line = lineRelative - minLine;
+        int[] selectedLines = argParser.getSelectedLines();
 
         String txt;
-        if (argStruct.getSubcommand().equals("clear")) {
+        if (argParser.getSubcommand().equals("clear")) {
             txt = "";
         } else {
-            txt = arrayToSignText(argStruct.getRemainder());
+            txt = arrayToSignText(argParser.getRemainder());
         }
 
-        SignEditCommit commit = new LineSignEditCommit(line, minLine, txt);
+        SignEditCommit commit = new LineSignEditCommit(selectedLines[0], minLine, txt);
         SignSubcommand.autocommit(commit, player, listener, config);
         return true;
     }

@@ -28,7 +28,7 @@ public class SignTextHistory {
         if (tailPosition <= 0) {
             throw new IndexOutOfBoundsException("Nothing to undo");
         }
-        tailPosition --;
+        tailPosition--;
         SignText previousSignText = history.get(tailPosition);
         previousSignText.revertSign();
     }
@@ -39,6 +39,6 @@ public class SignTextHistory {
         }
         SignText nextSignText = history.get(tailPosition);
         nextSignText.applySign();
-        tailPosition ++;
+        tailPosition++;
     }
 }

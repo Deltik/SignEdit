@@ -16,6 +16,7 @@ public class Configuration {
     public static final String CONFIG_LINE_STARTS_AT = "line-starts-at";
     public static final String CONFIG_CLICKING = "clicking";
     private static final Map<String, Object> defaults;
+
     static {
         defaults = new HashMap<>();
         defaults.put(CONFIG_LINE_STARTS_AT, 1);
@@ -41,7 +42,7 @@ public class Configuration {
 
     public Configuration(File f) {
         configFile = f;
-         if (!configFile.exists()) {
+        if (!configFile.exists()) {
             writeDefaultConfig();
         }
         yamlConfig = YamlConfiguration.loadConfiguration(configFile);
@@ -55,7 +56,7 @@ public class Configuration {
     }
 
     private void mergeInDefaultConfig(YamlConfiguration c) {
-         for (Map.Entry<String, Object> defaultConfigItem : defaults.entrySet()) {
+        for (Map.Entry<String, Object> defaultConfigItem : defaults.entrySet()) {
             if (!c.contains(defaultConfigItem.getKey())) {
                 c.set(defaultConfigItem.getKey(), defaultConfigItem.getValue());
             }
@@ -111,7 +112,7 @@ public class Configuration {
     }
 
     public int getMaxLine() {
-        return getLineStartsAt()+3;
+        return getLineStartsAt() + 3;
     }
 
     private void sanitizeConfig(YamlConfiguration c) {
@@ -121,8 +122,8 @@ public class Configuration {
         String clicking = c.getString(CONFIG_CLICKING);
         if (clicking == null ||
                 !(clicking.equalsIgnoreCase("true") ||
-                clicking.equalsIgnoreCase("false") ||
-                clicking.equalsIgnoreCase("auto"))) setDefaultConfig(CONFIG_CLICKING);
+                        clicking.equalsIgnoreCase("false") ||
+                        clicking.equalsIgnoreCase("auto"))) setDefaultConfig(CONFIG_CLICKING);
     }
 
     private void setDefaultConfig(String path) {

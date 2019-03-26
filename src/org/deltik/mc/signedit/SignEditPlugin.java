@@ -28,7 +28,7 @@ public class SignEditPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         SignEditPlugin.instance = this;
-        DaggerSignEditPluginComponent.create().injectSignEditPlugin(this);
+        DaggerSignEditPluginComponent.builder().build().injectSignEditPlugin(this);
         for (String alias : new String[]{"sign", "signedit", "editsign", "se"}) {
             PluginCommand pluginCommand = this.getCommand(alias);
             pluginCommand.setExecutor(signCommand);

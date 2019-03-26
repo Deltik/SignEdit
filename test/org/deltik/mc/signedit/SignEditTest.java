@@ -9,7 +9,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.PluginManager;
-import org.deltik.mc.signedit.Configuration;
 import org.deltik.mc.signedit.commands.SignCommand;
 import org.deltik.mc.signedit.listeners.Interact;
 import org.deltik.mc.signedit.subcommands.UiSignSubcommand;

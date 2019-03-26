@@ -2,10 +2,16 @@ package org.deltik.mc.signedit;
 
 import org.bukkit.block.Sign;
 
+import javax.inject.Inject;
+
 public class SignText {
     String[] lines = new String[4];
     String[] backupLines = lines;
     Sign targetSign;
+
+    @Inject
+    public SignText() {
+    }
 
     public Sign getTargetSign() {
         return targetSign;

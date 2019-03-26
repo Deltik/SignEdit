@@ -3,12 +3,15 @@ package org.deltik.mc.signedit.commands;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.deltik.mc.signedit.CommandInjector;
+import org.deltik.mc.signedit.subcommands.SignSubcommand;
 
 import javax.inject.Inject;
-import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -17,8 +20,8 @@ public class SignCommandTabCompleter implements TabCompleter {
     private Set<String> subcommandNames;
 
     @Inject
-    public SignCommandTabCompleter(@Named("subcommand names") Set<String> subcommandNames) {
-        this.subcommandNames = subcommandNames;
+    public SignCommandTabCompleter(Map<String, Provider<CommandInjector.Builder<? extends SignSubcommand>>> commandBuilders) {
+        subcommandNames = commandBuilders.keySet();
     }
 
     @Override

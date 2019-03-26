@@ -4,8 +4,14 @@ import dagger.Component;
 
 import javax.inject.Singleton;
 
-@Component(modules = {SignCommandModule.class})
+@Component(modules = {SignSubcommandModule.class})
 @Singleton
 public interface SignEditPluginComponent {
     void injectSignEditPlugin(SignEditPlugin plugin);
+
+    @Component.Builder
+    public interface Builder {
+        //        @BindsInstance Builder args(String[] args);
+        SignEditPluginComponent build();
+    }
 }

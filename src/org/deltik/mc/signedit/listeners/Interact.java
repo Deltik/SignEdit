@@ -22,7 +22,8 @@ public class Interact implements Listener {
     private Map<Player, SignEditCommit> inProgressCommits = new HashMap<>();
 
     @Inject
-    public Interact() {}
+    public Interact() {
+    }
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
@@ -54,7 +55,7 @@ public class Interact implements Listener {
             popInProgressCommit(player);
             // Apply colors
             String[] lines = event.getLines();
-            for (int i = 0 ; i < lines.length ; i ++) {
+            for (int i = 0; i < lines.length; i++) {
                 event.setLine(i, lines[i].replace('&', '§'));
             }
         }

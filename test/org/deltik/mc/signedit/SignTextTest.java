@@ -18,7 +18,7 @@ public class SignTextTest {
 
     @Test
     public void allLinesOfNewSignTextAreNull() {
-        for (int i = 0; i <= 3; i ++) {
+        for (int i = 0; i <= 3; i++) {
             assertNull(signText.getLine(i));
             assertFalse(signText.lineIsSet(i));
         }

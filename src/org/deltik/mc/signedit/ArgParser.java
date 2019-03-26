@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class ArgParser {
     private final Configuration config;
-    private final Map<String, Provider<SignSubcommand>> subcommandMap;
+    private final Map<String, Provider<CommandInjector.Builder<? extends SignSubcommand>>> subcommandMap;
 
     private static final int[] NO_LINES_SELECTED = new int[0];
 
@@ -22,7 +22,11 @@ public class ArgParser {
     List<String> remainder;
 
     @Inject
-    public ArgParser(String[] args, Configuration config, Map<String, Provider<SignSubcommand>> subcommandMap) {
+    public ArgParser(
+            String[] args,
+            Configuration config,
+            Map<String, Provider<CommandInjector.Builder<? extends SignSubcommand>>> subcommandMap
+    ) {
         this.config = config;
         this.subcommandMap = subcommandMap;
         parseArgs(args);
@@ -30,10 +34,6 @@ public class ArgParser {
 
     public String getSubcommand() {
         return subcommand;
-    }
-
-    public Provider<SignSubcommand> getSubcommandProvider() {
-        return subcommandMap.get(subcommand);
     }
 
     public int[] getSelectedLines() {
@@ -99,15 +99,13 @@ public class ArgParser {
                                     lineRangeSplit[1] + " in requested selection: " + rawLineGroups
                     );
                 }
-                for (int i = lowerBound ; i <= upperBound ; i ++) {
+                for (int i = lowerBound; i <= upperBound; i++) {
                     selectedLinesMask |= 1 << i;
                 }
-            }
-            else if (lineRangeSplit.length == 1) {
+            } else if (lineRangeSplit.length == 1) {
                 int lineNumber = parseLineNumberFromString(lineRange);
                 selectedLinesMask |= 1 << lineNumber;
-            }
-            else if (lineRangeSplit.length > 2) {
+            } else if (lineRangeSplit.length > 2) {
                 throw new RangeParseLineSelectionException(
                         "Invalid range \"" + lineRange + "\" in requested selection: " + rawLineGroups
                 );
@@ -116,7 +114,7 @@ public class ArgParser {
 
         this.selectedLines = new int[Integer.bitCount(selectedLinesMask)];
         int selectedLinesPosition = 0;
-        for (int i = 0 ; i <= (config.getMaxLine() - config.getMinLine()) ; i ++) {
+        for (int i = 0; i <= (config.getMaxLine() - config.getMinLine()); i++) {
             if ((selectedLinesMask >>> i & 1) == 0x1) {
                 this.selectedLines[selectedLinesPosition++] = i;
             }
@@ -127,8 +125,7 @@ public class ArgParser {
         int unadjustedLineNumber;
         try {
             unadjustedLineNumber = Integer.parseInt(rawLineNumber);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             throw new NumberParseLineSelectionException(
                     "Cannot parse \"" + rawLineNumber + "\" as a line number"
             );

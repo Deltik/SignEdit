@@ -4,48 +4,61 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.deltik.mc.signedit.ArgStruct;
+import org.deltik.mc.signedit.ArgParser;
+import org.deltik.mc.signedit.CommandInjector;
+import org.deltik.mc.signedit.Configuration;
 import org.deltik.mc.signedit.subcommands.SignSubcommand;
-import org.deltik.mc.signedit.subcommands.SubcommandFactory;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
+import java.util.Map;
 
 import static org.deltik.mc.signedit.SignEditPlugin.CHAT_PREFIX;
 
 @Singleton
 public class SignCommand implements CommandExecutor {
-    private SubcommandFactory subcommandFactory;
+
+    private Configuration configuration;
+    private Map<String, Provider<CommandInjector.Builder<? extends SignSubcommand>>> commandBuilders;
 
     @Inject
-    public SignCommand(SubcommandFactory subcommandFactory) {
-        this.subcommandFactory = subcommandFactory;
+    public SignCommand(Configuration configuration, Map<String, Provider<CommandInjector.Builder<? extends SignSubcommand>>> commandBuilders) {
+        this.configuration = configuration;
+        this.commandBuilders = commandBuilders;
     }
 
     @Override
-    public boolean onCommand(CommandSender cs, Command arg1, String arg2,
-                             String[] args) {
-        if (!(cs instanceof Player)) return true;
-        Player player = (Player) cs;
+    public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
+        if (!(commandSender instanceof Player)) return true;
+        Player player = (Player) commandSender;
 
-        ArgStruct argStruct = new ArgStruct(args);
+        ArgParser argParser = new ArgParser(args, configuration, commandBuilders);
 
-        if (!permitted(player, argStruct)) {
-            informForbidden(player, argStruct);
+        if (!permitted(player, argParser)) {
+            informForbidden(player, argParser);
             return true;
         }
 
-        try {
-            SignSubcommand subcommand = subcommandFactory.createSubcommand(player, argStruct);
-            subcommand.execute();
-        } catch (ClassNotFoundException e) {
+        Provider<CommandInjector.Builder<? extends SignSubcommand>> provider = commandBuilders.get(argParser.getSubcommand());
+
+        if (provider == null) {
             sendHelpMessage(player);
+            return true;
         }
+
+        CommandInjector.Builder<? extends SignSubcommand> builder = provider.get();
+
+        builder.player(player)
+                .argStruct(argParser)
+                .build()
+                .command()
+                .execute();
 
         return true;
     }
 
-    private boolean permitted(Player player, ArgStruct args) {
+    private boolean permitted(Player player, ArgParser args) {
         // Legacy (<= 1.3) permissions
         return (player.hasPermission("SignEdit.use") ||
                 // /sign <subcommand>
@@ -65,7 +78,7 @@ public class SignCommand implements CommandExecutor {
         p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §eversion");
     }
 
-    public static void informForbidden(Player p, ArgStruct a) {
+    public static void informForbidden(Player p, ArgParser a) {
         p.sendMessage(CHAT_PREFIX + "§cYou are not allowed to use the §e" + a.getSubcommand() + "§c subcommand.");
     }
 }
