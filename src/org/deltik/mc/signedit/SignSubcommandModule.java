@@ -33,7 +33,7 @@ abstract class SignSubcommandModule {
     @StringKey("set")
     abstract CommandInjector.Builder<? extends SignSubcommand> BindSetSignSubcommand(SetSignSubcommandComponent.Builder command);
 
-    @PerSubCommand
+    @PerSubcommand
     @Subcomponent
     interface SetSignSubcommandComponent extends CommandInjector<SetSignSubcommand> {
         @Subcomponent.Builder
@@ -46,7 +46,7 @@ abstract class SignSubcommandModule {
     @StringKey("clear")
     abstract CommandInjector.Builder<? extends SignSubcommand> BindClearSignSubcommand(ClearSignSubcommandComponent.Builder command);
 
-    @PerSubCommand
+    @PerSubcommand
     @Subcomponent
     interface ClearSignSubcommandComponent extends CommandInjector<ClearSignSubcommand> {
         @Subcomponent.Builder
@@ -59,7 +59,7 @@ abstract class SignSubcommandModule {
     @StringKey("ui")
     abstract CommandInjector.Builder<? extends SignSubcommand> BindUiSignSubcommand(UiSignSubcommandComponent.Builder command);
 
-    @PerSubCommand
+    @PerSubcommand
     @Subcomponent
     interface UiSignSubcommandComponent extends CommandInjector<UiSignSubcommand> {
         @Subcomponent.Builder
@@ -72,7 +72,7 @@ abstract class SignSubcommandModule {
     @StringKey("cancel")
     abstract CommandInjector.Builder<? extends SignSubcommand> BindCancelSignSubcommand(CancelSignSubcommandComponent.Builder command);
 
-    @PerSubCommand
+    @PerSubcommand
     @Subcomponent
     interface CancelSignSubcommandComponent extends CommandInjector<CancelSignSubcommand> {
         @Subcomponent.Builder
@@ -85,7 +85,7 @@ abstract class SignSubcommandModule {
 //    @StringKey("status")
 //    abstract CommandInjector.Builder<? extends SignSubcommand> BindStatusSignSubcommand(StatusSignSubcommandComponent.Builder command);
 
-//    @PerSubCommand
+//    @PerSubcommand
 //    @Subcomponent
 //    interface StatusSignSubcommandComponent extends CommandInjector<StatusSignSubcommand> {
 //        @Subcomponent.Builder
@@ -98,7 +98,7 @@ abstract class SignSubcommandModule {
 //    @StringKey("copy")
 //    abstract CommandInjector.Builder<? extends SignSubcommand> BindCopySignSubcommand(CopySignSubcommandComponent.Builder command);
 
-//    @PerSubCommand
+//    @PerSubcommand
 //    @Subcomponent
 //    interface CopySignSubcommandComponent extends CommandInjector<CopySignSubcommand> {
 //        @Subcomponent.Builder
@@ -111,7 +111,7 @@ abstract class SignSubcommandModule {
 //    @StringKey("cut")
 //    abstract CommandInjector.Builder<? extends SignSubcommand> BindCutSignSubcommand(CutSignSubcommandComponent.Builder command);
 
-//    @PerSubCommand
+//    @PerSubcommand
 //    @Subcomponent
 //    interface CutSignSubcommandComponent extends CommandInjector<CutSignSubcommand> {
 //        @Subcomponent.Builder
@@ -124,7 +124,7 @@ abstract class SignSubcommandModule {
 //    @StringKey("paste")
 //    abstract CommandInjector.Builder<? extends SignSubcommand> BindPasteSignSubcommand(PasteSignSubcommandComponent.Builder command);
 
-//    @PerSubCommand
+//    @PerSubcommand
 //    @Subcomponent
 //    interface PasteSignSubcommandComponent extends CommandInjector<PasteSignSubcommand> {
 //        @Subcomponent.Builder
@@ -137,7 +137,7 @@ abstract class SignSubcommandModule {
 //    @StringKey("undo")
 //    abstract CommandInjector.Builder<? extends SignSubcommand> BindUndoSignSubcommand(UndoSignSubcommandComponent.Builder command);
 
-//    @PerSubCommand
+//    @PerSubcommand
 //    @Subcomponent
 //    interface UndoSignSubcommandComponent extends CommandInjector<UndoSignSubcommand> {
 //        @Subcomponent.Builder
@@ -150,7 +150,7 @@ abstract class SignSubcommandModule {
 //    @StringKey("redo")
 //    abstract CommandInjector.Builder<? extends SignSubcommand> BindRedoSignSubcommand(RedoSignSubcommandComponent.Builder command);
 
-//    @PerSubCommand
+//    @PerSubcommand
 //    @Subcomponent
 //    interface RedoSignSubcommandComponent extends CommandInjector<RedoSignSubcommand> {
 //        @Subcomponent.Builder
@@ -163,7 +163,7 @@ abstract class SignSubcommandModule {
     @StringKey("version")
     abstract CommandInjector.Builder<? extends SignSubcommand> BindVersionSignSubcommand(VersionSignSubcommandComponent.Builder command);
 
-    @PerSubCommand
+    @PerSubcommand
     @Subcomponent
     interface VersionSignSubcommandComponent extends CommandInjector<VersionSignSubcommand> {
         @Subcomponent.Builder

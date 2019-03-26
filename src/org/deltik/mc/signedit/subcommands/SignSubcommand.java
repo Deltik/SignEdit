@@ -17,7 +17,7 @@ public interface SignSubcommand {
     boolean execute();
 
     static Block getTargetBlockOfPlayer(Player player) {
-        return player.getTargetBlock((Set<Material>) null, 10);
+        return player.getTargetBlock(null, 10);
     }
 
     static boolean autocommit(SignEditCommit commit, Player player, Interact listener, Configuration config) {
@@ -40,9 +40,7 @@ public interface SignSubcommand {
             return false;
         else if (block == null)
             return true;
-        else if (config.allowedToEditSignBySight() && block.getState() instanceof Sign)
-            return false;
-        return true;
+        else return !config.allowedToEditSignBySight() || !(block.getState() instanceof Sign);
     }
 
     static boolean reportLineSelectionError(Exception selectedLinesError, Player player) {

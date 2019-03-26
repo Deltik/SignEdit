@@ -10,7 +10,7 @@ public interface SignEditPluginComponent {
     void injectSignEditPlugin(SignEditPlugin plugin);
 
     @Component.Builder
-    public interface Builder {
+    interface Builder {
         SignEditPluginComponent build();
     }
 }

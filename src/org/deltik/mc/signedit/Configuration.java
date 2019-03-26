@@ -11,10 +11,10 @@ import java.util.Map;
 
 @Singleton
 public class Configuration {
-    File configFile;
-    YamlConfiguration yamlConfig;
-    public static final String CONFIG_LINE_STARTS_AT = "line-starts-at";
-    public static final String CONFIG_CLICKING = "clicking";
+    private File configFile;
+    private YamlConfiguration yamlConfig;
+    private static final String CONFIG_LINE_STARTS_AT = "line-starts-at";
+    private static final String CONFIG_CLICKING = "clicking";
     private static final Map<String, Object> defaults;
 
     static {
