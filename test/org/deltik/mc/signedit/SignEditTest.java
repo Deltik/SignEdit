@@ -42,7 +42,7 @@ public abstract class SignEditTest {
     public void setUp() throws Exception {
         Configuration config = new Configuration(File.createTempFile("SignEdit-", "-config.yml"));
         spyConfig = spy(config);
-        listener = new SignEditListener();
+        listener = new SignEditListener(null, null);
         doReturn(false).when(spyConfig).writeFullConfig(new YamlConfiguration());
 
         uiSignSubcommand = mock(UiSignSubcommand.class);

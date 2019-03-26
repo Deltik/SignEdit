@@ -59,6 +59,7 @@ permissions:
       signedit.sign.ui: true
       signedit.sign.set: true
       signedit.sign.clear: true
+      signedit.sign.cancel: true
       signedit.sign.status: true
       signedit.sign.copy: true
       signedit.sign.cut: true
@@ -72,6 +73,8 @@ permissions:
     description: Allow /sign set
   signedit.sign.clear:
     description: Allow /sign clear
+  signedit.sign.cancel:
+    description: Allow /sign cancel
   signedit.sign.status:
     description: Allow /sign status
   signedit.sign.copy:
