@@ -11,9 +11,6 @@ import javax.inject.Inject;
 public class SignEditPlugin extends JavaPlugin {
     public static final String CHAT_PREFIX = "§7[§6SignEdit§7]§r ";
 
-    @Deprecated
-    public static SignEditPlugin instance;
-
     @Inject
     public Configuration config;
 
@@ -27,7 +24,6 @@ public class SignEditPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        SignEditPlugin.instance = this;
         DaggerSignEditPluginComponent.builder().build().injectSignEditPlugin(this);
         for (String alias : new String[]{"sign", "signedit", "editsign", "se"}) {
             PluginCommand pluginCommand = this.getCommand(alias);
@@ -39,7 +35,6 @@ public class SignEditPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        Configuration endConfig = new Configuration();
-        endConfig.writeFullConfig();
+        config.writeFullConfig();
     }
 }

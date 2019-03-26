@@ -32,8 +32,8 @@ public class Configuration {
     }
 
     @Inject
-    public Configuration() {
-        this("plugins//" + SignEditPlugin.instance.getName() + "//config.yml");
+    public Configuration(SignEditPlugin plugin) {
+        this("plugins//" + plugin.getName() + "//config.yml");
     }
 
     public Configuration(String f) {

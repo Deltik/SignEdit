@@ -11,7 +11,6 @@ public interface SignEditPluginComponent {
 
     @Component.Builder
     public interface Builder {
-        //        @BindsInstance Builder args(String[] args);
         SignEditPluginComponent build();
     }
 }

@@ -9,15 +9,17 @@ import static org.deltik.mc.signedit.SignEditPlugin.CHAT_PREFIX;
 
 public class VersionSignSubcommand implements SignSubcommand {
     private Player player;
+    private SignEditPlugin plugin;
 
     @Inject
-    public VersionSignSubcommand(Player player) {
+    public VersionSignSubcommand(Player player, SignEditPlugin plugin) {
         this.player = player;
+        this.plugin = plugin;
     }
 
     @Override
     public boolean execute() {
-        String version = SignEditPlugin.instance.getDescription().getVersion();
+        String version = plugin.getDescription().getVersion();
         player.sendMessage(CHAT_PREFIX + "§6Version§r " + version);
         return true;
     }
