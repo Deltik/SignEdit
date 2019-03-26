@@ -5,19 +5,19 @@ import org.deltik.mc.signedit.ArgParser;
 import org.deltik.mc.signedit.Configuration;
 import org.deltik.mc.signedit.committers.LineSignEditCommit;
 import org.deltik.mc.signedit.committers.SignEditCommit;
-import org.deltik.mc.signedit.listeners.Interact;
+import org.deltik.mc.signedit.listeners.SignEditListener;
 
 import javax.inject.Inject;
 import java.util.List;
 
 public class SetSignSubcommand implements SignSubcommand {
     private final Configuration config;
-    private final Interact listener;
+    private final SignEditListener listener;
     private final ArgParser argParser;
     private final Player player;
 
     @Inject
-    public SetSignSubcommand(Configuration config, Interact listener, ArgParser argParser, Player player) {
+    public SetSignSubcommand(Configuration config, SignEditListener listener, ArgParser argParser, Player player) {
         this.config = config;
         this.listener = listener;
         this.argParser = argParser;

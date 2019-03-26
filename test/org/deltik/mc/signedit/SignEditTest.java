@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.PluginManager;
 import org.deltik.mc.signedit.commands.SignCommand;
-import org.deltik.mc.signedit.listeners.Interact;
+import org.deltik.mc.signedit.listeners.SignEditListener;
 import org.deltik.mc.signedit.subcommands.UiSignSubcommand;
 import org.junit.After;
 import org.junit.Before;
@@ -32,7 +32,7 @@ public abstract class SignEditTest {
     Sign sign;
     Block block;
     Configuration spyConfig;
-    Interact listener;
+    SignEditListener listener;
     String cString = "signedit";
     UiSignSubcommand uiSignSubcommand;
     Server server;
@@ -42,7 +42,7 @@ public abstract class SignEditTest {
     public void setUp() throws Exception {
         Configuration config = new Configuration(File.createTempFile("SignEdit-", "-config.yml"));
         spyConfig = spy(config);
-        listener = new Interact();
+        listener = new SignEditListener();
         doReturn(false).when(spyConfig).writeFullConfig(new YamlConfiguration());
 
         uiSignSubcommand = mock(UiSignSubcommand.class);

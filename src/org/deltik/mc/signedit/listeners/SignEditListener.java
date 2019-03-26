@@ -16,13 +16,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Singleton
-public class Interact implements Listener {
+public class SignEditListener implements Listener {
 
     private Map<Player, SignEditCommit> pendingSignEditCommits = new HashMap<>();
     private Map<Player, SignEditCommit> inProgressCommits = new HashMap<>();
 
     @Inject
-    public Interact() {
+    public SignEditListener() {
     }
 
     @EventHandler

@@ -5,7 +5,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.deltik.mc.signedit.MinecraftReflector;
-import org.deltik.mc.signedit.listeners.Interact;
+import org.deltik.mc.signedit.listeners.SignEditListener;
 
 import java.lang.reflect.Field;
 
@@ -14,10 +14,10 @@ import static org.deltik.mc.signedit.SignEditPlugin.CHAT_PREFIX;
 
 public class UiSignEditCommit implements SignEditCommit {
     private MinecraftReflector reflector;
-    private Interact listener;
+    private SignEditListener listener;
     private Sign sign;
 
-    public UiSignEditCommit(MinecraftReflector reflector, Interact listener) {
+    public UiSignEditCommit(MinecraftReflector reflector, SignEditListener listener) {
         this.reflector = reflector;
         this.listener = listener;
     }

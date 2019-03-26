@@ -2,18 +2,18 @@ package org.deltik.mc.signedit.subcommands;
 
 import org.bukkit.entity.Player;
 import org.deltik.mc.signedit.committers.SignEditCommit;
-import org.deltik.mc.signedit.listeners.Interact;
+import org.deltik.mc.signedit.listeners.SignEditListener;
 
 import javax.inject.Inject;
 
 import static org.deltik.mc.signedit.SignEditPlugin.CHAT_PREFIX;
 
 public class CancelSignSubcommand implements SignSubcommand {
-    private final Interact listener;
+    private final SignEditListener listener;
     private final Player player;
 
     @Inject
-    public CancelSignSubcommand(Interact listener, Player player) {
+    public CancelSignSubcommand(SignEditListener listener, Player player) {
         this.listener = listener;
         this.player = player;
     }

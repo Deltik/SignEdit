@@ -5,18 +5,18 @@ import org.deltik.mc.signedit.Configuration;
 import org.deltik.mc.signedit.MinecraftReflector;
 import org.deltik.mc.signedit.committers.SignEditCommit;
 import org.deltik.mc.signedit.committers.UiSignEditCommit;
-import org.deltik.mc.signedit.listeners.Interact;
+import org.deltik.mc.signedit.listeners.SignEditListener;
 
 import javax.inject.Inject;
 
 public class UiSignSubcommand implements SignSubcommand {
     private final Configuration config;
-    private final Interact listener;
+    private final SignEditListener listener;
     private final Player player;
     private MinecraftReflector reflector;
 
     @Inject
-    public UiSignSubcommand(Configuration config, Interact listener, Player player, MinecraftReflector reflector) {
+    public UiSignSubcommand(Configuration config, SignEditListener listener, Player player, MinecraftReflector reflector) {
         this.config = config;
         this.listener = listener;
         this.player = player;

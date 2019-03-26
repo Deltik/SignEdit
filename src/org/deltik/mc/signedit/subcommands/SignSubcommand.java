@@ -1,15 +1,12 @@
 package org.deltik.mc.signedit.subcommands;
 
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.deltik.mc.signedit.Configuration;
 import org.deltik.mc.signedit.committers.SignEditCommit;
 import org.deltik.mc.signedit.exceptions.LineSelectionException;
-import org.deltik.mc.signedit.listeners.Interact;
-
-import java.util.Set;
+import org.deltik.mc.signedit.listeners.SignEditListener;
 
 import static org.deltik.mc.signedit.SignEditPlugin.CHAT_PREFIX;
 
@@ -20,7 +17,7 @@ public interface SignSubcommand {
         return player.getTargetBlock(null, 10);
     }
 
-    static boolean autocommit(SignEditCommit commit, Player player, Interact listener, Configuration config) {
+    static boolean autocommit(SignEditCommit commit, Player player, SignEditListener listener, Configuration config) {
         Block block = getTargetBlockOfPlayer(player);
         if (shouldDoClickingMode(block, config)) {
             listener.pendSignEditCommit(player, commit);

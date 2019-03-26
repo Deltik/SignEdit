@@ -4,7 +4,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.deltik.mc.signedit.commands.SignCommand;
 import org.deltik.mc.signedit.commands.SignCommandTabCompleter;
-import org.deltik.mc.signedit.listeners.Interact;
+import org.deltik.mc.signedit.listeners.SignEditListener;
 
 import javax.inject.Inject;
 
@@ -15,7 +15,7 @@ public class SignEditPlugin extends JavaPlugin {
     public Configuration config;
 
     @Inject
-    public Interact listener;
+    public SignEditListener listener;
 
     @Inject
     public SignCommand signCommand;
