@@ -20,7 +20,7 @@ public interface SignSubcommand {
     static boolean autointeract(SignEditInteraction interaction, Player player, SignEditListener listener, Configuration config) {
         Block block = getTargetBlockOfPlayer(player);
         if (shouldDoClickingMode(block, config)) {
-            listener.pendSignEditInteraction(player, interaction);
+            listener.setPendingInteraction(player, interaction);
             player.sendMessage(CHAT_PREFIX + "§6Now right-click a sign to edit it");
         } else if (block.getState() instanceof Sign) {
             Sign sign = (Sign) block.getState();

@@ -41,7 +41,7 @@ public class SignEditListener implements Listener {
         Player player = event.getPlayer();
 
         if (isInteractionPending(player)) {
-            SignEditInteraction interaction = popSignEditInteraction(player);
+            SignEditInteraction interaction = removePendingInteraction(player);
             interaction.validatedInteract(player, sign);
         }
     }
@@ -54,9 +54,9 @@ public class SignEditListener implements Listener {
         historyManager.forgetPlayer(player);
 
         if (isInProgress(player)) {
-            popInProgressInteraction(player).cleanup();
+            removeInProgressInteraction(player).cleanup();
         }
-        popSignEditInteraction(player);
+        removePendingInteraction(player);
     }
 
     @EventHandler
@@ -64,7 +64,7 @@ public class SignEditListener implements Listener {
         Player player = event.getPlayer();
 
         if (isInProgress(player)) {
-            popInProgressInteraction(player);
+            removeInProgressInteraction(player);
             // Apply colors
             String[] lines = event.getLines();
             for (int i = 0; i < lines.length; i++) {
@@ -73,11 +73,11 @@ public class SignEditListener implements Listener {
         }
     }
 
-    public void pendSignEditInteraction(Player player, SignEditInteraction interaction) {
+    public void setPendingInteraction(Player player, SignEditInteraction interaction) {
         pendingInteractions.put(player, interaction);
     }
 
-    public void registerInProgressInteraction(Player player, SignEditInteraction interaction) {
+    public void setInProgressInteraction(Player player, SignEditInteraction interaction) {
         inProgressInteractions.put(player, interaction);
     }
 
@@ -89,15 +89,15 @@ public class SignEditListener implements Listener {
         return inProgressInteractions.containsKey(player);
     }
 
-    public SignEditInteraction popSignEditInteraction(Player player) {
+    public SignEditInteraction removePendingInteraction(Player player) {
         return pendingInteractions.remove(player);
     }
 
-    public SignEditInteraction peekSignEditInteraction(Player player) {
+    public SignEditInteraction getPendingInteraction(Player player) {
         return pendingInteractions.get(player);
     }
 
-    public SignEditInteraction popInProgressInteraction(Player player) {
+    public SignEditInteraction removeInProgressInteraction(Player player) {
         return inProgressInteractions.remove(player);
     }
 }

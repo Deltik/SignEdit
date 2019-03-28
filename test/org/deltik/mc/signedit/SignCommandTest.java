@@ -279,7 +279,7 @@ public class SignCommandTest extends SignEditTest {
         signCommand.onCommand(player, command, cString, argsString.split(" "));
 
         Assert.assertTrue(listener.isInteractionPending(player));
-        SignEditInteraction interaction = listener.popSignEditInteraction(player);
+        SignEditInteraction interaction = listener.removePendingInteraction(player);
         Assert.assertFalse(listener.isInteractionPending(player));
         interaction.interact(player, sign);
         verify(sign).setLine(2, "xray yankee zulu");

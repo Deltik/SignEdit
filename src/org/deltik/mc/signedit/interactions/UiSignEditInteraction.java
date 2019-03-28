@@ -30,7 +30,7 @@ public class UiSignEditInteraction implements SignEditInteraction {
     @Override
     public void interact(Player player, Sign sign) {
         this.sign = sign;
-        listener.registerInProgressInteraction(player, this);
+        listener.setInProgressInteraction(player, this);
         formatSignForEdit(sign);
 
         try {

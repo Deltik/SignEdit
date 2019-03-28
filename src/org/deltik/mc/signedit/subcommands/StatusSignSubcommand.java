@@ -43,7 +43,7 @@ public class StatusSignSubcommand implements SignSubcommand {
         if (!listener.isInteractionPending(player)) {
             player.sendMessage(CHAT_PREFIX + "§6§lPending Action:§r §7None");
         } else {
-            SignEditInteraction interaction = listener.peekSignEditInteraction(player);
+            SignEditInteraction interaction = listener.getPendingInteraction(player);
             player.sendMessage(CHAT_PREFIX + "§6§lPending Action:§r " + interaction.getName());
             player.sendMessage(CHAT_PREFIX + "  §oRight-click a sign to apply the action!");
         }

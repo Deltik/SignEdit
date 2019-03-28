@@ -52,7 +52,7 @@ public class SignEditInteractionTest extends SignEditTest {
 
         Assert.assertFalse(listener.isInProgress(player));
 
-        listener.registerInProgressInteraction(player, spySignEditInteraction);
+        listener.setInProgressInteraction(player, spySignEditInteraction);
 
         Assert.assertTrue(listener.isInProgress(player));
 
@@ -69,7 +69,7 @@ public class SignEditInteractionTest extends SignEditTest {
 
         Assert.assertFalse(listener.isInProgress(player));
 
-        listener.registerInProgressInteraction(player, spySignEditInteraction);
+        listener.setInProgressInteraction(player, spySignEditInteraction);
 
         Assert.assertTrue(listener.isInProgress(player));
 
