@@ -14,7 +14,7 @@ import org.deltik.mc.signedit.subcommands.*;
         SignSubcommandModule.ClearSignSubcommandComponent.class,
         SignSubcommandModule.UiSignSubcommandComponent.class,
         SignSubcommandModule.CancelSignSubcommandComponent.class,
-//        SignSubcommandModule.StatusSignSubcommandComponent.class,
+        SignSubcommandModule.StatusSignSubcommandComponent.class,
 //        SignSubcommandModule.CopySignSubcommandComponent.class,
 //        SignSubcommandModule.CutSignSubcommandComponent.class,
 //        SignSubcommandModule.PasteSignSubcommandComponent.class,
@@ -80,18 +80,18 @@ abstract class SignSubcommandModule {
         }
     }
 
-//    @Binds
-//    @IntoMap
-//    @StringKey("status")
-//    abstract CommandInjector.Builder<? extends SignSubcommand> BindStatusSignSubcommand(StatusSignSubcommandComponent.Builder command);
+    @Binds
+    @IntoMap
+    @StringKey("status")
+    abstract CommandInjector.Builder<? extends SignSubcommand> BindStatusSignSubcommand(StatusSignSubcommandComponent.Builder command);
 
-//    @PerSubcommand
-//    @Subcomponent
-//    interface StatusSignSubcommandComponent extends CommandInjector<StatusSignSubcommand> {
-//        @Subcomponent.Builder
-//        abstract class Builder extends CommandInjector.Builder<StatusSignSubcommand> {
-//        }
-//    }
+    @PerSubcommand
+    @Subcomponent
+    interface StatusSignSubcommandComponent extends CommandInjector<StatusSignSubcommand> {
+        @Subcomponent.Builder
+        abstract class Builder extends CommandInjector.Builder<StatusSignSubcommand> {
+        }
+    }
 
 //    @Binds
 //    @IntoMap

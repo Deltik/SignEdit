@@ -10,6 +10,10 @@ import static org.deltik.mc.signedit.SignEditPlugin.CHAT_PREFIX;
 public interface SignEditInteraction {
     void interact(Player player, Sign sign);
 
+    default String getName() {
+        return this.getClass().getSimpleName();
+    }
+
     default void cleanup() {
     }
 

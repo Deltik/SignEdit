@@ -24,6 +24,14 @@ public class SignTextHistory {
         tailPosition = history.size();
     }
 
+    public int undosRemaining() {
+        return tailPosition;
+    }
+
+    public int redosRemaining() {
+        return history.size() - tailPosition;
+    }
+
     public void undo() {
         if (tailPosition <= 0) {
             throw new IndexOutOfBoundsException("Nothing to undo");

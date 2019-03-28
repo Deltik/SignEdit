@@ -93,6 +93,10 @@ public class SignEditListener implements Listener {
         return pendingInteractions.remove(player);
     }
 
+    public SignEditInteraction peekSignEditInteraction(Player player) {
+        return pendingInteractions.get(player);
+    }
+
     public SignEditInteraction popInProgressInteraction(Player player) {
         return inProgressInteractions.remove(player);
     }
