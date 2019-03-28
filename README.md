@@ -32,7 +32,7 @@
 | `/sign status` | Show the pending action and what is in the copy buffer. | `>= 1.10` |
 | `/sign copy [<lines>]` | Copy the targeted sign's text.  If `<lines>` is specified, only those lines are copied. | `>= 1.10` |
 | `/sign cut [<lines>]` | Copy the targeted sign's text and remove it from the sign.  If `<lines>` is specified, only those lines are cut. | `>= 1.10` |
-| `/sign paste` | Paste the lines buffered by the previous `/sign copy` command onto the targeted sign. | `>= 1.10` |
+| `/sign paste` | Paste the lines buffered by the previous `/sign copy` or `/sign cut` command onto the targeted sign. | `>= 1.10` |
 | `/sign undo` | Revert the previous sign change. | `>= 1.10` |
 | `/sign redo` | Restore the most recent sign change that was undone by `/sign undo`. | `>= 1.10` |
 | `/sign version` | Show the installed version of this plugin. | `>= 1.9.3` |

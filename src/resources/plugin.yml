@@ -16,7 +16,9 @@ commands:
         Invoke the native Minecraft sign editor on the targeted sign.
 
       /<command> set <lines> [<text>]
-        Change each of the lines <lines> of the targeted sign to <text>. All `&` characters are treated as formatting code characters. If <text> is blank, erase the lines <lines>.
+        Change each of the lines <lines> of the targeted sign to <text>.
+        All `&` characters are treated as formatting code characters.
+        If <text> is blank, erase the lines <lines>.
 
       /<command> <lines> [<text>]
         Alias of /<command> set <lines> [<text>]
@@ -33,13 +35,15 @@ commands:
       /<command> status
 
       /<command> copy [<lines>]
-        Copy the targeted sign's text. If <lines> is specified, only those lines are copied.
+        Copy the targeted sign's text.
+        If <lines> is specified, only those lines are copied.
 
       /<command> cut [<lines>]
-        Copy the targeted sign's text and remove it from the sign. If <lines> is specified, only those lines are cut.
+        Copy the targeted sign's text and remove it from the sign.
+        If <lines> is specified, only those lines are cut.
 
       /<command> paste
-        Paste the lines buffered by the previous /sign copy command onto the targeted sign.
+        Paste the lines buffered by the previous /sign copy or /sign cut command onto the targeted sign.
 
       /<command> undo
         Revert the previous sign change.

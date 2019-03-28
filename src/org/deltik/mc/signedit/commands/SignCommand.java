@@ -59,7 +59,7 @@ public class SignCommand implements CommandExecutor {
     }
 
     private boolean permitted(Player player, ArgParser args) {
-        // Legacy (<= 1.3) permissions
+        // Legacy (< 1.4) permissions
         return (player.hasPermission("SignEdit.use") ||
                 // /sign <subcommand>
                 player.hasPermission("signedit.sign." + args.getSubcommand()));
@@ -71,11 +71,15 @@ public class SignCommand implements CommandExecutor {
 
     public static void sendHelpMessage(Player p, String cmdString) {
         p.sendMessage(CHAT_PREFIX + "§f§lUsage:");
-        p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §e[set]§r §7<line> [<text>]");
-        p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §e[clear]§r §7<line>");
+        p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §e[set]§r §7<lines> [<text>]");
+        p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §e[clear]§r §7<lines>");
         p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §eui");
         p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §ecancel");
+        p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §e{copy,cut} §7[<lines>]");
+        p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §epaste");
+        p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §estatus");
         p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §eversion");
+        p.sendMessage(CHAT_PREFIX + "§f§lOnline Help:§r https://git.io/SignEdit-README");
     }
 
     public static void informForbidden(Player p, ArgParser a) {
