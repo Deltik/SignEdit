@@ -10,6 +10,8 @@ import org.deltik.mc.signedit.listeners.SignEditListener;
 import javax.inject.Inject;
 import java.util.List;
 
+import static org.deltik.mc.signedit.SignEditPlugin.CHAT_PREFIX;
+
 public class SetSignSubcommand implements SignSubcommand {
     private final Configuration config;
     private final SignEditListener listener;
@@ -31,6 +33,10 @@ public class SetSignSubcommand implements SignSubcommand {
             return true;
         }
         int[] selectedLines = argParser.getSelectedLines();
+        if (selectedLines.length <= 0) {
+            player.sendMessage(CHAT_PREFIX + "§c" + "A line selection is required but was not provided.");
+            return true;
+        }
 
         String txt;
         if (argParser.getSubcommand().equals("clear")) {

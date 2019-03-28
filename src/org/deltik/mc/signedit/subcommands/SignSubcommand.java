@@ -43,7 +43,7 @@ public interface SignSubcommand {
     static boolean reportLineSelectionError(Exception selectedLinesError, Player player) {
         if (!(selectedLinesError instanceof LineSelectionException)) return false;
 
-        player.sendMessage(CHAT_PREFIX + selectedLinesError.getMessage());
+        player.sendMessage(CHAT_PREFIX + "§c" + selectedLinesError.getMessage());
 
         return true;
     }
