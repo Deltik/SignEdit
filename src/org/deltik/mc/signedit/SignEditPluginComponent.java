@@ -1,6 +1,7 @@
 package org.deltik.mc.signedit;
 
 import dagger.Component;
+import org.deltik.mc.signedit.subcommands.SignSubcommandModule;
 
 import javax.inject.Singleton;
 

@@ -74,7 +74,7 @@ public class StatusSignSubcommand implements SignSubcommand {
             player.sendMessage(CHAT_PREFIX + "§6§lClipboard Contents:");
             for (int i = 0; i < 4; i++) {
                 String line = clipboard.getLine(i);
-                int relativeLineNumber = i + config.getLineStartsAt();
+                int relativeLineNumber = i + config.getMinLine();
                 if (line == null) {
                     player.sendMessage(CHAT_PREFIX + "§6§l  Line " + relativeLineNumber + "§r §7is undefined.");
                 } else {

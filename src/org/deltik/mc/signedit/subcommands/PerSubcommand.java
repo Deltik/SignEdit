@@ -1,4 +1,4 @@
-package org.deltik.mc.signedit;
+package org.deltik.mc.signedit.subcommands;
 
 import javax.inject.Scope;
 import java.lang.annotation.Documented;

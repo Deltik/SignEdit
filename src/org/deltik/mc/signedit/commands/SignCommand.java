@@ -5,7 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.deltik.mc.signedit.ArgParser;
-import org.deltik.mc.signedit.CommandInjector;
+import org.deltik.mc.signedit.subcommands.SignSubcommandInjector;
 import org.deltik.mc.signedit.Configuration;
 import org.deltik.mc.signedit.subcommands.SignSubcommand;
 
@@ -20,10 +20,10 @@ import static org.deltik.mc.signedit.SignEditPlugin.CHAT_PREFIX;
 public class SignCommand implements CommandExecutor {
 
     private Configuration configuration;
-    private Map<String, Provider<CommandInjector.Builder<? extends SignSubcommand>>> commandBuilders;
+    private Map<String, Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>>> commandBuilders;
 
     @Inject
-    public SignCommand(Configuration configuration, Map<String, Provider<CommandInjector.Builder<? extends SignSubcommand>>> commandBuilders) {
+    public SignCommand(Configuration configuration, Map<String, Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>>> commandBuilders) {
         this.configuration = configuration;
         this.commandBuilders = commandBuilders;
     }
@@ -40,17 +40,17 @@ public class SignCommand implements CommandExecutor {
             return true;
         }
 
-        Provider<CommandInjector.Builder<? extends SignSubcommand>> provider = commandBuilders.get(argParser.getSubcommand());
+        Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>> provider = commandBuilders.get(argParser.getSubcommand());
 
         if (provider == null) {
             sendHelpMessage(player);
             return true;
         }
 
-        CommandInjector.Builder<? extends SignSubcommand> builder = provider.get();
+        SignSubcommandInjector.Builder<? extends SignSubcommand> builder = provider.get();
 
         builder.player(player)
-                .argStruct(argParser)
+                .argParser(argParser)
                 .build()
                 .command()
                 .execute();

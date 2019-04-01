@@ -2,6 +2,7 @@ package org.deltik.mc.signedit;
 
 import org.deltik.mc.signedit.exceptions.*;
 import org.deltik.mc.signedit.subcommands.SignSubcommand;
+import org.deltik.mc.signedit.subcommands.SignSubcommandInjector;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -12,7 +13,7 @@ import java.util.Map;
 
 public class ArgParser {
     private final Configuration config;
-    private final Map<String, Provider<CommandInjector.Builder<? extends SignSubcommand>>> subcommandMap;
+    private final Map<String, Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>>> subcommandMap;
 
     private static final int[] NO_LINES_SELECTED = new int[0];
 
@@ -25,7 +26,7 @@ public class ArgParser {
     public ArgParser(
             String[] args,
             Configuration config,
-            Map<String, Provider<CommandInjector.Builder<? extends SignSubcommand>>> subcommandMap
+            Map<String, Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>>> subcommandMap
     ) {
         this.config = config;
         this.subcommandMap = subcommandMap;
@@ -140,6 +141,6 @@ public class ArgParser {
                             unadjustedLineNumber + " was provided."
             );
         }
-        return unadjustedLineNumber - config.getLineStartsAt();
+        return unadjustedLineNumber - config.getMinLine();
     }
 }

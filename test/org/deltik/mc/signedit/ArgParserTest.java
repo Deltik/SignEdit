@@ -5,6 +5,7 @@ import org.deltik.mc.signedit.exceptions.OutOfBoundsLineSelectionException;
 import org.deltik.mc.signedit.exceptions.RangeOrderLineSelectionException;
 import org.deltik.mc.signedit.exceptions.RangeParseLineSelectionException;
 import org.deltik.mc.signedit.subcommands.SignSubcommand;
+import org.deltik.mc.signedit.subcommands.SignSubcommandInjector;
 import org.junit.Test;
 
 import javax.inject.Provider;
@@ -29,7 +30,7 @@ public class ArgParserTest {
         when(config.getLineStartsAt()).thenReturn(lineStartsAt);
         when(config.getMinLine()).thenCallRealMethod();
         when(config.getMaxLine()).thenCallRealMethod();
-        Map<String, Provider<CommandInjector.Builder<? extends SignSubcommand>>> subcommandMap = new HashMap<>();
+        Map<String, Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>>> subcommandMap = new HashMap<>();
         subcommandMap.put("help", null);
         subcommandMap.put("ui", null);
         subcommandMap.put("set", null);

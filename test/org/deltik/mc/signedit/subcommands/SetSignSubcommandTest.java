@@ -17,19 +17,19 @@
 
 //    Configuration config;
 //    SignEditListener listener;
-//    ArgParser argStruct;
+//    ArgParser argParser;
 //    Player player;
 
 //    @Before
 //    public void setUp() throws Exception {
 //        config = mock(Configuration.class);
 //        listener = mock(SignEditListener.class);
-//        argStruct = mock(ArgParser.class);
+//        argParser = mock(ArgParser.class);
 //        player = mock(Player.class);
 
-//        when(argStruct.getSubcommand()).thenReturn("set");
+//        when(argParser.getSubcommand()).thenReturn("set");
 
-//        subcommand = new SetSignSubcommand(config, listener, argStruct, player);
+//        subcommand = new SetSignSubcommand(config, listener, argParser, player);
 //    }
 
 //    @Test
@@ -49,10 +49,10 @@
 //    }
 
 //    private void setArgStructLineRelative(int lineRelative) {
-//        when(argStruct.getLineRelative()).thenReturn(lineRelative);
+//        when(argParser.getLineRelative()).thenReturn(lineRelative);
 //    }
 
 //    private void setArgStructRemainder(String input) {
-//        when(argStruct.getRemainder()).thenReturn(Arrays.asList(input.split(" ")));
+//        when(argParser.getRemainder()).thenReturn(Arrays.asList(input.split(" ")));
 //    }
 //}
