@@ -231,6 +231,13 @@ public class ArgParserTest {
     }
 
     @Test
+    public void parseSignLinesFailsNegativeNumber() {
+        parse("set -1 #NOPE");
+
+        assertTrue(selectedLinesError instanceof OutOfBoundsLineSelectionException);
+    }
+
+    @Test
     public void parseSignLinesFailsGarbageRange() {
         parse("set 1-3-4 #NOPE");
 

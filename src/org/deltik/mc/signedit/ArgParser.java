@@ -89,6 +89,9 @@ public class ArgParser {
         byte selectedLinesMask = 0;
         String[] linesGroup = rawLineGroups.split(",");
         for (String lineRange : linesGroup) {
+            if (lineRange.startsWith("-")) {
+                parseLineNumberFromString(lineRange);
+            }
             String[] lineRangeSplit = lineRange.split("-");
             if (lineRangeSplit.length == 2) {
                 int lowerBound = parseLineNumberFromString(lineRangeSplit[0]);
