@@ -5,25 +5,31 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.deltik.mc.signedit.ArgParser;
-import org.deltik.mc.signedit.subcommands.SignSubcommandInjector;
+import org.deltik.mc.signedit.ChatCommsModule;
 import org.deltik.mc.signedit.Configuration;
+import org.deltik.mc.signedit.ChatComms;
 import org.deltik.mc.signedit.subcommands.SignSubcommand;
+import org.deltik.mc.signedit.subcommands.SignSubcommandInjector;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.util.Map;
 
-import static org.deltik.mc.signedit.SignEditPlugin.CHAT_PREFIX;
-
 @Singleton
 public class SignCommand implements CommandExecutor {
 
+    private final Provider<ChatCommsModule.ChatCommsComponent.Builder> commsBuilderProvider;
     private Configuration configuration;
     private Map<String, Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>>> commandBuilders;
 
     @Inject
-    public SignCommand(Configuration configuration, Map<String, Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>>> commandBuilders) {
+    public SignCommand(
+            Provider<ChatCommsModule.ChatCommsComponent.Builder> commsBuilderProvider,
+            Configuration configuration,
+            Map<String, Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>>> commandBuilders
+    ) {
+        this.commsBuilderProvider = commsBuilderProvider;
         this.configuration = configuration;
         this.commandBuilders = commandBuilders;
     }
@@ -33,24 +39,28 @@ public class SignCommand implements CommandExecutor {
         if (!(commandSender instanceof Player)) return true;
         Player player = (Player) commandSender;
 
+        ChatComms comms = commsBuilderProvider.get().player(player).build().comms();
+
         ArgParser argParser = new ArgParser(args, configuration, commandBuilders);
 
         if (!permitted(player, argParser)) {
-            informForbidden(player, argParser);
+            comms.informForbidden(command.getName(), argParser.getSubcommand());
             return true;
         }
 
-        Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>> provider = commandBuilders.get(argParser.getSubcommand());
+        Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>> subcommandProvider =
+                commandBuilders.get(argParser.getSubcommand());
 
-        if (provider == null) {
-            sendHelpMessage(player);
+        if (subcommandProvider == null) {
+            comms.showHelpFor(command.getName());
             return true;
         }
 
-        SignSubcommandInjector.Builder<? extends SignSubcommand> builder = provider.get();
+        SignSubcommandInjector.Builder<? extends SignSubcommand> builder = subcommandProvider.get();
 
         builder.player(player)
                 .argParser(argParser)
+                .comms(comms)
                 .build()
                 .command()
                 .execute();
@@ -63,26 +73,5 @@ public class SignCommand implements CommandExecutor {
         return (player.hasPermission("SignEdit.use") ||
                 // /sign <subcommand>
                 player.hasPermission("signedit.sign." + args.getSubcommand()));
-    }
-
-    public static void sendHelpMessage(Player p) {
-        sendHelpMessage(p, "signedit");
-    }
-
-    public static void sendHelpMessage(Player p, String cmdString) {
-        p.sendMessage(CHAT_PREFIX + "§f§lUsage:");
-        p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §e[set]§r §7<lines> [<text>]");
-        p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §e[clear]§r §7<lines>");
-        p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §eui");
-        p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §ecancel");
-        p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §e{copy,cut} §7[<lines>]");
-        p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §epaste");
-        p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §estatus");
-        p.sendMessage(CHAT_PREFIX + "§a§6/" + cmdString + "§r §eversion");
-        p.sendMessage(CHAT_PREFIX + "§f§lOnline Help:§r https://git.io/SignEdit-README");
-    }
-
-    public static void informForbidden(Player p, ArgParser a) {
-        p.sendMessage(CHAT_PREFIX + "§cYou are not allowed to use the §e" + a.getSubcommand() + "§c subcommand.");
     }
 }

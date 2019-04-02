@@ -3,6 +3,7 @@ package org.deltik.mc.signedit.subcommands;
 import dagger.BindsInstance;
 import org.bukkit.entity.Player;
 import org.deltik.mc.signedit.ArgParser;
+import org.deltik.mc.signedit.ChatComms;
 
 public interface SignSubcommandInjector<T extends SignSubcommand> {
     T command();
@@ -15,5 +16,8 @@ public interface SignSubcommandInjector<T extends SignSubcommand> {
 
         @BindsInstance
         public abstract Builder argParser(ArgParser args);
+
+        @BindsInstance
+        public abstract Builder comms(ChatComms comms);
     }
 }

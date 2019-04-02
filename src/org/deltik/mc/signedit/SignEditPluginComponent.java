@@ -5,7 +5,10 @@ import org.deltik.mc.signedit.subcommands.SignSubcommandModule;
 
 import javax.inject.Singleton;
 
-@Component(modules = {SignSubcommandModule.class})
+@Component(modules = {
+        SignSubcommandModule.class,
+        ChatCommsModule.class
+})
 @Singleton
 public interface SignEditPluginComponent {
     void injectSignEditPlugin(SignEditPlugin plugin);
