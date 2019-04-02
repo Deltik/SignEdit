@@ -3,7 +3,8 @@ package org.deltik.mc.signedit.subcommands;
 import org.bukkit.entity.Player;
 import org.deltik.mc.signedit.ArgParser;
 import org.deltik.mc.signedit.Configuration;
-import org.deltik.mc.signedit.interactions.LineSignEditInteraction;
+import org.deltik.mc.signedit.SignText;
+import org.deltik.mc.signedit.interactions.SetSignEditInteraction;
 import org.deltik.mc.signedit.interactions.SignEditInteraction;
 import org.deltik.mc.signedit.listeners.SignEditListener;
 
@@ -17,18 +18,25 @@ public class SetSignSubcommand implements SignSubcommand {
     private final SignEditListener listener;
     private final ArgParser argParser;
     private final Player player;
+    private final SignText signText;
 
     @Inject
-    public SetSignSubcommand(Configuration config, SignEditListener listener, ArgParser argParser, Player player) {
+    public SetSignSubcommand(
+            Configuration config,
+            SignEditListener listener,
+            ArgParser argParser,
+            Player player,
+            SignText signText
+    ) {
         this.config = config;
         this.listener = listener;
         this.argParser = argParser;
         this.player = player;
+        this.signText = signText;
     }
 
     @Override
     public boolean execute() {
-        int minLine = config.getMinLine();
         if (SignSubcommand.reportLineSelectionError(argParser.getSelectedLinesError(), player)) {
             return true;
         }
@@ -38,19 +46,19 @@ public class SetSignSubcommand implements SignSubcommand {
             return true;
         }
 
-        String txt;
+        String text;
         if (argParser.getSubcommand().equals("clear")) {
-            txt = "";
+            text = "";
         } else {
-            txt = arrayToSignText(argParser.getRemainder());
+            text = String.join(" ", argParser.getRemainder());
         }
 
-        SignEditInteraction interaction = new LineSignEditInteraction(selectedLines[0], minLine, txt);
+        for (int selectedLine : selectedLines) {
+            signText.setLine(selectedLine, text);
+        }
+
+        SignEditInteraction interaction = new SetSignEditInteraction(signText, config.getLineStartsAt());
         SignSubcommand.autointeract(interaction, player, listener, config);
         return true;
-    }
-
-    private String arrayToSignText(List<String> textArray) {
-        return String.join(" ", textArray).replace('&', '§');
     }
 }

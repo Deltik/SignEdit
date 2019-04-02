@@ -3,11 +3,12 @@ package org.deltik.mc.signedit;
 import org.bukkit.block.Sign;
 
 import javax.inject.Inject;
+import java.util.Objects;
 
 public class SignText {
-    String[] lines = new String[4];
-    String[] backupLines = lines;
-    Sign targetSign;
+    private String[] lines = new String[4];
+    private String[] backupLines = lines;
+    private Sign targetSign;
 
     @Inject
     public SignText() {
@@ -42,7 +43,7 @@ public class SignText {
     }
 
     public void importSign() {
-        lines = targetSign.getLines();
+        lines = targetSign.getLines().clone();
     }
 
     public void setLineLiteral(int lineNumber, String value) {
@@ -64,6 +65,10 @@ public class SignText {
         return lines[lineNumber] != null;
     }
 
+    public String[] getLines() {
+        return lines;
+    }
+
     public String getLine(int lineNumber) {
         return lines[lineNumber];
     }
@@ -73,5 +78,17 @@ public class SignText {
         if (line == null) return null;
         line = line.replace('§', '&');
         return line;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (!(object instanceof SignText)) return false;
+        SignText otherSignText = (SignText) object;
+        for (int i = 0; i < lines.length; i++) {
+            if (!Objects.equals(this.getLine(i), otherSignText.getLine(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 }

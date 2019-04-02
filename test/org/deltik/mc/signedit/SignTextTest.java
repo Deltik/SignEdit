@@ -81,6 +81,16 @@ public class SignTextTest {
     }
 
     @Test
+    public void getLinesRetrievesAllLines() {
+        String[] expected = new String[]{"alpha", "bravo", "charlie", "delta"};
+        for (int i = 0; i < expected.length; i++) {
+            signText.setLine(i, expected[i]);
+        }
+
+        assertArrayEquals(expected, signText.getLines());
+    }
+
+    @Test
     public void getLineRetrievesLineContents() {
         String expected = "alpha beta gamma";
         int lineNumber = 3;
@@ -153,7 +163,8 @@ public class SignTextTest {
     @Test
     public void importSign() {
         Sign sign = mock(Sign.class);
-        when(sign.getLines()).thenReturn(new String[]{"a", "b", "c", "d"});
+        String[] source = new String[]{"a", "b", "c", "d"};
+        when(sign.getLines()).thenReturn(source);
 
         signText.setTargetSign(sign);
         signText.importSign();
@@ -162,6 +173,18 @@ public class SignTextTest {
         assertEquals(signText.getLine(1), "b");
         assertEquals(signText.getLine(2), "c");
         assertEquals(signText.getLine(3), "d");
+    }
+
+    @Test
+    public void importSignClonesLines() {
+        Sign sign = mock(Sign.class);
+        String[] source = new String[]{"a", "b", "c", "d"};
+        when(sign.getLines()).thenReturn(source);
+
+        signText.setTargetSign(sign);
+        signText.importSign();
+
+        assertNotSame(source, signText.getLines());
     }
 
     @Test
@@ -188,5 +211,45 @@ public class SignTextTest {
         verify(sign, times(1)).setLine(eq(1), eq("b"));
         verify(sign, times(0)).setLine(eq(2), any());
         verify(sign, times(1)).setLine(eq(3), eq("d"));
+    }
+
+    @Test
+    public void signTextEqualsReturnsTrueOnNullLines() {
+        SignText left = new SignText();
+        SignText right = new SignText();
+
+        assertEquals(left, right);
+    }
+
+    @Test
+    public void signTextEqualsReturnsFalseOnNullVsNotNull() {
+        SignText left = new SignText();
+        SignText right = new SignText();
+        left.setLine(0, "not null");
+        right.setLine(3, "not null");
+
+        assertNotEquals(left, right);
+    }
+
+    @Test
+    public void signTextEqualsReturnsFalseOnUnequalLines() {
+        SignText left = new SignText();
+        SignText right = new SignText();
+        left.setLine(0, "black");
+        left.setLine(2, "red");
+        right.setLine(0, "black");
+        right.setLine(2, "blue");
+
+        assertNotEquals(left, right);
+    }
+
+    @Test
+    public void signTextEqualsReturnsTrueOnEqualLines() {
+        SignText left = new SignText();
+        SignText right = new SignText();
+        left.setLine(2, "blue");
+        right.setLine(2, "blue");
+
+        assertEquals(left, right);
     }
 }
