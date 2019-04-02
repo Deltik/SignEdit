@@ -30,6 +30,11 @@ public class UiSignEditInteraction implements SignEditInteraction {
     }
 
     @Override
+    public String getName() {
+        return "Open sign editor";
+    }
+
+    @Override
     public void cleanup(Event event) {
         if (!(event instanceof SignChangeEvent)) {
             formatSignTextForSave(beforeSignText);

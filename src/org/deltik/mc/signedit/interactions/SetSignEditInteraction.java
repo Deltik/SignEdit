@@ -16,6 +16,11 @@ public class SetSignEditInteraction implements SignEditInteraction {
     }
 
     @Override
+    public String getName() {
+        return "Change sign";
+    }
+
+    @Override
     public void interact(Player player, Sign sign) {
         SignText beforeSignText = new SignText();
         beforeSignText.setTargetSign(sign);
