@@ -1,5 +1,6 @@
 package org.deltik.mc.signedit;
 
+import dagger.BindsInstance;
 import dagger.Component;
 import org.deltik.mc.signedit.subcommands.SignSubcommandModule;
 
@@ -16,5 +17,8 @@ public interface SignEditPluginComponent {
     @Component.Builder
     interface Builder {
         SignEditPluginComponent build();
+
+        @BindsInstance
+        Builder plugin(SignEditPlugin plugin);
     }
 }

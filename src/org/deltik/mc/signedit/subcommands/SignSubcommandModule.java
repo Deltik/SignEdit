@@ -23,11 +23,6 @@ import org.deltik.mc.signedit.SignEditPlugin;
         SignSubcommandModule.VersionSignSubcommandComponent.class,
 })
 public abstract class SignSubcommandModule {
-    @Provides
-    static SignEditPlugin getSignEditPlugin() {
-        return JavaPlugin.getPlugin(SignEditPlugin.class);
-    }
-
     @Binds
     @IntoMap
     @StringKey("set")
