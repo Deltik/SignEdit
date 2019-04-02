@@ -19,7 +19,7 @@ public class ArgParser {
 
     String subcommand;
     int[] selectedLines = NO_LINES_SELECTED;
-    Exception selectedLinesError;
+    LineSelectionException selectedLinesError;
     List<String> remainder;
 
     @Inject
@@ -41,7 +41,7 @@ public class ArgParser {
         return selectedLines;
     }
 
-    public Exception getSelectedLinesError() {
+    public LineSelectionException getSelectedLinesError() {
         return selectedLinesError;
     }
 
@@ -98,10 +98,7 @@ public class ArgParser {
                 int lowerBound = parseLineNumberFromString(lineRangeSplit[0]);
                 int upperBound = parseLineNumberFromString(lineRangeSplit[1]);
                 if (lowerBound > upperBound) {
-                    throw new RangeOrderLineSelectionException(
-                            "Lower bound " + lineRangeSplit[0] + " cannot be higher than higher bound " +
-                                    lineRangeSplit[1] + " in requested selection: " + rawLineGroups
-                    );
+                    throw new RangeOrderLineSelectionException(rawLineGroups, lineRangeSplit[0], lineRangeSplit[1]);
                 }
                 for (int i = lowerBound; i <= upperBound; i++) {
                     selectedLinesMask |= 1 << i;
@@ -110,9 +107,7 @@ public class ArgParser {
                 int lineNumber = parseLineNumberFromString(lineRange);
                 selectedLinesMask |= 1 << lineNumber;
             } else if (lineRangeSplit.length > 2) {
-                throw new RangeParseLineSelectionException(
-                        "Invalid range \"" + lineRange + "\" in requested selection: " + rawLineGroups
-                );
+                throw new RangeParseLineSelectionException(rawLineGroups, lineRange);
             }
         }
 
@@ -130,16 +125,11 @@ public class ArgParser {
         try {
             unadjustedLineNumber = Integer.parseInt(rawLineNumber);
         } catch (NumberFormatException e) {
-            throw new NumberParseLineSelectionException(
-                    "Cannot parse \"" + rawLineNumber + "\" as a line number"
-            );
+            throw new NumberParseLineSelectionException(rawLineNumber);
         }
         if (unadjustedLineNumber > config.getMaxLine() ||
                 unadjustedLineNumber < config.getMinLine()) {
-            throw new OutOfBoundsLineSelectionException(
-                    "Line numbers must be between " + config.getMinLine() + " and " + config.getMaxLine() + ", but " +
-                            unadjustedLineNumber + " was provided."
-            );
+            throw new OutOfBoundsLineSelectionException(rawLineNumber);
         }
         return unadjustedLineNumber - config.getMinLine();
     }

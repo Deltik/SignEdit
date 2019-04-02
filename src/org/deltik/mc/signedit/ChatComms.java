@@ -1,8 +1,12 @@
 package org.deltik.mc.signedit;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.entity.Player;
+import org.deltik.mc.signedit.exceptions.*;
 
 import javax.inject.Inject;
+
+import static org.bukkit.Bukkit.getLogger;
 
 public class ChatComms {
     private Player player;
@@ -95,5 +99,37 @@ public class ChatComms {
                     primaryDark() + parameters;
         }
         tellPlayer(output);
+    }
+
+    public void reportException(Exception e) {
+        if (e instanceof MissingLineSelectionException) {
+            tellPlayer(error() + "A line selection is required but was not provided.");
+        } else if (e instanceof NumberParseLineSelectionException) {
+            tellPlayer(error() + "Cannot parse \"" + e.getMessage() + "\" as a line number");
+        } else if (e instanceof OutOfBoundsLineSelectionException) {
+            tellPlayer(error() + "Line numbers must be between " + config.getMinLine() + " and " + config.getMaxLine() +
+                    ", but " + e.getMessage() + " was provided.");
+        } else if (e instanceof RangeOrderLineSelectionException) {
+            String lower = ((RangeOrderLineSelectionException) e).getInvalidLowerBound();
+            String upper = ((RangeOrderLineSelectionException) e).getInvalidUpperBound();
+            tellPlayer(error() + "Lower bound " + lower + " cannot be higher than upper bound " + upper +
+                    " in requested selection: " + e.getMessage());
+        } else if (e instanceof RangeParseLineSelectionException) {
+            String badRange = ((RangeParseLineSelectionException) e).getBadRange();
+            tellPlayer(error() + "Invalid range \"" + badRange + "\" in requested selection: " + e.getMessage());
+        } else if (e instanceof SignEditorInvocationException) {
+            Exception originalException = ((SignEditorInvocationException) e).getOriginalException();
+            tellPlayer(error() + strong() + "Failed to invoke sign editor!");
+            tellPlayer(primaryDark() + "Likely cause: " + reset() + "Minecraft server API changed");
+            tellPlayer(primaryDark() + "Server admin: " + reset() + "Check for updates to this plugin");
+            tellPlayer("");
+            tellPlayer(primaryDark() + "Error code: " + reset() + originalException.toString());
+            tellPlayer(primary() + "(More details logged in server console)");
+            getLogger().severe(ExceptionUtils.getStackTrace(originalException));
+        } else {
+            tellPlayer(error() + "Uncaught error: " + e.toString());
+            tellPlayer(error() + "(More details logged in server console)");
+            getLogger().severe(ExceptionUtils.getStackTrace(e));
+        }
     }
 }

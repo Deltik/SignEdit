@@ -2,12 +2,9 @@ package org.deltik.mc.signedit.subcommands;
 
 import dagger.Binds;
 import dagger.Module;
-import dagger.Provides;
 import dagger.Subcomponent;
 import dagger.multibindings.IntoMap;
 import dagger.multibindings.StringKey;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.deltik.mc.signedit.SignEditPlugin;
 
 @Module(subcomponents = {
         SignSubcommandModule.SetSignSubcommandComponent.class,

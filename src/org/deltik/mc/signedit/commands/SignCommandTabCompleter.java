@@ -3,8 +3,8 @@ package org.deltik.mc.signedit.commands;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import org.deltik.mc.signedit.subcommands.SignSubcommandInjector;
 import org.deltik.mc.signedit.subcommands.SignSubcommand;
+import org.deltik.mc.signedit.subcommands.SignSubcommandInjector;
 
 import javax.inject.Inject;
 import javax.inject.Provider;

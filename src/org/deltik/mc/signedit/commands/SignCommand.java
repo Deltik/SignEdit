@@ -77,7 +77,7 @@ public class SignCommand implements CommandExecutor {
             SignEditInteraction interaction = subcommand.execute();
             autointeract(player, interaction);
         } catch (Exception e) {
-            // TODO
+            comms.reportException(e);
         }
 
         return true;

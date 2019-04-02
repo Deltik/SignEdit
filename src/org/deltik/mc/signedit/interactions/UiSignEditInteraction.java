@@ -8,6 +8,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.block.SignChangeEvent;
 import org.deltik.mc.signedit.MinecraftReflector;
 import org.deltik.mc.signedit.SignText;
+import org.deltik.mc.signedit.exceptions.SignEditorInvocationException;
 import org.deltik.mc.signedit.listeners.SignEditListener;
 
 import java.lang.reflect.Field;
@@ -81,13 +82,7 @@ public class UiSignEditInteraction implements SignEditInteraction {
             openSignEditor(player, sign);
         } catch (Exception e) {
             formatSignTextForSave(afterSignText);
-            player.sendMessage(CHAT_PREFIX + "§c§lFailed to invoke sign editor!");
-            player.sendMessage(CHAT_PREFIX + "§7Likely cause: §rMinecraft server API changed");
-            player.sendMessage(CHAT_PREFIX + "§7Server admin: §rCheck for updates to this plugin");
-            player.sendMessage(CHAT_PREFIX);
-            player.sendMessage(CHAT_PREFIX + "§7Error code: §r" + e.toString());
-            player.sendMessage(CHAT_PREFIX + "§6(More details logged in server console)");
-            getLogger().severe(ExceptionUtils.getStackTrace(e));
+            throw new SignEditorInvocationException(e);
         }
     }
 
