@@ -54,7 +54,7 @@ public class SignEditListener implements Listener {
         historyManager.forgetPlayer(player);
 
         if (isInProgress(player)) {
-            removeInProgressInteraction(player).cleanup();
+            removeInProgressInteraction(player).cleanup(event);
         }
         removePendingInteraction(player);
     }
@@ -64,12 +64,7 @@ public class SignEditListener implements Listener {
         Player player = event.getPlayer();
 
         if (isInProgress(player)) {
-            removeInProgressInteraction(player);
-            // Apply colors
-            String[] lines = event.getLines();
-            for (int i = 0; i < lines.length; i++) {
-                event.setLine(i, lines[i].replace('&', '§'));
-            }
+            removeInProgressInteraction(player).cleanup(event);
         }
     }
 

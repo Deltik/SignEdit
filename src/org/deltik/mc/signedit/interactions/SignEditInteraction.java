@@ -2,6 +2,7 @@ package org.deltik.mc.signedit.interactions;
 
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.block.SignChangeEvent;
 
 import static org.bukkit.Bukkit.getServer;
@@ -14,7 +15,7 @@ public interface SignEditInteraction {
         return this.getClass().getSimpleName();
     }
 
-    default void cleanup() {
+    default void cleanup(Event event) {
     }
 
     default void validatedInteract(Player player, Sign sign) {

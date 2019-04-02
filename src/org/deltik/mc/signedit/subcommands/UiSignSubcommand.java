@@ -25,7 +25,7 @@ public class UiSignSubcommand implements SignSubcommand {
 
     @Override
     public boolean execute() {
-        SignEditInteraction interaction = new UiSignEditInteraction(reflector, listener);
+        SignEditInteraction interaction = new UiSignEditInteraction(reflector, listener, config.getLineStartsAt());
         SignSubcommand.autointeract(interaction, player, listener, config);
         return true;
     }
