@@ -19,13 +19,13 @@ public class CancelSignSubcommand implements SignSubcommand {
     }
 
     @Override
-    public boolean execute() {
+    public SignEditInteraction execute() {
         SignEditInteraction interaction = listener.removePendingInteraction(player);
         if (interaction != null) {
             player.sendMessage(CHAT_PREFIX + "§6Cancelled pending right-click action");
         } else {
             player.sendMessage(CHAT_PREFIX + "§cNo right-click action to cancel!");
         }
-        return true;
+        return null;
     }
 }

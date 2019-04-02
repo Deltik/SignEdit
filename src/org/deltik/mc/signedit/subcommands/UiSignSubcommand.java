@@ -12,21 +12,21 @@ import javax.inject.Inject;
 public class UiSignSubcommand implements SignSubcommand {
     private final Configuration config;
     private final SignEditListener listener;
-    private final Player player;
     private MinecraftReflector reflector;
 
     @Inject
-    public UiSignSubcommand(Configuration config, SignEditListener listener, Player player, MinecraftReflector reflector) {
+    public UiSignSubcommand(
+            Configuration config,
+            SignEditListener listener,
+            MinecraftReflector reflector
+    ) {
         this.config = config;
         this.listener = listener;
-        this.player = player;
         this.reflector = reflector;
     }
 
     @Override
-    public boolean execute() {
-        SignEditInteraction interaction = new UiSignEditInteraction(reflector, listener, config.getLineStartsAt());
-        SignSubcommand.autointeract(interaction, player, listener, config);
-        return true;
+    public SignEditInteraction execute() {
+        return new UiSignEditInteraction(reflector, listener, config.getLineStartsAt());
     }
 }

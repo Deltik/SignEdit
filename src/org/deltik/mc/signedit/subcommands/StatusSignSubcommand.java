@@ -32,11 +32,11 @@ public class StatusSignSubcommand implements SignSubcommand {
     }
 
     @Override
-    public boolean execute() {
+    public SignEditInteraction execute() {
         reportHistory();
         reportPendingAction();
         reportClipboard();
-        return true;
+        return null;
     }
 
     private void reportPendingAction() {
