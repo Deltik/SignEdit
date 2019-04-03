@@ -4,9 +4,9 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.SignChangeEvent;
+import org.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
 
 import static org.bukkit.Bukkit.getServer;
-import static org.deltik.mc.signedit.SignEditPlugin.CHAT_PREFIX;
 
 public interface SignEditInteraction {
     void interact(Player player, Sign sign);
@@ -23,8 +23,7 @@ public interface SignEditInteraction {
         SignChangeEvent event = new SignChangeEvent(sign.getBlock(), player, new String[]{"", "", "", ""});
         getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
-            player.sendMessage(CHAT_PREFIX + "§cSign edit forbidden by policy or other plugin");
-            return;
+            throw new ForbiddenSignEditException();
         }
         interact(player, sign);
     }

@@ -1,11 +1,11 @@
 package org.deltik.mc.signedit.interactions;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.SignChangeEvent;
+import org.deltik.mc.signedit.ChatComms;
 import org.deltik.mc.signedit.MinecraftReflector;
 import org.deltik.mc.signedit.SignText;
 import org.deltik.mc.signedit.exceptions.SignEditorInvocationException;
@@ -13,21 +13,17 @@ import org.deltik.mc.signedit.listeners.SignEditListener;
 
 import java.lang.reflect.Field;
 
-import static org.bukkit.Bukkit.getLogger;
-import static org.deltik.mc.signedit.SignEditPlugin.CHAT_PREFIX;
-
 public class UiSignEditInteraction implements SignEditInteraction {
     private MinecraftReflector reflector;
     private SignEditListener listener;
-    private int lineOffset;
-    private Player player;
+    private final ChatComms comms;
     private SignText beforeSignText;
     private SignText afterSignText;
 
-    public UiSignEditInteraction(MinecraftReflector reflector, SignEditListener listener, int lineOffset) {
+    public UiSignEditInteraction(MinecraftReflector reflector, SignEditListener listener, ChatComms comms) {
         this.reflector = reflector;
         this.listener = listener;
-        this.lineOffset = lineOffset;
+        this.comms = comms;
     }
 
     @Override
@@ -50,24 +46,12 @@ public class UiSignEditInteraction implements SignEditInteraction {
         for (int i = 0; i < lines.length; i++) {
             signChangeEvent.setLine(i, afterSignText.getLine(i));
         }
-        printSignChange();
-    }
 
-    private void printSignChange() {
-        afterSignText.importSign();
-        if (!afterSignText.equals(beforeSignText)) {
-            player.sendMessage(CHAT_PREFIX + "§6§lBefore:");
-            printSignLines(player, beforeSignText);
-            player.sendMessage(CHAT_PREFIX + "§6§lAfter:");
-            printSignLines(player, afterSignText);
-        } else {
-            player.sendMessage(CHAT_PREFIX + "§6Sign did not change");
-        }
+        comms.compareSignTexts(beforeSignText, afterSignText);
     }
 
     @Override
     public void interact(Player player, Sign sign) {
-        this.player = player;
         beforeSignText = new SignText();
         beforeSignText.setTargetSign(sign);
         beforeSignText.importSign();
@@ -178,17 +162,5 @@ public class UiSignEditInteraction implements SignEditInteraction {
             signText.setLine(i, signText.getLine(i));
         }
         signText.applySign();
-    }
-
-    private void printSignLines(Player player, SignText signText) {
-        for (int i = 0; i < 4; i++) {
-            int relativeLineNumber = lineOffset + i;
-            String line = signText.getLine(i);
-            if (line == null) {
-                player.sendMessage(CHAT_PREFIX + "§6§l  Line " + relativeLineNumber + "§r §7is undefined.");
-            } else {
-                player.sendMessage(CHAT_PREFIX + "§6§l  Line " + relativeLineNumber + ":§r " + line);
-            }
-        }
     }
 }

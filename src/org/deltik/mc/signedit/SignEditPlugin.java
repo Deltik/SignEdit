@@ -9,8 +9,6 @@ import org.deltik.mc.signedit.listeners.SignEditListener;
 import javax.inject.Inject;
 
 public class SignEditPlugin extends JavaPlugin {
-    public static final String CHAT_PREFIX = "§7[§6SignEdit§7]§r ";
-
     @Inject
     public Configuration config;
 

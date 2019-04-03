@@ -7,25 +7,23 @@ import org.deltik.mc.signedit.listeners.SignEditListener;
 
 import javax.inject.Inject;
 
-import static org.deltik.mc.signedit.SignEditPlugin.CHAT_PREFIX;
-
 public class StatusSignSubcommand implements SignSubcommand {
-    private final Configuration config;
     private final Player player;
+    private final ChatComms comms;
     private final SignEditListener listener;
     private final SignTextClipboardManager clipboardManager;
     private final SignTextHistoryManager historyManager;
 
     @Inject
     public StatusSignSubcommand(
-            Configuration config,
             Player player,
+            ChatComms comms,
             SignEditListener listener,
             SignTextClipboardManager clipboardManager,
             SignTextHistoryManager historyManager
     ) {
-        this.config = config;
         this.player = player;
+        this.comms = comms;
         this.listener = listener;
         this.clipboardManager = clipboardManager;
         this.historyManager = historyManager;
@@ -41,11 +39,13 @@ public class StatusSignSubcommand implements SignSubcommand {
 
     private void reportPendingAction() {
         if (!listener.isInteractionPending(player)) {
-            player.sendMessage(CHAT_PREFIX + "§6§lPending Action:§r §7None");
+            comms.tellPlayer(comms.primary() + comms.strong() + "Pending Action:" + comms.reset() + " " +
+                    comms.primaryDark() + "None");
         } else {
             SignEditInteraction interaction = listener.getPendingInteraction(player);
-            player.sendMessage(CHAT_PREFIX + "§6§lPending Action:§r " + interaction.getName());
-            player.sendMessage(CHAT_PREFIX + "  §oRight-click a sign to apply the action!");
+            comms.tellPlayer(comms.primary() + comms.strong() + "Pending Action:" + comms.reset() + " " +
+                    interaction.getName());
+            comms.tellPlayer(" " + comms.italic() + "Right-click a sign to apply the action!");
         }
     }
 
@@ -59,28 +59,22 @@ public class StatusSignSubcommand implements SignSubcommand {
             redosRemaining = history.redosRemaining();
         }
 
-        player.sendMessage(CHAT_PREFIX + "§6§lHistory:§r §6have §e" +
+        comms.tellPlayer(comms.primary() + comms.strong() + "History:" + comms.reset() + " " +
+                comms.primary() + "have " + comms.primaryLight() +
                 undosRemaining +
-                "§6 undos, §e" +
+                comms.primary() + " undos, " + comms.primaryLight() +
                 redosRemaining +
-                "§6 redos");
+                comms.primary() + " redos");
     }
 
     private void reportClipboard() {
         SignText clipboard = clipboardManager.getClipboard(player);
         if (clipboard == null) {
-            player.sendMessage(CHAT_PREFIX + "§6§lClipboard Contents:§r §7None");
+            comms.tellPlayer(comms.primary() + comms.strong() + "Clipboard Contents:" + comms.reset() + " " +
+                    comms.primaryDark() + "None");
         } else {
-            player.sendMessage(CHAT_PREFIX + "§6§lClipboard Contents:");
-            for (int i = 0; i < 4; i++) {
-                String line = clipboard.getLine(i);
-                int relativeLineNumber = i + config.getMinLine();
-                if (line == null) {
-                    player.sendMessage(CHAT_PREFIX + "§6§l  Line " + relativeLineNumber + "§r §7is undefined.");
-                } else {
-                    player.sendMessage(CHAT_PREFIX + "§6§l  Line " + relativeLineNumber + ":§r " + line);
-                }
-            }
+            comms.tellPlayer(comms.primary() + comms.strong() + "Clipboard Contents:");
+            comms.dumpSignTextLines(clipboard);
         }
     }
 }

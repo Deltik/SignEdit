@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.deltik.mc.signedit.exceptions.*;
 
 import javax.inject.Inject;
+import java.util.Objects;
 
 import static org.bukkit.Bukkit.getLogger;
 
@@ -49,8 +50,24 @@ public class ChatComms {
         return "§f";
     }
 
+    public String highlightBefore() {
+        return "§4";
+    }
+
+    public String highlightAfter() {
+        return "§2";
+    }
+
     public String strong() {
         return "§l";
+    }
+
+    public String italic() {
+        return "§o";
+    }
+
+    public String strike() {
+        return "§m";
     }
 
     public String error() {
@@ -101,8 +118,49 @@ public class ChatComms {
         tellPlayer(output);
     }
 
+    public void compareSignTexts(SignText before, SignText after) {
+        if (before.equals(after)) {
+            tellPlayer(primary() + "Sign did not change");
+        } else {
+            String[] beforeHighlights = new String[4];
+            String[] afterHighlights = new String[4];
+            for (int i = 0; i < 4; i++) {
+                if (!Objects.equals(before.getLine(i), after.getLine(i))) {
+                    beforeHighlights[i] = highlightBefore();
+                    afterHighlights[i] = highlightAfter();
+                }
+            }
+            tellPlayer(primary() + strong() + "Before:");
+            dumpSignTextLines(before, beforeHighlights);
+            tellPlayer(primary() + strong() + "After:");
+            dumpSignTextLines(after, afterHighlights);
+        }
+    }
+
+    public void dumpSignTextLines(SignText signText) {
+        dumpSignTextLines(signText, new String[4]);
+    }
+
+    public void dumpSignTextLines(SignText signText, String[] highlights) {
+        for (int i = 0; i < 4; i++) {
+            int relativeLineNumber = config.getLineStartsAt() + i;
+            String line = signText.getLine(i);
+            String highlight = highlights[i];
+            if (highlight == null) {
+                highlight = secondary();
+            }
+            if (line == null) {
+                line = "";
+                highlight = primaryDark() + strike();
+            }
+            tellPlayer(" " + highlight + "<" + relativeLineNumber + ">" + reset() + " " + line);
+        }
+    }
+
     public void reportException(Exception e) {
-        if (e instanceof MissingLineSelectionException) {
+        if (e instanceof ForbiddenSignEditException) {
+            tellPlayer(error() + "Sign edit forbidden by policy or other plugin");
+        } else if (e instanceof MissingLineSelectionException) {
             tellPlayer(error() + "A line selection is required but was not provided.");
         } else if (e instanceof NumberParseLineSelectionException) {
             tellPlayer(error() + "Cannot parse \"" + e.getMessage() + "\" as a line number");

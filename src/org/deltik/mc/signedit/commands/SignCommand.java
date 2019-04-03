@@ -20,8 +20,6 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.util.Map;
 
-import static org.deltik.mc.signedit.SignEditPlugin.CHAT_PREFIX;
-
 @Singleton
 public class SignCommand implements CommandExecutor {
 
@@ -75,7 +73,7 @@ public class SignCommand implements CommandExecutor {
 
         try {
             SignEditInteraction interaction = subcommand.execute();
-            autointeract(player, interaction);
+            autointeract(player, interaction, comms);
         } catch (Exception e) {
             comms.reportException(e);
         }
@@ -90,18 +88,18 @@ public class SignCommand implements CommandExecutor {
                 player.hasPermission("signedit.sign." + args.getSubcommand()));
     }
 
-    private void autointeract(Player player, SignEditInteraction interaction) {
+    private void autointeract(Player player, SignEditInteraction interaction, ChatComms comms) {
         if (interaction == null) return;
 
         Block block = getTargetBlockOfPlayer(player);
         if (shouldDoClickingMode(block)) {
             listener.setPendingInteraction(player, interaction);
-            player.sendMessage(CHAT_PREFIX + "§6Now right-click a sign to edit it");
+            comms.tellPlayer(comms.primary() + "Now right-click a sign to edit it");
         } else if (block.getState() instanceof Sign) {
             Sign sign = (Sign) block.getState();
             interaction.validatedInteract(player, sign);
         } else {
-            player.sendMessage(CHAT_PREFIX + "§cYou must be looking at a sign to edit it!");
+            comms.tellPlayer(comms.primary() + "You must be looking at a sign to edit it!");
         }
     }
 
