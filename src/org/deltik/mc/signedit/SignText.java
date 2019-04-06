@@ -106,7 +106,7 @@ public class SignText {
     }
 
     public boolean lineIsSet(int lineNumber) {
-        return changedLines[lineNumber] != null;
+        return getLines()[lineNumber] != null;
     }
 
     public String[] getLines() {
@@ -122,19 +122,19 @@ public class SignText {
     }
 
     public String getLine(int lineNumber) {
-        return changedLines[lineNumber];
+        return getLines()[lineNumber];
     }
 
     public String getBeforeLine(int lineNumber) {
-        return beforeLines[lineNumber];
+        return getBeforeLines()[lineNumber];
     }
 
     public String getAfterLine(int lineNumber) {
-        return afterLines[lineNumber];
+        return getAfterLines()[lineNumber];
     }
 
     public String getLineParsed(int lineNumber) {
-        String line = changedLines[lineNumber];
+        String line = getLines()[lineNumber];
         if (line == null) return null;
         line = line
                 .replaceAll("&(?=[0-9A-Fa-fK-Ok-oRr])", "\\\\&")

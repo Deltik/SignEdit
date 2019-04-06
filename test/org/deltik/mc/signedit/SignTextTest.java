@@ -1,9 +1,13 @@
 package org.deltik.mc.signedit;
 
+import org.bukkit.Server;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.plugin.PluginManager;
+import org.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.stubbing.Answer;
@@ -13,12 +17,26 @@ import static org.mockito.Mockito.*;
 
 public class SignTextTest {
     private SignText signText;
+    private final String[] defaultSignLines = new String[]{"a", "b", "c", "d"};
 
     @Before
     public void newTestObject() {
         Player player = mock(Player.class);
         PluginManager pluginManager = mock(PluginManager.class);
         signText = new SignText(player, pluginManager);
+    }
+
+    @Test
+    public void constructionWithJustPlayerGetsPluginManagerFromPlayer() {
+        Player player = mock(Player.class);
+        Server server = mock(Server.class);
+        PluginManager pluginManager = mock(PluginManager.class);
+        when(player.getServer()).thenReturn(server);
+        when(server.getPluginManager()).thenReturn(pluginManager);
+
+        signText = new SignText(player);
+
+        verify(server, times(1)).getPluginManager();
     }
 
     @Test
@@ -165,6 +183,35 @@ public class SignTextTest {
         verify(sign, times(0)).setLine(eq(3), any());
     }
 
+    @Test(expected = RuntimeException.class)
+    public void applySignValidatesEventIsRelated() {
+        Sign sign = mock(Sign.class);
+        Block eventBlock = mock(Block.class);
+        Block signBlock = mock(Block.class);
+        when(sign.getBlock()).thenReturn(signBlock);
+        SignChangeEvent event = mock(SignChangeEvent.class);
+        when(event.getBlock()).thenReturn(eventBlock);
+
+        signText.setTargetSign(sign);
+        signText.applySign(event);
+    }
+
+    @Test(expected = ForbiddenSignEditException.class)
+    public void throwForbiddenSignEditExceptionWhenSignChangeEventIsCancelled() {
+        Sign sign = createSign();
+        Player player = mock(Player.class);
+        PluginManager pluginManager = mock(PluginManager.class);
+        signText = new SignText(player, pluginManager);
+        SignChangeEvent signChangeEvent = mock(SignChangeEvent.class);
+        Block sameBlock = mock(Block.class);
+        when(sign.getBlock()).thenReturn(sameBlock);
+        when(signChangeEvent.getBlock()).thenReturn(sameBlock);
+        when(signChangeEvent.isCancelled()).thenReturn(true);
+
+        signText.setTargetSign(sign);
+        signText.applySign(signChangeEvent);
+    }
+
     @Test
     public void importSign() {
         Sign sign = createSign();
@@ -211,6 +258,68 @@ public class SignTextTest {
         verify(sign, times(1)).setLine(eq(1), eq("b"));
         verify(sign, times(0)).setLine(eq(2), any());
         verify(sign, times(1)).setLine(eq(3), eq("d"));
+    }
+
+    @Test
+    public void signChangedReturnsTrueWhenSignChanged() {
+        Sign sign = createSign();
+
+        signText.setTargetSign(sign);
+
+        assertFalse(signText.signChanged());
+        signText.setLine(1, "Anything else");
+
+        assertFalse(signText.signChanged());
+        signText.applySign();
+
+        assertTrue(signText.signChanged());
+    }
+
+    @Test
+    public void signChangedReturnsFalseWhenSignNotChanged() {
+        Sign sign = createSign();
+
+        signText.setTargetSign(sign);
+
+        assertFalse(signText.signChanged());
+        signText.setLine(1, "b");
+
+        assertFalse(signText.signChanged());
+        signText.applySign();
+
+        assertFalse(signText.signChanged());
+    }
+
+    @Test
+    public void getBeforeLinesShowBeforeState() {
+        Sign sign = createSign();
+
+        signText.setTargetSign(sign);
+        signText.setLineLiteral(1, "CHANGED");
+        signText.applySign();
+
+        assertArrayEquals(defaultSignLines, signText.getBeforeLines());
+
+        for (int i = 0; i < 4; i++) {
+            assertEquals(defaultSignLines[i], signText.getBeforeLine(i));
+        }
+    }
+
+    @Test
+    public void getBeforeLinesShowAfterState() {
+        Sign sign = createSign();
+        String[] expectedSignLines = defaultSignLines.clone();
+        expectedSignLines[1] = "CHANGED";
+
+        signText.setTargetSign(sign);
+        signText.setLineLiteral(1, "CHANGED");
+        signText.applySign();
+
+        assertArrayEquals(expectedSignLines, signText.getAfterLines());
+
+        for (int i = 0; i < 4; i++) {
+            assertEquals(expectedSignLines[i], signText.getAfterLine(i));
+        }
     }
 
     @Test
@@ -297,9 +406,12 @@ public class SignTextTest {
         Sign sign = mock(Sign.class);
         Block block = mock(Block.class);
         when(sign.getBlock()).thenReturn(block);
-        String[] signLines = new String[]{"a", "b", "c", "d"};
+        String[] signLines = defaultSignLines.clone();
         when(sign.getLines()).thenReturn(signLines);
         when(sign.getLine(anyInt())).then((Answer) invocation -> signLines[(int) invocation.getArgument(0)]);
+        doAnswer(invocation ->
+                signLines[(int) invocation.getArgument(0)] = invocation.getArgument(1)
+        ).when(sign).setLine(anyInt(), anyString());
         return sign;
     }
 }
