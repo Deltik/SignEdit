@@ -133,6 +133,8 @@ All configuration is in the file `plugins/SignEdit/config.yml`.
 
 (`>= 1.5`) The configuration file is sanitized when the plugin is loaded and unloaded and rewritten when the plugin is unloaded.
 
+(`>= 1.10`) During plugin unloading, the configuration file is reloaded before being rewritten.
+
 ### `clicking: [auto|false|true]`
 
 (`>= 1.1`)

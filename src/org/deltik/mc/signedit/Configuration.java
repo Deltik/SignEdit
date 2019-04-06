@@ -42,6 +42,10 @@ public class Configuration {
 
     public Configuration(File f) {
         configFile = f;
+        reloadConfig();
+    }
+
+    public void reloadConfig() {
         if (!configFile.exists()) {
             writeDefaultConfig();
         }

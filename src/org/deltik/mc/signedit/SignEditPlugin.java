@@ -33,6 +33,7 @@ public class SignEditPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        config.reloadConfig();
         config.writeFullConfig();
     }
 }
