@@ -1,6 +1,9 @@
 package org.deltik.mc.signedit;
 
+import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.stubbing.Answer;
@@ -13,7 +16,9 @@ public class SignTextTest {
 
     @Before
     public void newTestObject() {
-        signText = new SignText();
+        Player player = mock(Player.class);
+        PluginManager pluginManager = mock(PluginManager.class);
+        signText = new SignText(player, pluginManager);
     }
 
     @Test
@@ -129,7 +134,7 @@ public class SignTextTest {
 
     @Test
     public void applySign() {
-        Sign sign = mock(Sign.class);
+        Sign sign = createSign();
 
         signText.setLine(0, "one");
         signText.setLine(1, "two");
@@ -147,7 +152,7 @@ public class SignTextTest {
 
     @Test
     public void applySignSkipsUnsetLines() {
-        Sign sign = mock(Sign.class);
+        Sign sign = createSign();
 
         signText.setLine(1, "just this line");
         signText.setTargetSign(sign);
@@ -162,9 +167,7 @@ public class SignTextTest {
 
     @Test
     public void importSign() {
-        Sign sign = mock(Sign.class);
-        String[] source = new String[]{"a", "b", "c", "d"};
-        when(sign.getLines()).thenReturn(source);
+        Sign sign = createSign();
 
         signText.setTargetSign(sign);
         signText.importSign();
@@ -189,10 +192,7 @@ public class SignTextTest {
 
     @Test
     public void signBackupAndRestore() {
-        Sign sign = mock(Sign.class);
-        String[] signContents = new String[]{"a", "b", "c", "d"};
-        when(sign.getLines()).thenReturn(signContents);
-        when(sign.getLine(anyInt())).then((Answer) invocation -> signContents[(int) invocation.getArgument(0)]);
+        Sign sign = createSign();
 
         signText.setTargetSign(sign);
 
@@ -213,43 +213,13 @@ public class SignTextTest {
         verify(sign, times(1)).setLine(eq(3), eq("d"));
     }
 
-    @Test
-    public void signTextEqualsReturnsTrueOnNullLines() {
-        SignText left = new SignText();
-        SignText right = new SignText();
-
-        assertEquals(left, right);
-    }
-
-    @Test
-    public void signTextEqualsReturnsFalseOnNullVsNotNull() {
-        SignText left = new SignText();
-        SignText right = new SignText();
-        left.setLine(0, "not null");
-        right.setLine(3, "not null");
-
-        assertNotEquals(left, right);
-    }
-
-    @Test
-    public void signTextEqualsReturnsFalseOnUnequalLines() {
-        SignText left = new SignText();
-        SignText right = new SignText();
-        left.setLine(0, "black");
-        left.setLine(2, "red");
-        right.setLine(0, "black");
-        right.setLine(2, "blue");
-
-        assertNotEquals(left, right);
-    }
-
-    @Test
-    public void signTextEqualsReturnsTrueOnEqualLines() {
-        SignText left = new SignText();
-        SignText right = new SignText();
-        left.setLine(2, "blue");
-        right.setLine(2, "blue");
-
-        assertEquals(left, right);
+    private Sign createSign() {
+        Sign sign = mock(Sign.class);
+        Block block = mock(Block.class);
+        when(sign.getBlock()).thenReturn(block);
+        String[] signLines = new String[]{"a", "b", "c", "d"};
+        when(sign.getLines()).thenReturn(signLines);
+        when(sign.getLine(anyInt())).then((Answer) invocation -> signLines[(int) invocation.getArgument(0)]);
+        return sign;
     }
 }

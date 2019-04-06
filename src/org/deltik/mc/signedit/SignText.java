@@ -71,7 +71,13 @@ public class SignText {
 
     public void revertSign() {
         SignChangeEvent signChangeEvent = new SignChangeEvent(targetSign.getBlock(), player, beforeLines);
+        for (int i = 0; i < beforeLines.length; i++) {
+            if (changedLines[i] != null) {
+                targetSign.setLine(i, beforeLines[i]);
+            }
+        }
         callSignChangeEvent(signChangeEvent);
+        targetSign.update();
     }
 
     public boolean signChanged() {
