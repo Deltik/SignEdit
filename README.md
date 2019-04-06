@@ -5,7 +5,7 @@
 
 **SignEdit for Bukkit** is a [Bukkit plugin](https://www.spigotmc.org/resources/categories/bukkit.4/) that allows players to edit sign objects by looking at them or clicking on them and typing in a SignEdit command.
 
-![Screenshot of usage help in SignEdit for Bukkit v1.9.2](https://i.imgur.com/HSNhFPB.png)
+![Screenshot of usage help in SignEdit for Bukkit v1.10.0](https://i.imgur.com/aFOvM67.png)
 
 ## Installation
 
@@ -53,15 +53,23 @@
 
 #### `/sign ui`
 
-![GIF of `/sign ui` in action](https://i.imgur.com/TnVpy2v.gif)
+![GIF of `/sign ui` in action](https://i.imgur.com/IaZ1Pry.gif)
 
 #### `/sign 2 Deltik's`
 
-![GIF of `/sign <line> <text>` in action](https://i.imgur.com/B1MNGXv.gif)
+![GIF of `/sign <line> <text>` in action](https://i.imgur.com/zrPKLaY.gif)
 
-#### `/sign clear 4`
+#### `/sign clear 1`
 
-![GIF of `/sign clear <line>` in action](https://i.imgur.com/iVTGLra.gif)
+![GIF of `/sign clear <line>` in action](https://i.imgur.com/U5b1z1Z.gif)
+
+#### `/sign set 1,4 ===============`
+
+![GIF of `/sign set <lines> <text>` in action](https://i.imgur.com/5PrG83O.gif)
+
+#### `/sign set 1,4 &1#&2#&3#&4#&5#&6#&7#&8#&9#&a#&b#&c#&d#&e#&f#`
+
+![GIF of `/sign set <lines> <text>` in action](https://i.imgur.com/STpR13s.gif)
 
 ## Syntax
 
@@ -164,7 +172,7 @@ All configuration is in the file `plugins/SignEdit/config.yml`.
   * In `clicking: true` mode, after running the `/sign` command, right-click a sign to edit it.
   * (`>= 1.7`) In `clicking: auto` mode, the behavior is the same as `clicking: false` if you are looking at a sign and `clicking: true` if you are not looking at a sign.
 * All editing functions support formatting codes (`&` turns into `§`)
-  ![Screenshot of color code in `/sign <line> <text>`](https://i.imgur.com/Cdv7p2t.png)
+  ![Screenshot of color code in `/sign <line> <text>`](https://i.imgur.com/De8137B.png)
 * (`>= 1.10`) Escape formatting codes with backslash (e.g. `\&f` turns into literal `&f`)
 * (`>= 1.10`) Tab completion for `/sign` subcommands
 * (`>= 1.10`) Copy, cut, and paste sign lines with `/sign copy`, `/sign cut`, and `/sign paste`, respectively.
