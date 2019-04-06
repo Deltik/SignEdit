@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.plugin.PluginManager;
+import org.deltik.mc.signedit.exceptions.BlockStateNotPlacedException;
 import org.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
 import org.junit.Before;
 import org.junit.Test;
@@ -212,6 +213,16 @@ public class SignTextTest {
         signText.applySign(signChangeEvent);
     }
 
+    @Test(expected = BlockStateNotPlacedException.class)
+    public void preventApplySignWhenBlockIsInoperable() {
+        Sign sign = createSign();
+        when(sign.update()).thenReturn(false);
+
+        signText.setTargetSign(sign);
+        signText.setLine(0, "doesn't matter");
+        signText.applySign();
+    }
+
     @Test
     public void importSign() {
         Sign sign = createSign();
@@ -275,6 +286,15 @@ public class SignTextTest {
 
         assertEquals("cotton eyed joe", signText.getBeforeLine(0));
         assertEquals(defaultSignLines[0], signText.getAfterLine(0));
+    }
+
+    @Test(expected = BlockStateNotPlacedException.class)
+    public void preventRevertSignWhenBlockIsInoperable() {
+        Sign sign = createSign();
+        when(sign.update()).thenReturn(false);
+
+        signText.setTargetSign(sign);
+        signText.revertSign();
     }
 
     @Test
@@ -429,6 +449,7 @@ public class SignTextTest {
         doAnswer(invocation ->
                 signLines[(int) invocation.getArgument(0)] = invocation.getArgument(1)
         ).when(sign).setLine(anyInt(), anyString());
+        when(sign.update()).thenReturn(true);
         return sign;
     }
 }

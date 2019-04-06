@@ -35,9 +35,9 @@ public class SignTextHistory {
         if (tailPosition <= 0) {
             throw new SignTextHistoryStackBoundsException("Nothing to undo");
         }
-        tailPosition--;
-        SignText previousSignText = history.get(tailPosition);
+        SignText previousSignText = history.get(tailPosition-1);
         previousSignText.revertSign();
+        tailPosition--;
         return previousSignText;
     }
 

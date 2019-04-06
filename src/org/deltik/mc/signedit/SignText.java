@@ -1,9 +1,11 @@
 package org.deltik.mc.signedit;
 
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.plugin.PluginManager;
+import org.deltik.mc.signedit.exceptions.BlockStateNotPlacedException;
 import org.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
 
 import javax.inject.Inject;
@@ -49,6 +51,7 @@ public class SignText {
         if (!Objects.equals(signChangeEvent.getBlock(), targetSign.getBlock())) {
             throw new RuntimeException("Refusing to apply a sign change to a different SignChangeEvent");
         }
+        verifyBlockPlaced(targetSign);
         beforeLines = targetSign.getLines().clone();
         for (int i = 0; i < changedLines.length; i++) {
             String line = getLine(i);
@@ -62,6 +65,12 @@ public class SignText {
         afterLines = targetSign.getLines().clone();
     }
 
+    private void verifyBlockPlaced(BlockState blockState) {
+        if (!blockState.update()) {
+            throw new BlockStateNotPlacedException();
+        }
+    }
+
     private void callSignChangeEvent(SignChangeEvent signChangeEvent) {
         pluginManager.callEvent(signChangeEvent);
         if (signChangeEvent.isCancelled()) {
@@ -70,6 +79,7 @@ public class SignText {
     }
 
     public void revertSign() {
+        verifyBlockPlaced(targetSign);
         SignChangeEvent signChangeEvent = new SignChangeEvent(targetSign.getBlock(), player, beforeLines);
         for (int i = 0; i < beforeLines.length; i++) {
             if (changedLines[i] != null) {
