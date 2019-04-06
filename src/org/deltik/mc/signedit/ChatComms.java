@@ -175,6 +175,8 @@ public class ChatComms {
         } else if (e instanceof RangeParseLineSelectionException) {
             String badRange = ((RangeParseLineSelectionException) e).getBadRange();
             tellPlayer(error() + "Invalid range \"" + badRange + "\" in requested selection: " + e.getMessage());
+        } else if (e instanceof SignTextHistoryStackBoundsException) {
+            tellPlayer(error() + e.getMessage());
         } else if (e instanceof SignEditorInvocationException) {
             Exception originalException = ((SignEditorInvocationException) e).getOriginalException();
             tellPlayer(error() + strong() + "Failed to invoke sign editor!");

@@ -1,5 +1,7 @@
 package org.deltik.mc.signedit;
 
+import org.deltik.mc.signedit.exceptions.SignTextHistoryStackBoundsException;
+
 import javax.inject.Inject;
 import java.util.LinkedList;
 
@@ -29,21 +31,23 @@ public class SignTextHistory {
         return history.size() - tailPosition;
     }
 
-    public void undo() {
+    public SignText undo() {
         if (tailPosition <= 0) {
-            throw new IndexOutOfBoundsException("Nothing to undo");
+            throw new SignTextHistoryStackBoundsException("Nothing to undo");
         }
         tailPosition--;
         SignText previousSignText = history.get(tailPosition);
         previousSignText.revertSign();
+        return previousSignText;
     }
 
-    public void redo() {
+    public SignText redo() {
         if (tailPosition == history.size()) {
-            throw new IndexOutOfBoundsException("Nothing to redo");
+            throw new SignTextHistoryStackBoundsException("Nothing to redo");
         }
         SignText nextSignText = history.get(tailPosition);
         nextSignText.applySign();
         tailPosition++;
+        return nextSignText;
     }
 }

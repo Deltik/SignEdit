@@ -53,7 +53,9 @@ public class UiSignEditInteraction implements SignEditInteraction {
             signText.setLine(i, lines[i]);
         }
         signText.applySign(signChangeEvent);
-        historyManager.getHistory(signChangeEvent.getPlayer()).push(signText);
+        if (signText.signChanged()) {
+            historyManager.getHistory(signChangeEvent.getPlayer()).push(signText);
+        }
 
         comms.compareSignText(signText);
     }

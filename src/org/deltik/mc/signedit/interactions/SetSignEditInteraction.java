@@ -26,7 +26,9 @@ public class SetSignEditInteraction implements SignEditInteraction {
     public void interact(Player player, Sign sign) {
         signText.setTargetSign(sign);
         signText.applySign();
-        historyManager.getHistory(player).push(signText);
+        if (signText.signChanged()) {
+            historyManager.getHistory(player).push(signText);
+        }
 
         comms.compareSignText(signText);
     }

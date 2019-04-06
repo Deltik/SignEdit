@@ -15,8 +15,8 @@ import dagger.multibindings.StringKey;
 //        SignSubcommandModule.CopySignSubcommandComponent.class,
 //        SignSubcommandModule.CutSignSubcommandComponent.class,
 //        SignSubcommandModule.PasteSignSubcommandComponent.class,
-//        SignSubcommandModule.UndoSignSubcommandComponent.class,
-//        SignSubcommandModule.RedoSignSubcommandComponent.class,
+        SignSubcommandModule.UndoSignSubcommandComponent.class,
+        SignSubcommandModule.RedoSignSubcommandComponent.class,
         SignSubcommandModule.VersionSignSubcommandComponent.class,
 })
 public abstract class SignSubcommandModule {
@@ -124,31 +124,31 @@ public abstract class SignSubcommandModule {
 //        }
 //    }
 
-//    @Binds
-//    @IntoMap
-//    @StringKey("undo")
-//    abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindUndoSignSubcommand(UndoSignSubcommandComponent.Builder command);
+    @Binds
+    @IntoMap
+    @StringKey("undo")
+    abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindUndoSignSubcommand(UndoSignSubcommandComponent.Builder command);
 
-//    @PerSubcommand
-//    @Subcomponent
-//    public interface UndoSignSubcommandComponent extends SignSubcommandInjector<UndoSignSubcommand> {
-//        @Subcomponent.Builder
-//        abstract class Builder extends SignSubcommandInjector.Builder<UndoSignSubcommand> {
-//        }
-//    }
+    @PerSubcommand
+    @Subcomponent
+    public interface UndoSignSubcommandComponent extends SignSubcommandInjector<UndoSignSubcommand> {
+        @Subcomponent.Builder
+        abstract class Builder extends SignSubcommandInjector.Builder<UndoSignSubcommand> {
+        }
+    }
 
-//    @Binds
-//    @IntoMap
-//    @StringKey("redo")
-//    abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindRedoSignSubcommand(RedoSignSubcommandComponent.Builder command);
+    @Binds
+    @IntoMap
+    @StringKey("redo")
+    abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindRedoSignSubcommand(RedoSignSubcommandComponent.Builder command);
 
-//    @PerSubcommand
-//    @Subcomponent
-//    public interface RedoSignSubcommandComponent extends SignSubcommandInjector<RedoSignSubcommand> {
-//        @Subcomponent.Builder
-//        abstract class Builder extends SignSubcommandInjector.Builder<RedoSignSubcommand> {
-//        }
-//    }
+    @PerSubcommand
+    @Subcomponent
+    public interface RedoSignSubcommandComponent extends SignSubcommandInjector<RedoSignSubcommand> {
+        @Subcomponent.Builder
+        abstract class Builder extends SignSubcommandInjector.Builder<RedoSignSubcommand> {
+        }
+    }
 
     @Binds
     @IntoMap

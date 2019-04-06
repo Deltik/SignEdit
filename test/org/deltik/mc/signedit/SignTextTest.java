@@ -261,6 +261,23 @@ public class SignTextTest {
     }
 
     @Test
+    public void signRevertFlipsBeforeAndAfter() {
+        Sign sign = createSign();
+        signText.setTargetSign(sign);
+
+        signText.setLine(0, "cotton eyed joe");
+        signText.applySign();
+
+        assertEquals(defaultSignLines[0], signText.getBeforeLine(0));
+        assertEquals("cotton eyed joe", signText.getAfterLine(0));
+
+        signText.revertSign();
+
+        assertEquals("cotton eyed joe", signText.getBeforeLine(0));
+        assertEquals(defaultSignLines[0], signText.getAfterLine(0));
+    }
+
+    @Test
     public void signChangedReturnsTrueWhenSignChanged() {
         Sign sign = createSign();
 

@@ -76,6 +76,11 @@ public class SignText {
                 targetSign.setLine(i, beforeLines[i]);
             }
         }
+
+        String[] _tmp = beforeLines;
+        beforeLines = afterLines;
+        afterLines = _tmp;
+
         callSignChangeEvent(signChangeEvent);
         targetSign.update();
     }
