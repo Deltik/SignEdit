@@ -213,6 +213,86 @@ public class SignTextTest {
         verify(sign, times(1)).setLine(eq(3), eq("d"));
     }
 
+    @Test
+    public void signSetLineFormatsOnlyFormattingCodes() {
+        String[] doOp = "0123456789ABCDEFabcdefKLMNOklmnoRr".split("");
+        String[] noOp = "GHIJPQSTUVWXYZghijpqstuvwxyz~!@#$%^&*()_+`-=[]{}\\|;':\"<>,./? ".split("");
+
+        for (String doOpItem : doOp) {
+            String input = "&" + doOpItem;
+            String expected = "§" + doOpItem;
+            signText.setLine(0, input);
+            assertEquals(signText.getLine(0), expected);
+        }
+
+        for (String noOpItem : noOp) {
+            String input = "&" + noOpItem;
+            String expected = "&" + noOpItem;
+            signText.setLine(0, input);
+            assertEquals(signText.getLine(0), expected);
+        }
+    }
+
+    @Test
+    public void signSetLineEscapesOnlyFormattingCodes() {
+        String[] doOp = "0123456789ABCDEFabcdefKLMNOklmnoRr".split("");
+        String[] noOp = "GHIJPQSTUVWXYZghijpqstuvwxyz~!@#$%^&*()_+`-=[]{}\\|;':\"<>,./? ".split("");
+
+        for (String doOpItem : doOp) {
+            String input = "\\&" + doOpItem;
+            String expected = "&" + doOpItem;
+            signText.setLine(0, input);
+            assertEquals(signText.getLine(0), expected);
+        }
+
+        for (String noOpItem : noOp) {
+            String input = "\\&" + noOpItem;
+            String expected = "\\&" + noOpItem;
+            signText.setLine(0, input);
+            assertEquals(signText.getLine(0), expected);
+        }
+    }
+
+    @Test
+    public void signGetLineParsedParsesOnlyFormattingCodes() {
+        String[] doOp = "0123456789ABCDEFabcdefKLMNOklmnoRr".split("");
+        String[] noOp = "GHIJPQSTUVWXYZghijpqstuvwxyz~!@#$%^&*()_+`-=[]{}\\|;':\"<>,./? ".split("");
+
+        for (String doOpItem : doOp) {
+            String input = "§" + doOpItem;
+            String expected = "&" + doOpItem;
+            signText.setLineLiteral(0, input);
+            assertEquals(signText.getLineParsed(0), expected);
+        }
+
+        for (String noOpItem : noOp) {
+            String input = "§" + noOpItem;
+            String expected = "§" + noOpItem;
+            signText.setLineLiteral(0, input);
+            assertEquals(signText.getLineParsed(0), expected);
+        }
+    }
+
+    @Test
+    public void signGetLineParsedEscapesOnlyFormattingCodes() {
+        String[] doOp = "0123456789ABCDEFabcdefKLMNOklmnoRr".split("");
+        String[] noOp = "GHIJPQSTUVWXYZghijpqstuvwxyz~!@#$%^&*()_+`-=[]{}\\|;':\"<>,./? ".split("");
+
+        for (String doOpItem : doOp) {
+            String input = "&" + doOpItem;
+            String expected = "\\&" + doOpItem;
+            signText.setLineLiteral(0, input);
+            assertEquals(signText.getLineParsed(0), expected);
+        }
+
+        for (String noOpItem : noOp) {
+            String input = "&" + noOpItem;
+            String expected = "&" + noOpItem;
+            signText.setLineLiteral(0, input);
+            assertEquals(signText.getLineParsed(0), expected);
+        }
+    }
+
     private Sign createSign() {
         Sign sign = mock(Sign.class);
         Block block = mock(Block.class);
