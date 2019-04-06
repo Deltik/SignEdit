@@ -15,7 +15,8 @@ public class ArgParser {
     private final Configuration config;
     private final Map<String, Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>>> subcommandMap;
 
-    private static final int[] NO_LINES_SELECTED = new int[0];
+    public static final int[] NO_LINES_SELECTED = new int[0];
+    public static final int[] ALL_LINES_SELECTED = new int[]{0, 1, 2, 3};
 
     String subcommand;
     int[] selectedLines = NO_LINES_SELECTED;

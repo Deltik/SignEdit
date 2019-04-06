@@ -12,9 +12,9 @@ import dagger.multibindings.StringKey;
         SignSubcommandModule.UiSignSubcommandComponent.class,
         SignSubcommandModule.CancelSignSubcommandComponent.class,
         SignSubcommandModule.StatusSignSubcommandComponent.class,
-//        SignSubcommandModule.CopySignSubcommandComponent.class,
-//        SignSubcommandModule.CutSignSubcommandComponent.class,
-//        SignSubcommandModule.PasteSignSubcommandComponent.class,
+        SignSubcommandModule.CopySignSubcommandComponent.class,
+        SignSubcommandModule.CutSignSubcommandComponent.class,
+        SignSubcommandModule.PasteSignSubcommandComponent.class,
         SignSubcommandModule.UndoSignSubcommandComponent.class,
         SignSubcommandModule.RedoSignSubcommandComponent.class,
         SignSubcommandModule.VersionSignSubcommandComponent.class,
@@ -85,44 +85,44 @@ public abstract class SignSubcommandModule {
         }
     }
 
-//    @Binds
-//    @IntoMap
-//    @StringKey("copy")
-//    abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindCopySignSubcommand(CopySignSubcommandComponent.Builder command);
+    @Binds
+    @IntoMap
+    @StringKey("copy")
+    abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindCopySignSubcommand(CopySignSubcommandComponent.Builder command);
 
-//    @PerSubcommand
-//    @Subcomponent
-//    public interface CopySignSubcommandComponent extends SignSubcommandInjector<CopySignSubcommand> {
-//        @Subcomponent.Builder
-//        abstract class Builder extends SignSubcommandInjector.Builder<CopySignSubcommand> {
-//        }
-//    }
+    @PerSubcommand
+    @Subcomponent
+    public interface CopySignSubcommandComponent extends SignSubcommandInjector<CopySignSubcommand> {
+        @Subcomponent.Builder
+        abstract class Builder extends SignSubcommandInjector.Builder<CopySignSubcommand> {
+        }
+    }
 
-//    @Binds
-//    @IntoMap
-//    @StringKey("cut")
-//    abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindCutSignSubcommand(CutSignSubcommandComponent.Builder command);
+    @Binds
+    @IntoMap
+    @StringKey("cut")
+    abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindCutSignSubcommand(CutSignSubcommandComponent.Builder command);
 
-//    @PerSubcommand
-//    @Subcomponent
-//    public interface CutSignSubcommandComponent extends SignSubcommandInjector<CutSignSubcommand> {
-//        @Subcomponent.Builder
-//        abstract class Builder extends SignSubcommandInjector.Builder<CutSignSubcommand> {
-//        }
-//    }
+    @PerSubcommand
+    @Subcomponent
+    public interface CutSignSubcommandComponent extends SignSubcommandInjector<CutSignSubcommand> {
+        @Subcomponent.Builder
+        abstract class Builder extends SignSubcommandInjector.Builder<CutSignSubcommand> {
+        }
+    }
 
-//    @Binds
-//    @IntoMap
-//    @StringKey("paste")
-//    abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindPasteSignSubcommand(PasteSignSubcommandComponent.Builder command);
+    @Binds
+    @IntoMap
+    @StringKey("paste")
+    abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindPasteSignSubcommand(PasteSignSubcommandComponent.Builder command);
 
-//    @PerSubcommand
-//    @Subcomponent
-//    public interface PasteSignSubcommandComponent extends SignSubcommandInjector<PasteSignSubcommand> {
-//        @Subcomponent.Builder
-//        abstract class Builder extends SignSubcommandInjector.Builder<PasteSignSubcommand> {
-//        }
-//    }
+    @PerSubcommand
+    @Subcomponent
+    public interface PasteSignSubcommandComponent extends SignSubcommandInjector<PasteSignSubcommand> {
+        @Subcomponent.Builder
+        abstract class Builder extends SignSubcommandInjector.Builder<PasteSignSubcommand> {
+        }
+    }
 
     @Binds
     @IntoMap

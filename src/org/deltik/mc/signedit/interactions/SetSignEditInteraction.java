@@ -19,7 +19,7 @@ public class SetSignEditInteraction implements SignEditInteraction {
 
     @Override
     public String getName() {
-        return "Change sign";
+        return "Change sign text";
     }
 
     @Override
