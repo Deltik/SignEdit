@@ -8,7 +8,6 @@ import org.deltik.mc.signedit.SignText;
 import org.deltik.mc.signedit.SignTextClipboardManager;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 import static org.deltik.mc.signedit.ArgParser.ALL_LINES_SELECTED;
 import static org.deltik.mc.signedit.ArgParser.NO_LINES_SELECTED;

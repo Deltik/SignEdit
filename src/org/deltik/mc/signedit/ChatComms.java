@@ -179,6 +179,8 @@ public class ChatComms {
             tellPlayer(error() + e.getMessage());
         } else if (e instanceof BlockStateNotPlacedException) {
             tellPlayer(error() + "Operation failed: Sign no longer exists!");
+        } else if (e instanceof NullClipboardException) {
+            tellPlayer(error() + "There is nothing in the clipboard!");
         } else if (e instanceof SignEditorInvocationException) {
             Exception originalException = ((SignEditorInvocationException) e).getOriginalException();
             tellPlayer(error() + strong() + "Failed to invoke sign editor!");

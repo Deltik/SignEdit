@@ -1,10 +1,10 @@
 package org.deltik.mc.signedit.subcommands;
 
-import org.deltik.mc.signedit.*;
-import org.deltik.mc.signedit.exceptions.LineSelectionException;
-import org.deltik.mc.signedit.exceptions.MissingLineSelectionException;
+import org.deltik.mc.signedit.ArgParser;
+import org.deltik.mc.signedit.ChatComms;
+import org.deltik.mc.signedit.SignText;
+import org.deltik.mc.signedit.SignTextClipboardManager;
 import org.deltik.mc.signedit.interactions.CopySignEditInteraction;
-import org.deltik.mc.signedit.interactions.SetSignEditInteraction;
 import org.deltik.mc.signedit.interactions.SignEditInteraction;
 
 import javax.inject.Inject;
