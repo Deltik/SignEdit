@@ -52,7 +52,9 @@ public class SignText {
 
     public void setLine(int lineNumber, String value) {
         if (value != null) {
-            value = value.replace('&', '§');
+            value = value
+                    .replaceAll("(?<!\\\\)&([0-9A-Fa-fK-Ok-oRr])", "§$1")
+                    .replaceAll("\\\\&(?=[0-9A-Fa-fK-Ok-oRr])", "&");
         }
         setLineLiteral(lineNumber, value);
     }
@@ -76,7 +78,9 @@ public class SignText {
     public String getLineParsed(int lineNumber) {
         String line = lines[lineNumber];
         if (line == null) return null;
-        line = line.replace('§', '&');
+        line = line
+                .replaceAll("&(?=[0-9A-Fa-fK-Ok-oRr])", "\\\\&")
+                .replaceAll("§([0-9A-Fa-fK-Ok-oRr])", "&$1");
         return line;
     }
 
