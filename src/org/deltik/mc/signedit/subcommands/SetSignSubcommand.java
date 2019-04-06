@@ -3,6 +3,7 @@ package org.deltik.mc.signedit.subcommands;
 import org.deltik.mc.signedit.ArgParser;
 import org.deltik.mc.signedit.ChatComms;
 import org.deltik.mc.signedit.SignText;
+import org.deltik.mc.signedit.SignTextHistoryManager;
 import org.deltik.mc.signedit.exceptions.LineSelectionException;
 import org.deltik.mc.signedit.exceptions.MissingLineSelectionException;
 import org.deltik.mc.signedit.interactions.SetSignEditInteraction;
@@ -14,16 +15,19 @@ public class SetSignSubcommand implements SignSubcommand {
     private final ArgParser argParser;
     private final SignText signText;
     private final ChatComms comms;
+    private final SignTextHistoryManager historyManager;
 
     @Inject
     public SetSignSubcommand(
             ArgParser argParser,
             SignText signText,
-            ChatComms comms
+            ChatComms comms,
+            SignTextHistoryManager historyManager
     ) {
         this.argParser = argParser;
         this.signText = signText;
         this.comms = comms;
+        this.historyManager = historyManager;
     }
 
     @Override
@@ -48,6 +52,6 @@ public class SetSignSubcommand implements SignSubcommand {
             signText.setLine(selectedLine, text);
         }
 
-        return new SetSignEditInteraction(signText, comms);
+        return new SetSignEditInteraction(signText, comms, historyManager);
     }
 }

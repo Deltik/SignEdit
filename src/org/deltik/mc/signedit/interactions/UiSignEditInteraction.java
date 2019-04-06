@@ -8,6 +8,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.deltik.mc.signedit.ChatComms;
 import org.deltik.mc.signedit.MinecraftReflector;
 import org.deltik.mc.signedit.SignText;
+import org.deltik.mc.signedit.SignTextHistoryManager;
 import org.deltik.mc.signedit.exceptions.SignEditorInvocationException;
 import org.deltik.mc.signedit.listeners.SignEditListener;
 
@@ -18,16 +19,20 @@ public class UiSignEditInteraction implements SignEditInteraction {
     private final SignEditListener listener;
     private final ChatComms comms;
     private final SignText signText;
+    private final SignTextHistoryManager historyManager;
 
     public UiSignEditInteraction(
             MinecraftReflector reflector,
             SignEditListener listener,
             ChatComms comms,
-            SignText signText) {
+            SignText signText,
+            SignTextHistoryManager historyManager
+    ) {
         this.reflector = reflector;
         this.listener = listener;
         this.comms = comms;
         this.signText = signText;
+        this.historyManager = historyManager;
     }
 
     @Override
@@ -48,6 +53,7 @@ public class UiSignEditInteraction implements SignEditInteraction {
             signText.setLine(i, lines[i]);
         }
         signText.applySign(signChangeEvent);
+        historyManager.getHistory(signChangeEvent.getPlayer()).push(signText);
 
         comms.compareSignText(signText);
     }
