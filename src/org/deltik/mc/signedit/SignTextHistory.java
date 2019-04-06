@@ -1,18 +1,15 @@
 package org.deltik.mc.signedit;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import java.util.LinkedList;
 
 public class SignTextHistory {
-    private Provider<SignText> signTextProvider;
     private final Configuration config;
     private LinkedList<SignText> history = new LinkedList<>();
     int tailPosition = 0;
 
     @Inject
-    public SignTextHistory(Provider<SignText> signTextProvider, Configuration config) {
-        this.signTextProvider = signTextProvider;
+    public SignTextHistory(Configuration config) {
         this.config = config;
     }
 

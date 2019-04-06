@@ -21,14 +21,9 @@ public class SetSignEditInteraction implements SignEditInteraction {
 
     @Override
     public void interact(Player player, Sign sign) {
-        SignText beforeSignText = new SignText();
-        beforeSignText.setTargetSign(sign);
-        beforeSignText.importSign();
-
         signText.setTargetSign(sign);
         signText.applySign();
-        signText.importSign();
 
-        comms.compareSignTexts(beforeSignText, signText);
+        comms.compareSignText(signText);
     }
 }

@@ -1,17 +1,31 @@
 package org.deltik.mc.signedit;
 
 import org.bukkit.block.Sign;
+import org.bukkit.entity.Player;
+import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.plugin.PluginManager;
+import org.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 import java.util.Objects;
 
 public class SignText {
-    private String[] lines = new String[4];
-    private String[] backupLines = lines;
+    private final Player player;
+    private final PluginManager pluginManager;
+    private String[] changedLines = new String[4];
+    private String[] beforeLines = new String[4];
+    private String[] afterLines = new String[4];
     private Sign targetSign;
 
     @Inject
-    public SignText() {
+    public SignText(Player player) {
+        this(player, player.getServer().getPluginManager());
+    }
+
+    public SignText(Player player, PluginManager pluginManager) {
+        this.player = player;
+        this.pluginManager = pluginManager;
     }
 
     public Sign getTargetSign() {
@@ -23,31 +37,53 @@ public class SignText {
     }
 
     public void applySign() {
-        for (int i = 0; i < lines.length; i++) {
+        SignChangeEvent signChangeEvent = new SignChangeEvent(
+                targetSign.getBlock(),
+                player,
+                targetSign.getLines().clone()
+        );
+        applySign(signChangeEvent);
+    }
+
+    public void applySign(SignChangeEvent signChangeEvent) {
+        if (!Objects.equals(signChangeEvent.getBlock(), targetSign.getBlock())) {
+            throw new RuntimeException("Refusing to apply a sign change to a different SignChangeEvent");
+        }
+        beforeLines = targetSign.getLines().clone();
+        for (int i = 0; i < changedLines.length; i++) {
             String line = getLine(i);
             if (line != null) {
-                backupLines[i] = targetSign.getLine(i);
+                signChangeEvent.setLine(i, line);
                 targetSign.setLine(i, line);
             }
         }
+        callSignChangeEvent(signChangeEvent);
         targetSign.update();
+        afterLines = targetSign.getLines().clone();
     }
 
-    public void revertSign() {
-        for (int i = 0; i < lines.length; i++) {
-            String backupLine = backupLines[i];
-            if (backupLine != null) {
-                targetSign.setLine(i, backupLine);
-            }
+    private void callSignChangeEvent(SignChangeEvent signChangeEvent) {
+        pluginManager.callEvent(signChangeEvent);
+        if (signChangeEvent.isCancelled()) {
+            throw new ForbiddenSignEditException();
         }
     }
 
+    public void revertSign() {
+        SignChangeEvent signChangeEvent = new SignChangeEvent(targetSign.getBlock(), player, beforeLines);
+        callSignChangeEvent(signChangeEvent);
+    }
+
+    public boolean signChanged() {
+        return !Arrays.equals(beforeLines, afterLines);
+    }
+
     public void importSign() {
-        lines = targetSign.getLines().clone();
+        changedLines = targetSign.getLines().clone();
     }
 
     public void setLineLiteral(int lineNumber, String value) {
-        lines[lineNumber] = value;
+        changedLines[lineNumber] = value;
     }
 
     public void setLine(int lineNumber, String value) {
@@ -60,39 +96,43 @@ public class SignText {
     }
 
     public void clearLine(int lineNumber) {
-        lines[lineNumber] = null;
+        changedLines[lineNumber] = null;
     }
 
     public boolean lineIsSet(int lineNumber) {
-        return lines[lineNumber] != null;
+        return changedLines[lineNumber] != null;
     }
 
     public String[] getLines() {
-        return lines;
+        return changedLines;
+    }
+
+    public String[] getBeforeLines() {
+        return beforeLines;
+    }
+
+    public String[] getAfterLines() {
+        return afterLines;
     }
 
     public String getLine(int lineNumber) {
-        return lines[lineNumber];
+        return changedLines[lineNumber];
+    }
+
+    public String getBeforeLine(int lineNumber) {
+        return beforeLines[lineNumber];
+    }
+
+    public String getAfterLine(int lineNumber) {
+        return afterLines[lineNumber];
     }
 
     public String getLineParsed(int lineNumber) {
-        String line = lines[lineNumber];
+        String line = changedLines[lineNumber];
         if (line == null) return null;
         line = line
                 .replaceAll("&(?=[0-9A-Fa-fK-Ok-oRr])", "\\\\&")
                 .replaceAll("§([0-9A-Fa-fK-Ok-oRr])", "&$1");
         return line;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof SignText)) return false;
-        SignText otherSignText = (SignText) object;
-        for (int i = 0; i < lines.length; i++) {
-            if (!Objects.equals(this.getLine(i), otherSignText.getLine(i))) {
-                return false;
-            }
-        }
-        return true;
     }
 }

@@ -118,33 +118,33 @@ public class ChatComms {
         tellPlayer(output);
     }
 
-    public void compareSignTexts(SignText before, SignText after) {
-        if (before.equals(after)) {
+    public void compareSignText(SignText signText) {
+        if (!signText.signChanged()) {
             tellPlayer(primary() + "Sign did not change");
         } else {
             String[] beforeHighlights = new String[4];
             String[] afterHighlights = new String[4];
             for (int i = 0; i < 4; i++) {
-                if (!Objects.equals(before.getLine(i), after.getLine(i))) {
+                if (!Objects.equals(signText.getBeforeLine(i), signText.getAfterLine(i))) {
                     beforeHighlights[i] = highlightBefore();
                     afterHighlights[i] = highlightAfter();
                 }
             }
             tellPlayer(primary() + strong() + "Before:");
-            dumpSignTextLines(before, beforeHighlights);
+            dumpLines(signText.getBeforeLines(), beforeHighlights);
             tellPlayer(primary() + strong() + "After:");
-            dumpSignTextLines(after, afterHighlights);
+            dumpLines(signText.getAfterLines(), afterHighlights);
         }
     }
 
-    public void dumpSignTextLines(SignText signText) {
-        dumpSignTextLines(signText, new String[4]);
+    public void dumpLines(String[] lines) {
+        dumpLines(lines, new String[4]);
     }
 
-    public void dumpSignTextLines(SignText signText, String[] highlights) {
+    public void dumpLines(String[] lines, String[] highlights) {
         for (int i = 0; i < 4; i++) {
             int relativeLineNumber = config.getLineStartsAt() + i;
-            String line = signText.getLine(i);
+            String line = lines[i];
             String highlight = highlights[i];
             if (highlight == null) {
                 highlight = secondary();

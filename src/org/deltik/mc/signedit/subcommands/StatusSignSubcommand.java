@@ -74,7 +74,7 @@ public class StatusSignSubcommand implements SignSubcommand {
                     comms.primaryDark() + "None");
         } else {
             comms.tellPlayer(comms.primary() + comms.strong() + "Clipboard Contents:");
-            comms.dumpSignTextLines(clipboard);
+            comms.dumpLines(clipboard.getLines());
         }
     }
 }

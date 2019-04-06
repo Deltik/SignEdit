@@ -42,7 +42,7 @@ public class SignEditListener implements Listener {
 
         if (isInteractionPending(player)) {
             SignEditInteraction interaction = removePendingInteraction(player);
-            interaction.validatedInteract(player, sign);
+            interaction.interact(player, sign);
         }
     }
 

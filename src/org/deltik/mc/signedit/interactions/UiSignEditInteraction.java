@@ -14,16 +14,20 @@ import org.deltik.mc.signedit.listeners.SignEditListener;
 import java.lang.reflect.Field;
 
 public class UiSignEditInteraction implements SignEditInteraction {
-    private MinecraftReflector reflector;
-    private SignEditListener listener;
+    private final MinecraftReflector reflector;
+    private final SignEditListener listener;
     private final ChatComms comms;
-    private SignText beforeSignText;
-    private SignText afterSignText;
+    private final SignText signText;
 
-    public UiSignEditInteraction(MinecraftReflector reflector, SignEditListener listener, ChatComms comms) {
+    public UiSignEditInteraction(
+            MinecraftReflector reflector,
+            SignEditListener listener,
+            ChatComms comms,
+            SignText signText) {
         this.reflector = reflector;
         this.listener = listener;
         this.comms = comms;
+        this.signText = signText;
     }
 
     @Override
@@ -33,39 +37,33 @@ public class UiSignEditInteraction implements SignEditInteraction {
 
     @Override
     public void cleanup(Event event) {
+        formatSignTextForSave(signText);
         if (!(event instanceof SignChangeEvent)) {
-            formatSignTextForSave(beforeSignText);
             return;
         }
+
         SignChangeEvent signChangeEvent = (SignChangeEvent) event;
         String[] lines = signChangeEvent.getLines();
         for (int i = 0; i < lines.length; i++) {
-            afterSignText.setLine(i, lines[i]);
+            signText.setLine(i, lines[i]);
         }
-        formatSignTextForSave(afterSignText);
-        for (int i = 0; i < lines.length; i++) {
-            signChangeEvent.setLine(i, afterSignText.getLine(i));
-        }
+        signText.applySign(signChangeEvent);
 
-        comms.compareSignTexts(beforeSignText, afterSignText);
+        comms.compareSignText(signText);
     }
 
     @Override
     public void interact(Player player, Sign sign) {
-        beforeSignText = new SignText();
-        beforeSignText.setTargetSign(sign);
-        beforeSignText.importSign();
-        afterSignText = new SignText();
-        afterSignText.setTargetSign(sign);
-        afterSignText.importSign();
+        signText.setTargetSign(sign);
+        signText.importSign();
 
+        formatSignTextForEdit(signText);
         listener.setInProgressInteraction(player, this);
-        formatSignTextForEdit(afterSignText);
 
         try {
             openSignEditor(player, sign);
         } catch (Exception e) {
-            formatSignTextForSave(afterSignText);
+            formatSignTextForSave(signText);
             throw new SignEditorInvocationException(e);
         }
     }

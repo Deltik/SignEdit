@@ -65,6 +65,31 @@
 
 ## Syntax
 
+### Formatting Codes
+
+(`>= 1.0, < 1.10`)
+
+All ampersands (`&`) are replaced with section signs (`§`) for [Minecraft formatting codes](https://minecraft.gamepedia.com/Formatting_codes).
+
+It is not possible to type a literal ampersand in versions `>= 1.0, < 1.10`.
+
+(`>= 1.10`)
+
+Only ampersands (`&`) that precede a [Minecraft formatting code](https://minecraft.gamepedia.com/Formatting_codes) character turn into section signs (`§`).
+If you want to type a literal ampersand, escape it with a backslash like so: `\&a`
+
+#### Examples (`>= 1.10`)
+
+| Input | Output |
+| --- | --- |
+| `&bHELLO` | `§bHELLO` |
+| `a&b` | `a§b` |
+| `a\&b` | `a&b` |
+| `x&y` | `x&y` |
+| `x\&y` | `x\&y` |
+| `\&d &e &f &g` | `&d §e §f &g` |
+| `Arts & Crafts` | `Arts & Crafts` |
+
 ### Selecting Multiple Lines
 
 (`>= 1.10`)
@@ -130,15 +155,25 @@ All configuration is in the file `plugins/SignEdit/config.yml`.
 
 * (`>= 1.8`) Edit the targeted sign in the native Minecraft sign editor with `/sign ui`.
   * No dependencies!
-* Edit the line `<line>` of the targeted sign to be `<text>` with `/sign set <line> [<text>]` or (`>= 1.6`) `/sign <line> [<text>]`.
-* All editing functions support formatting codes (`&` turns into `§`)
-  ![Screenshot of color code in `/sign <line> <text>`](https://i.imgur.com/Cdv7p2t.png)
+* (`>= 1.10`) Change all of the lines `<lines>` of the targeted sign to be `<text>` with `/sign set <lines> [<text>]` or `/sign <lines> [<text>]`.
+* (`>= 1.10`) See the sign text before and after in chat.
 * Targeting a sign works as follows:
   * In `clicking: false` mode or in version `= 1.0`, the sign you are looking at is edited.
   * In `clicking: true` mode, after running the `/sign` command, right-click a sign to edit it.
   * (`>= 1.7`) In `clicking: auto` mode, the behavior is the same as `clicking: false` if you are looking at a sign and `clicking: true` if you are not looking at a sign.
-* (`>= 1.8`) Before editing a sign, this plugin checks if the player is allowed to edit the sign by pretending to blank out the sign and seeing if the corresponding [SignChangeEvent](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/event/block/SignChangeEvent.html) is cancelled.
+* All editing functions support formatting codes (`&` turns into `§`)
+  ![Screenshot of color code in `/sign <line> <text>`](https://i.imgur.com/Cdv7p2t.png)
+* (`>= 1.10`) Escape formatting codes with backslash (e.g. `\&f` turns into literal `&f`)
 * (`>= 1.10`) Tab completion for `/sign` subcommands
+* (`>= 1.10`) Copy, cut, and paste sign lines with `/sign copy`, `/sign cut`, and `/sign paste`, respectively.
+* (`>= 1.10`) Undo and redo sign changes with `/sign undo` and `/sign redo`, respectively.
+* (`>= 1.10`) Players cannot edit signs that they do not have permission to edit.  Every attempted edit is validated through a [SignChangeEvent](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/event/block/SignChangeEvent.html) and will not succeed if another plugin or policy cancels the SignChangeEvent.
+
+## Features from Older Versions
+These features no longer apply to the latest version of this plugin:
+
+* Edit the line `<line>` of the targeted sign to be `<text>` with `/sign set <line> [<text>]` or (`>= 1.6`) `/sign <line> [<text>]`.
+* (`>= 1.8, < 1.10`) Before editing a sign, this plugin checks if the player is allowed to edit the sign by pretending to blank out the sign and seeing if the corresponding [SignChangeEvent](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/event/block/SignChangeEvent.html) is cancelled.
 
 ## Compatibility
 

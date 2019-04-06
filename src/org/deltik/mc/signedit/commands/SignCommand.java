@@ -65,7 +65,8 @@ public class SignCommand implements CommandExecutor {
 
         SignSubcommandInjector.Builder<? extends SignSubcommand> builder = subcommandProvider.get();
 
-        SignSubcommand subcommand = builder.player(player)
+        SignSubcommand subcommand = builder
+                .player(player)
                 .argParser(argParser)
                 .comms(comms)
                 .build()
@@ -97,7 +98,7 @@ public class SignCommand implements CommandExecutor {
             comms.tellPlayer(comms.primary() + "Now right-click a sign to edit it");
         } else if (block.getState() instanceof Sign) {
             Sign sign = (Sign) block.getState();
-            interaction.validatedInteract(player, sign);
+            interaction.interact(player, sign);
         } else {
             comms.tellPlayer(comms.primary() + "You must be looking at a sign to edit it!");
         }
