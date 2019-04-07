@@ -19,17 +19,14 @@
 
 ### Commands
 
-| Command | Usage | Version |
+| Command | Usage | [Version](#versioning) |
 | --- | --- | --- |
 | `/sign` | Show the usage of the `/sign` subcommands. | `>= 1.0` |
 | `/sign ui` | Invoke the native Minecraft sign editor on the targeted sign. | `>= 1.8` |
-| `/sign set <line> <text>` | Change the line `<line>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. | `>= 1.0, < 1.4` |
-| `/sign set <line> [<text>]` | Change the line `<line>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. If `<text>` is blank, erase the line `<line>`. | `>= 1.4, < 1.10` |
-| `/sign set <lines> [<text>]` | Change each of the lines `<lines>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. If `<text>` is blank, erase the lines `<lines>`. | `>= 1.10` |
-| `/sign clear <line>` | Erase the line `<line>` of the targeted sign. | `>= 1.4, < 1.10` |
+| `/sign set <lines> [<text>]` | Change each of the [lines](#selecting-multiple-lines) `<lines>` of the targeted sign to `<text>`.  [Formatting codes](#formatting-codes) are parsed with `&` in place of `§`.  If `<text>` is blank, erase the lines `<lines>`. | `>= 1.10` |
 | `/sign clear <lines>` | Erase the lines `<lines>` of the targeted sign. | `>= 1.10` |
 | `/sign cancel` | Abort your pending right-mouse click sign edit action. | `>= 1.9` |
-| `/sign status` | Show the pending action and what is in the copy buffer. | `>= 1.10` |
+| `/sign status` | Show the pending action, what is in the copy buffer, and an overview of the undo/redo history stack. | `>= 1.10` |
 | `/sign copy [<lines>]` | Copy the targeted sign's text.  If `<lines>` is specified, only those lines are copied. | `>= 1.10` |
 | `/sign cut [<lines>]` | Copy the targeted sign's text and remove it from the sign.  If `<lines>` is specified, only those lines are cut. | `>= 1.10` |
 | `/sign paste` | Paste the lines buffered by the previous `/sign copy` or `/sign cut` command onto the targeted sign. | `>= 1.10` |
@@ -37,9 +34,19 @@
 | `/sign redo` | Restore the most recent sign change that was undone by `/sign undo`. | `>= 1.10` |
 | `/sign version` | Show the installed version of this plugin. | `>= 1.9.3` |
 
+### Commands from Older Versions
+
+These commands no longer apply to the latest version of this plugin:
+
+| Command | Usage | [Version](#versioning) |
+| --- | --- | --- |
+| `/sign set <line> <text>` | Change the line `<line>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. | `>= 1.0, < 1.4` |
+| `/sign set <line> [<text>]` | Change the line `<line>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. If `<text>` is blank, erase the line `<line>`. | `>= 1.4, < 1.10` |
+| `/sign clear <line>` | Erase the line `<line>` of the targeted sign. | `>= 1.4, < 1.10` |
+
 ### Aliases
 
-| Alias | Command | Version |
+| Alias | Command | [Version](#versioning) |
 | --- | --- | --- |
 | `/signedit` | `/sign` | `>= 1.4` |
 | `/editsign` | `/sign` | `>= 1.4` |
@@ -106,18 +113,47 @@ For commands that take a *lines* argument, the specified lines can be any combin
 
 #### Examples
 
-- `1` selects line 1.
-- `1-1` selects line 1.
-- `1,3` selects lines 1 and 3.
-- `1-3` selects lines 1, 2, and 3.
-- `1-2,4` selects lines 1, 2, and 4.
-- `1,2,4` selects lines 1, 2, and 4.
-- `2-3,1,4` selects lines 1, 2, 3, and 4.
-- `2,2,2,3,3` selects lines 2 and 3.
+* `1` selects line 1.
+* `1-1` selects line 1.
+* `1,3` selects lines 1 and 3.
+* `1-3` selects lines 1, 2, and 3.
+* `1-2,4` selects lines 1, 2, and 4.
+* `1,2,4` selects lines 1, 2, and 4.
+* `2-3,1,4` selects lines 1, 2, 3, and 4.
+* `2,2,2,3,3` selects lines 2 and 3.
+
+### Versioning
+
+This plugin uses [semantic versioning](https://semver.org/).  From a version number `MAJOR.MINOR.PATCH`:
+
+* `MAJOR` increases when behavior changes that breaks how previous versions worked,
+* `MINOR` increases when new features are added while being compatible with how previous versions worked, and
+* `PATCH` increases when bugs are fixed without breaking how previous versions worked.
+
+In the documentation, version constraints are used to indicate to which versions the piece of documentation applies:
+
+* `>=` means starting from this version,
+* `>` means after this version,
+* `<=` means up to and including this version,
+* `<` means up to but not including this version,
+* `=` means this version only, and
+* [`~>`](https://thoughtbot.com/blog/rubys-pessimistic-operator) means this version and any newer versions after the last point (`.`).
+
+#### Examples
+
+* `>= 1.5` matches version `1.5.0` and higher.
+* `> 1.4` matches version `1.4.1` and higher.
+* `<= 1.3.1` matches version `1.3.1`, `1.3.0`, `1.3`, and lower.
+* `< 1.4` matches any version lower than `1.4`.
+* `= 1.0` matches version `1.0` and `1.0.0`.
+* `~> 1.4` is the same as `>= 1.4, < 2`.
+* `~> 1.3.0` is the same as `>= 1.3.0, < 1.4`.
+* `~> 2` is the same as `>= 2.0.0`.
+* `= 1.0, = 1.1, = 1.2, = 1.3` matches only versions `1.0`, `1.1`, `1.2`, `1.3`, and any more `.0` `PATCH` versions.
 
 ## Permissions
 
-All features of SignEdit for Bukkit will be available if the player has the following permission:
+All features of this plugin will be available if the player has the following permission:
 
     SignEdit.use
 
@@ -129,8 +165,14 @@ Examples:
 
     signedit.sign.cancel
     signedit.sign.clear
+    signedit.sign.copy
+    signedit.sign.cut
+    signedit.sign.paste
+    signedit.sign.redo
     signedit.sign.set
+    signedit.sign.status
     signedit.sign.ui
+    signedit.sign.undo
     signedit.sign.version
 
 ## Configuration
@@ -171,7 +213,7 @@ All configuration is in the file `plugins/SignEdit/config.yml`.
   * In `clicking: false` mode or in version `= 1.0`, the sign you are looking at is edited.
   * In `clicking: true` mode, after running the `/sign` command, right-click a sign to edit it.
   * (`>= 1.7`) In `clicking: auto` mode, the behavior is the same as `clicking: false` if you are looking at a sign and `clicking: true` if you are not looking at a sign.
-* All editing functions support formatting codes (`&` turns into `§`)
+* All editing functions support [formatting codes](#formatting-codes) (`&` turns into `§`)
   ![Screenshot of color code in `/sign <line> <text>`](https://i.imgur.com/De8137B.png)
 * (`>= 1.10`) Escape formatting codes with backslash (e.g. `\&f` turns into literal `&f`)
 * (`>= 1.10`) Tab completion for `/sign` subcommands

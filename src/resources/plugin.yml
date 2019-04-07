@@ -17,7 +17,7 @@ commands:
 
       /<command> set <lines> [<text>]
         Change each of the lines <lines> of the targeted sign to <text>.
-        All `&` characters are treated as formatting code characters.
+        Formatting codes are parsed with `&` in place of `§`.
         If <text> is blank, erase the lines <lines>.
 
       /<command> <lines> [<text>]
@@ -33,6 +33,7 @@ commands:
         Abort your pending right-click action.
 
       /<command> status
+        Show the pending action, what is in the copy buffer, and an overview of the undo/redo history stack.
 
       /<command> copy [<lines>]
         Copy the targeted sign's text.
