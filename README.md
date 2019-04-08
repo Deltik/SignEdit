@@ -7,6 +7,40 @@
 
 ![Screenshot of usage help in SignEdit for Bukkit v1.10.0](https://i.imgur.com/aFOvM67.png)
 
+## Table of Contents
+
+   * [SignEdit for Bukkit](#signedit-for-bukkit)
+      * [Table of Contents](#table-of-contents)
+      * [Installation](#installation)
+      * [Usage](#usage)
+         * [Commands](#commands)
+            * [Commands from Older Versions](#commands-from-older-versions)
+         * [Aliases](#aliases)
+      * [Syntax](#syntax)
+         * [Formatting Codes](#formatting-codes)
+            * [Examples](#examples)
+         * [Selecting Multiple Lines](#selecting-multiple-lines)
+            * [Examples](#examples-1)
+         * [Versioning](#versioning)
+            * [Examples](#examples-2)
+      * [Permissions](#permissions)
+      * [Configuration](#configuration)
+         * [`clicking: [auto|false|true]`](#clicking-autofalsetrue)
+         * [`line-starts-at: [1|0]`](#line-starts-at-10)
+      * [Features](#features)
+         * [Features from Older Versions](#features-from-older-versions)
+         * [Visual Examples](#visual-examples)
+            * [`/sign ui`](#sign-ui)
+            * [`/sign 2 Deltik's`](#sign-2-deltiks)
+            * [`/sign clear 1`](#sign-clear-1)
+            * [`/sign set 1,4 ===============`](#sign-set-14-)
+            * [`/sign set 1,4 &1#&2#&3#&4#&5#&6#&7#&8#&9#&a#&b#&c#&d#&e#&f#`](#sign-set-14-123456789abcdef)
+            * [`/se set 3 &4CONSTRUCTION`](#se-set-3-4construction)
+            * [`/se set 1-4 Arts\&Crafts`](#se-set-1-4-artscrafts)
+            * [`/sign <tab>`](#sign-tab)
+      * [Compatibility](#compatibility)
+         * [Backwards Compatibility with Omel's SignEdit v1.3](#backwards-compatibility-with-omels-signedit-v13)
+
 ## Installation
 
 1. Download the latest `.jar` file from [the Releases page](https://github.com/Deltik/SignEdit/releases) and upload it to your CraftBukkit/Spigot `plugins/` folder.
@@ -34,7 +68,7 @@
 | `/sign redo` | Restore the most recent sign change that was undone by `/sign undo`. | `>= 1.10` |
 | `/sign version` | Show the installed version of this plugin. | `>= 1.9.3` |
 
-### Commands from Older Versions
+#### Commands from Older Versions
 
 These commands no longer apply to the latest version of this plugin:
 
@@ -56,28 +90,6 @@ These commands no longer apply to the latest version of this plugin:
 | `/sign <line>` | `/sign clear <line>` | `>= 1.6, < 1.10` |
 | `/sign <lines>` | `/sign clear <lines>` | `>= 1.10` |
 
-### Visual Examples
-
-#### `/sign ui`
-
-![GIF of `/sign ui` in action](https://i.imgur.com/IaZ1Pry.gif)
-
-#### `/sign 2 Deltik's`
-
-![GIF of `/sign <line> <text>` in action](https://i.imgur.com/zrPKLaY.gif)
-
-#### `/sign clear 1`
-
-![GIF of `/sign clear <line>` in action](https://i.imgur.com/U5b1z1Z.gif)
-
-#### `/sign set 1,4 ===============`
-
-![GIF of `/sign set <lines> <text>` in action](https://i.imgur.com/5PrG83O.gif)
-
-#### `/sign set 1,4 &1#&2#&3#&4#&5#&6#&7#&8#&9#&a#&b#&c#&d#&e#&f#`
-
-![GIF of `/sign set <lines> <text>` in action](https://i.imgur.com/STpR13s.gif)
-
 ## Syntax
 
 ### Formatting Codes
@@ -93,7 +105,9 @@ It is not possible to type a literal ampersand in versions `>= 1.0, < 1.10`.
 Only ampersands (`&`) that precede a [Minecraft formatting code](https://minecraft.gamepedia.com/Formatting_codes) character turn into section signs (`§`).
 If you want to type a literal ampersand, escape it with a backslash like so: `\&a`
 
-#### Examples (`>= 1.10`)
+#### Examples
+
+(`>= 1.10`)
 
 | Input | Output |
 | --- | --- |
@@ -149,7 +163,7 @@ In the documentation, version constraints are used to indicate to which versions
 * `~> 1.4` is the same as `>= 1.4, < 2`.
 * `~> 1.3.0` is the same as `>= 1.3.0, < 1.4`.
 * `~> 2` is the same as `>= 2.0.0`.
-* `= 1.0, = 1.1, = 1.2, = 1.3` matches only versions `1.0`, `1.1`, `1.2`, `1.3`, and any more `.0` `PATCH` versions.
+* `= 1.0, = 1.1, = 1.2, = 1.3` matches only versions `1.0`, `1.1`, `1.2`, `1.3`, and their `.0` `PATCH` versions.
 
 ## Permissions
 
@@ -205,33 +219,68 @@ All configuration is in the file `plugins/SignEdit/config.yml`.
 
 ## Features
 
-* (`>= 1.8`) Edit the targeted sign in the native Minecraft sign editor with `/sign ui`.
+* (`>= 1.8`) Edit the targeted sign in the native Minecraft sign editor with [`/sign ui`](#sign-ui).
   * No dependencies!
-* (`>= 1.10`) Change all of the lines `<lines>` of the targeted sign to be `<text>` with `/sign set <lines> [<text>]` or `/sign <lines> [<text>]`.
-* (`>= 1.10`) See the sign text before and after in chat.
+* (`>= 1.10`) Change all of the lines `<lines>` of the targeted sign to be `<text>` with [`/sign set <lines> [<text>]`](#sign-set-14-) or [`/sign <lines> [<text>]`](#sign-2-deltiks).
+* (`>= 1.10`) [See the sign text before and after in chat.](#se-set-3-4construction)
 * Targeting a sign works as follows:
   * In `clicking: false` mode or in version `= 1.0`, the sign you are looking at is edited.
   * In `clicking: true` mode, after running the `/sign` command, right-click a sign to edit it.
   * (`>= 1.7`) In `clicking: auto` mode, the behavior is the same as `clicking: false` if you are looking at a sign and `clicking: true` if you are not looking at a sign.
-* All editing functions support [formatting codes](#formatting-codes) (`&` turns into `§`)
-  ![Screenshot of color code in `/sign <line> <text>`](https://i.imgur.com/De8137B.png)
-* (`>= 1.10`) Escape formatting codes with backslash (e.g. `\&f` turns into literal `&f`)
-* (`>= 1.10`) Tab completion for `/sign` subcommands
+* All editing functions support [formatting codes](#formatting-codes) ([`&` turns into `§`](#se-set-3-4construction))
+* (`>= 1.10`) Escape formatting codes with backslash (e.g. [`\&C` turns into literal `&C`](#se-set-1-4-artscrafts))
+* (`>= 1.10`) [Tab completion for `/sign` subcommands](#sign-tab)
 * (`>= 1.10`) Copy, cut, and paste sign lines with `/sign copy`, `/sign cut`, and `/sign paste`, respectively.
 * (`>= 1.10`) Undo and redo sign changes with `/sign undo` and `/sign redo`, respectively.
 * (`>= 1.10`) Players cannot edit signs that they do not have permission to edit.  Every attempted edit is validated through a [SignChangeEvent](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/event/block/SignChangeEvent.html) and will not succeed if another plugin or policy cancels the SignChangeEvent.
 
-## Features from Older Versions
+### Features from Older Versions
 These features no longer apply to the latest version of this plugin:
 
 * Edit the line `<line>` of the targeted sign to be `<text>` with `/sign set <line> [<text>]` or (`>= 1.6`) `/sign <line> [<text>]`.
 * (`>= 1.8, < 1.10`) Before editing a sign, this plugin checks if the player is allowed to edit the sign by pretending to blank out the sign and seeing if the corresponding [SignChangeEvent](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/event/block/SignChangeEvent.html) is cancelled.
 
+### Visual Examples
+
+#### `/sign ui`
+
+![GIF of `/sign ui` in action](https://i.imgur.com/IaZ1Pry.gif)
+
+#### `/sign 2 Deltik's`
+
+![GIF of `/sign <line> <text>` in action](https://i.imgur.com/zrPKLaY.gif)
+
+#### `/sign clear 1`
+
+![GIF of `/sign clear <line>` in action](https://i.imgur.com/U5b1z1Z.gif)
+
+#### `/sign set 1,4 ===============`
+
+![GIF of `/sign set <lines> <text>` in action](https://i.imgur.com/5PrG83O.gif)
+
+#### `/sign set 1,4 &1#&2#&3#&4#&5#&6#&7#&8#&9#&a#&b#&c#&d#&e#&f#`
+
+![GIF of `/sign set <lines> <text>` in action](https://i.imgur.com/STpR13s.gif)
+
+#### `/se set 3 &4CONSTRUCTION`
+
+![Screenshot of color code in `/sign <line> <text>`](https://i.imgur.com/De8137B.png)
+
+#### `/se set 1-4 Arts\&Crafts`
+
+![Screenshot of formatting code escaping in `/sign <lines> <text>`](https://i.imgur.com/ovZ2ZmI.png)
+
+#### `/sign <tab>`
+
+![Screenshot of tab completion under `/sign`](https://i.imgur.com/l0QWG0R.png)
+
 ## Compatibility
 
 This plugin is a fork of [Omel's SignEdit](https://www.spigotmc.org/resources/signedit.25485/) v1.3.  Omel's SignEdit v1.3 and older are not compatible with Bukkit v1.12 and newer because a deprecated API method was removed ([see related issue in MyPet](https://github.com/xXKeyleXx/MyPet/issues/1033)).
 
-Since this plugin does not use deprecated methods, it is expected to be compatible with Bukkit v1.7 and newer.
+Since this plugin does not use deprecated methods, it is expected to be compatible with Bukkit v1.8.3 and newer.
+
+Support for Bukkit v1.8 and lower was dropped in plugin version `>= 1.3.1`.  This is because plugin version `>= 1.3.1` compiles with a method signature introduced in Bukkit commit [e1f54099](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/commits/e1f54099c8d6ba708c2895803464a0b89cacd3b9#src/main/java/org/bukkit/entity/LivingEntity.java), which landed in [Bukkit v1.8.3](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/commits/ca4fd8554d297f3922d36328efd4612b05f9d8aa#pom.xml).
 
 ### Backwards Compatibility with Omel's SignEdit v1.3
 
