@@ -104,7 +104,7 @@ public class UiSignEditInteraction implements SignEditInteraction {
 
     private Object createPositionalPacket(Object position, Class<?> typeOfPacket) throws Exception {
         return typeOfPacket
-                .getConstructor(reflector.getMinecraftServerClass("BlockPosition"))
+                .getConstructor(position.getClass())
                 .newInstance(position);
     }
 
