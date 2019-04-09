@@ -13,6 +13,7 @@ import org.deltik.mc.signedit.exceptions.SignEditorInvocationException;
 import org.deltik.mc.signedit.listeners.SignEditListener;
 
 import java.lang.reflect.Field;
+import java.util.UUID;
 
 public class UiSignEditInteraction implements SignEditInteraction {
     private final MinecraftReflector reflector;
@@ -77,11 +78,10 @@ public class UiSignEditInteraction implements SignEditInteraction {
     }
 
     private void openSignEditor(Player player, Sign sign) throws Exception {
-        Object entityPlayer = getEntityPlayer(player);
-        attachEntityPlayerToSign(entityPlayer, sign);
+        attachPlayerToSign(player, sign);
         Object position = getBlockPosition(sign.getBlock());
         Object packet = createPositionalPacket(position, "PacketPlayOutOpenSignEditor");
-        sendPacketToEntityPlayer(packet, entityPlayer);
+        sendPacketToPlayer(packet, player);
     }
 
     private Object getEntityPlayer(Player player) throws Exception {
@@ -90,7 +90,8 @@ public class UiSignEditInteraction implements SignEditInteraction {
         return entityPlayerField.get(player);
     }
 
-    private void sendPacketToEntityPlayer(Object packet, Object entityPlayer) throws Exception {
+    private void sendPacketToPlayer(Object packet, Player player) throws Exception {
+        Object entityPlayer = getEntityPlayer(player);
         Object connection = entityPlayer.getClass().getField("playerConnection").get(entityPlayer);
         connection
                 .getClass()
@@ -114,14 +115,67 @@ public class UiSignEditInteraction implements SignEditInteraction {
                 .newInstance(block.getX(), block.getY(), block.getZ());
     }
 
-    private void attachEntityPlayerToSign(Object entityPlayer, Sign sign) throws Exception {
+    private void attachPlayerToSign(Player player, Sign sign) throws Exception {
+        Object entityPlayer = getEntityPlayer(player);
         Object tileEntitySign = getTileEntitySign(sign);
 
         maketileEntitySignEditable(tileEntitySign);
 
+        boolean attachedPlayerToSign = false;
+        NoSuchFieldException noSuchFieldException = null;
+
+        try {
+            attachPlayerUUIDToTileEntitySign(player.getUniqueId(), tileEntitySign);
+            attachedPlayerToSign = true;
+        } catch (NoSuchFieldException e) {
+            noSuchFieldException = e;
+        }
+
+        try {
+            attachEntityPlayerToTileEntitySign(entityPlayer, tileEntitySign);
+            attachedPlayerToSign = true;
+        } catch (NoSuchFieldException e) {
+            noSuchFieldException = e;
+        }
+
+        if (!attachedPlayerToSign) {
+            throw noSuchFieldException;
+        }
+    }
+
+    /**
+     * Attach an EntityPlayer directly to a TileEntitySign
+     * <p>
+     * This is how the vanilla Minecraft server expects Players to be attached to Signs.
+     * CraftBukkit respects this behavior.
+     *
+     * @param entityPlayer
+     * @param tileEntitySign
+     */
+    private void attachEntityPlayerToTileEntitySign(Object entityPlayer, Object tileEntitySign)
+            throws NoSuchFieldException, ClassNotFoundException, IllegalAccessException {
         Field signEntityHumanField = getFirstFieldOfType(tileEntitySign,
                 reflector.getMinecraftServerClass("EntityHuman"));
+        signEntityHumanField.setAccessible(true);
         signEntityHumanField.set(tileEntitySign, entityPlayer);
+    }
+
+    /**
+     * Attach a Player's unique ID to a Sign
+     * <p>
+     * Workaround for behavior change introduced in the PaperMC fork of CraftBukkit:
+     * https://github.com/PaperMC/Paper/commit/906684ff4f9413fda228122315fdf0fffa674a42
+     * <p>
+     * PaperMC chooses to store a Player's UUID as the Sign's editor rather than upstream's EntityHuman.
+     *
+     * @param playerUUID     UUID of the Player who is editing the Sign
+     * @param tileEntitySign TileEntitySign representation of the Sign to be edited
+     */
+    private void attachPlayerUUIDToTileEntitySign(UUID playerUUID, Object tileEntitySign)
+            throws NoSuchFieldException, IllegalAccessException {
+        Field signEditorField = getFirstFieldOfType(tileEntitySign, UUID.class);
+        signEditorField.setAccessible(true);
+        signEditorField.set(tileEntitySign, playerUUID);
     }
 
     private Object getTileEntitySign(Sign sign) throws Exception {
