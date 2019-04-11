@@ -19,16 +19,21 @@
       * [Syntax](#syntax)
          * [Formatting Codes](#formatting-codes)
             * [Examples](#examples)
-         * [Selecting Multiple Lines](#selecting-multiple-lines)
+         * [Language Tags](#language-tags)
             * [Examples](#examples-1)
-         * [Versioning](#versioning)
+         * [Selecting Multiple Lines](#selecting-multiple-lines)
             * [Examples](#examples-2)
+         * [Versioning](#versioning)
+            * [Examples](#examples-3)
       * [Permissions](#permissions)
       * [Configuration](#configuration)
          * [`clicking: [auto|false|true]`](#clicking-autofalsetrue)
+         * [`force-locale: [false|true]`](#force-locale-falsetrue)
          * [`line-starts-at: [1|0]`](#line-starts-at-10)
+         * [`locale: [en|…]`](#locale-en)
       * [Features](#features)
          * [Features from Older Versions](#features-from-older-versions)
+         * [Supported Locales](#supported-locales)
          * [Visual Examples](#visual-examples)
             * [`/sign ui`](#sign-ui)
             * [`/sign 2 Deltik's`](#sign-2-deltiks)
@@ -118,6 +123,26 @@ If you want to type a literal ampersand, escape it with a backslash like so: `\&
 | `x\&y` | `x\&y` |
 | `\&d &e &f &g` | `&d §e §f &g` |
 | `Arts & Crafts` | `Arts & Crafts` |
+
+### Language Tags
+
+(`>= 1.10.2`)
+
+Locales are identified by their [IETF BCP 47](https://tools.ietf.org/html/bcp47) language tag.
+For the practical scope of this plugin, only the two-letter language code plus an optional two-letter region code joined by a hyphen (`-`) are used.
+
+Go to [Supported Locales](#supported-locales) for a list of languages supported by this plugin.
+
+#### Examples
+
+| Tag | Locale |
+| --- | --- |
+| de | German |
+| de-AT | German (Austria)  |
+| en | English |
+| en-GB | English (United Kingdom) |
+| zh | Chinese |
+| zh-CN | Chinese (China) |
 
 ### Selecting Multiple Lines
 
@@ -209,6 +234,14 @@ All configuration is in the file `plugins/SignEdit/config.yml`.
 
 (`>= 1.7`) **auto** (default): Behave like `clicking: true` when you are not looking at a sign and behave like `clicking: false` when you are looking at a sign.
 
+### `force-locale: [false|true]`
+
+(`>= 1.10.2`)
+
+**false** (default): Does not change the behavior of the `locale` configuration option.
+
+**true**: Force every player to use the locale specified in the `locale` configuration option, regardless of the players' actual locales.
+
 ### `line-starts-at: [1|0]`
 
 (`>= 1.5`)
@@ -216,6 +249,17 @@ All configuration is in the file `plugins/SignEdit/config.yml`.
 **1** (default): Line number 1 corresponds to the top-most line of sign blocks.
 
 **0**: Line number 0 corresponds to the top-most line of sign blocks.
+
+### `locale: [en|…]`
+
+(`>= 1.10.2`)
+
+The value of `locale` is an IETF BCP 47 language tag.
+It is the locale used to display text to the player when the player's locale cannot be determined.
+
+**en** (default): Set the default/fallback locale to `en` (English).
+
+**…**: Set the default/fallback locale to `…`.  Go to [Supported Locales](#supported-locales) for a table of supported languages.
 
 ## Features
 
@@ -233,12 +277,22 @@ All configuration is in the file `plugins/SignEdit/config.yml`.
 * (`>= 1.10`) Copy, cut, and paste sign lines with `/sign copy`, `/sign cut`, and `/sign paste`, respectively.
 * (`>= 1.10`) Undo and redo sign changes with `/sign undo` and `/sign redo`, respectively.
 * (`>= 1.10`) Players cannot edit signs that they do not have permission to edit.  Every attempted edit is validated through a [SignChangeEvent](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/event/block/SignChangeEvent.html) and will not succeed if another plugin or policy cancels the SignChangeEvent.
+* (`>= 1.10.2`) Automatically uses the player's language, [if supported](#supported-locales).
 
 ### Features from Older Versions
 These features no longer apply to the latest version of this plugin:
 
 * Edit the line `<line>` of the targeted sign to be `<text>` with `/sign set <line> [<text>]` or (`>= 1.6`) `/sign <line> [<text>]`.
 * (`>= 1.8, < 1.10`) Before editing a sign, this plugin checks if the player is allowed to edit the sign by pretending to blank out the sign and seeing if the corresponding [SignChangeEvent](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/event/block/SignChangeEvent.html) is cancelled.
+
+### Supported Locales
+
+| Language Tag | Language | Proficiency | [Version](#versioning) |
+| --- | --- | --- | --- |
+| `en` | English | Native | `>= 1.4` |
+| `en` | English | Intermediate | `>= 1.0, < 1.4` |
+| `de` | German | Native | `>= 1.10.2` |
+| `zh` | Simplified Chinese | Machine Translation | `>= 1.10.2` |
 
 ### Visual Examples
 
