@@ -23,9 +23,9 @@ public class CancelSignSubcommand implements SignSubcommand {
     public SignEditInteraction execute() {
         SignEditInteraction interaction = listener.removePendingInteraction(player);
         if (interaction != null) {
-            comms.tellPlayer(comms.primary() + "Cancelled pending right-click action");
+            comms.tellPlayer(comms.primary() + comms.t("cancelled_pending_right_click_action"));
         } else {
-            comms.tellPlayer(comms.error() + "No right-click action to cancel!");
+            comms.tellPlayer(comms.error() + comms.t("no_right_click_action_to_cancel"));
         }
         return null;
     }

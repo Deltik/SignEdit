@@ -52,12 +52,12 @@ public class CutSignEditInteraction implements SignEditInteraction {
         }
         clipboardManager.setClipboard(player, clipboard);
 
-        comms.tellPlayer(comms.primary() + comms.strong() + "Lines cut:");
+        comms.tellPlayer(comms.primary() + comms.strong() + comms.t("lines_cut_section"));
         comms.dumpLines(clipboard.getLines());
     }
 
     @Override
     public String getName() {
-        return "Cut sign text";
+        return "cut_sign_text";
     }
 }

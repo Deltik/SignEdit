@@ -33,7 +33,7 @@ public class SignTextHistory {
 
     public SignText undo() {
         if (tailPosition <= 0) {
-            throw new SignTextHistoryStackBoundsException("Nothing to undo");
+            throw new SignTextHistoryStackBoundsException("nothing_to_undo");
         }
         SignText previousSignText = history.get(tailPosition - 1);
         previousSignText.revertSign();
@@ -43,7 +43,7 @@ public class SignTextHistory {
 
     public SignText redo() {
         if (tailPosition == history.size()) {
-            throw new SignTextHistoryStackBoundsException("Nothing to redo");
+            throw new SignTextHistoryStackBoundsException("nothing_to_redo");
         }
         SignText nextSignText = history.get(tailPosition);
         nextSignText.applySign();

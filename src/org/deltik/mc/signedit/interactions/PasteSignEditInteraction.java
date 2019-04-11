@@ -46,6 +46,6 @@ public class PasteSignEditInteraction implements SignEditInteraction {
 
     @Override
     public String getName() {
-        return "Paste lines in clipboard";
+        return "paste_lines_from_clipboard";
     }
 }

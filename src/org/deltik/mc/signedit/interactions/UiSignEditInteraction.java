@@ -38,7 +38,7 @@ public class UiSignEditInteraction implements SignEditInteraction {
 
     @Override
     public String getName() {
-        return "Open sign editor";
+        return "open_sign_editor";
     }
 
     @Override

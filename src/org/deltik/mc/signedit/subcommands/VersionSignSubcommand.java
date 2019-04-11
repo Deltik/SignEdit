@@ -19,7 +19,7 @@ public class VersionSignSubcommand implements SignSubcommand {
     @Override
     public SignEditInteraction execute() {
         String version = plugin.getDescription().getVersion();
-        comms.tellPlayer(comms.primary() + "Version" + comms.reset() + " " + version);
+        comms.tellPlayer(comms.primary() + comms.t("version", comms.reset() + " " + version));
         return null;
     }
 }

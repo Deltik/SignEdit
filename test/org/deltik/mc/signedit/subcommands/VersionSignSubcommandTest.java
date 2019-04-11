@@ -7,6 +7,8 @@ import org.deltik.mc.signedit.Configuration;
 import org.deltik.mc.signedit.SignEditPlugin;
 import org.junit.Test;
 
+import java.util.Locale;
+
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.*;
 
@@ -17,6 +19,7 @@ public class VersionSignSubcommandTest {
 
         Player player = mock(Player.class);
         Configuration config = mock(Configuration.class);
+        when(config.getLocale()).thenReturn(new Locale("en"));
         ChatComms comms = new ChatComms(player, config);
         PluginDescriptionFile pluginDescriptionFile = mock(PluginDescriptionFile.class);
         SignEditPlugin plugin = mock(SignEditPlugin.class);

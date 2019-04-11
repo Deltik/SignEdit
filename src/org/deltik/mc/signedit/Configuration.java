@@ -7,20 +7,26 @@ import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.IllformedLocaleException;
+import java.util.Locale;
 import java.util.Map;
 
 @Singleton
 public class Configuration {
     private File configFile;
     private YamlConfiguration yamlConfig;
-    private static final String CONFIG_LINE_STARTS_AT = "line-starts-at";
     private static final String CONFIG_CLICKING = "clicking";
+    private static final String CONFIG_LINE_STARTS_AT = "line-starts-at";
+    private static final String CONFIG_FORCE_LOCALE = "force-locale";
+    private static final String CONFIG_LOCALE = "locale";
     private static final Map<String, Object> defaults;
 
     static {
         defaults = new HashMap<>();
-        defaults.put(CONFIG_LINE_STARTS_AT, 1);
         defaults.put(CONFIG_CLICKING, "auto");
+        defaults.put(CONFIG_LINE_STARTS_AT, 1);
+        defaults.put(CONFIG_FORCE_LOCALE, false);
+        defaults.put(CONFIG_LOCALE, "en");
     }
 
     public File getConfigFile() {
@@ -119,15 +125,33 @@ public class Configuration {
         return getLineStartsAt() + 3;
     }
 
-    private void sanitizeConfig(YamlConfiguration c) {
-        int lineStartsAt = c.getInt(CONFIG_LINE_STARTS_AT);
-        if (lineStartsAt < 0 || lineStartsAt > 1) setDefaultConfig(CONFIG_LINE_STARTS_AT);
+    public boolean getforceLocale() {
+        return yamlConfig.getBoolean(CONFIG_FORCE_LOCALE);
+    }
 
+    public Locale getLocale() {
+        return getLocale(yamlConfig);
+    }
+
+    private Locale getLocale(YamlConfiguration yamlConfig) {
+        return new Locale.Builder().setLanguageTag(yamlConfig.getString(CONFIG_LOCALE)).build();
+    }
+
+    private void sanitizeConfig(YamlConfiguration c) {
         String clicking = c.getString(CONFIG_CLICKING);
         if (clicking == null ||
                 !(clicking.equalsIgnoreCase("true") ||
                         clicking.equalsIgnoreCase("false") ||
                         clicking.equalsIgnoreCase("auto"))) setDefaultConfig(CONFIG_CLICKING);
+
+        int lineStartsAt = c.getInt(CONFIG_LINE_STARTS_AT);
+        if (lineStartsAt < 0 || lineStartsAt > 1) setDefaultConfig(CONFIG_LINE_STARTS_AT);
+
+        try {
+            getLocale(c);
+        } catch (IllformedLocaleException | NullPointerException e) {
+            setDefaultConfig(CONFIG_LOCALE);
+        }
     }
 
     private void setDefaultConfig(String path) {

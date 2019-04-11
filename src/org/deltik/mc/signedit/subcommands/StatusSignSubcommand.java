@@ -39,13 +39,13 @@ public class StatusSignSubcommand implements SignSubcommand {
 
     private void reportPendingAction() {
         if (!listener.isInteractionPending(player)) {
-            comms.tellPlayer(comms.primary() + comms.strong() + "Pending Action:" + comms.reset() + " " +
-                    comms.primaryDark() + "None");
+            comms.tellPlayer(comms.primary() + comms.strong() + comms.t("pending_action_section",
+                    comms.primaryDark() + comms.t("no_pending_action")));
         } else {
             SignEditInteraction interaction = listener.getPendingInteraction(player);
-            comms.tellPlayer(comms.primary() + comms.strong() + "Pending Action:" + comms.reset() + " " +
-                    interaction.getName());
-            comms.tellPlayer(" " + comms.italic() + "Right-click a sign to apply the action!");
+            comms.tellPlayer(comms.primary() + comms.strong() + comms.t("pending_action_section",
+                    comms.reset() + comms.t(interaction.getName())));
+            comms.tellPlayer(" " + comms.italic() + comms.t("right_click_sign_to_apply_action"));
         }
     }
 
@@ -59,21 +59,19 @@ public class StatusSignSubcommand implements SignSubcommand {
             redosRemaining = history.redosRemaining();
         }
 
-        comms.tellPlayer(comms.primary() + comms.strong() + "History:" + comms.reset() + " " +
-                comms.primary() + "have " + comms.primaryLight() +
-                undosRemaining +
-                comms.primary() + " undos, " + comms.primaryLight() +
-                redosRemaining +
-                comms.primary() + " redos");
+        comms.tellPlayer(comms.primary() + comms.strong() + comms.t("history_section",
+                comms.reset() + comms.t("history_have", undosRemaining, redosRemaining)
+        ));
     }
 
     private void reportClipboard() {
         SignText clipboard = clipboardManager.getClipboard(player);
         if (clipboard == null) {
-            comms.tellPlayer(comms.primary() + comms.strong() + "Clipboard Contents:" + comms.reset() + " " +
-                    comms.primaryDark() + "None");
+            comms.tellPlayer(comms.primary() + comms.strong() + comms.t("clipboard_contents_section",
+                    comms.primaryDark() + comms.t("empty_clipboard")));
         } else {
-            comms.tellPlayer(comms.primary() + comms.strong() + "Clipboard Contents:");
+            comms.tellPlayer(comms.primary() + comms.strong() + comms.t("clipboard_contents_section",
+                    ""));
             comms.dumpLines(clipboard.getLines());
         }
     }
