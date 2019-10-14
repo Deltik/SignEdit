@@ -16,6 +16,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.text.MessageFormat;
+import java.text.NumberFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,7 +27,8 @@ public class ChatComms {
     private final Player player;
     private final Configuration config;
     private final ResourceBundle phrases;
-    private final MessageFormat formatter;
+    private final MessageFormat messageFormatter;
+    private final NumberFormat numberFormatter;
 
     @Inject
     public ChatComms(Player player, Configuration config) {
@@ -35,8 +37,10 @@ public class ChatComms {
 
         Locale locale = getSensibleLocale(player, config);
         this.phrases = ResourceBundle.getBundle("Comms", locale, new UTF8ResourceBundleControl());
-        this.formatter = new MessageFormat("");
-        this.formatter.setLocale(locale);
+        this.messageFormatter = new MessageFormat("");
+        this.messageFormatter.setLocale(locale);
+
+        this.numberFormatter = NumberFormat.getInstance(locale);
     }
 
     private Locale getSensibleLocale(Player player, Configuration config) {
@@ -49,7 +53,7 @@ public class ChatComms {
     }
 
     public void tellPlayer(String message) {
-        player.sendMessage(prefix() + message);
+        player.sendMessage(prefix(message));
     }
 
     public String t(String key, Object... messageArguments) {
@@ -57,8 +61,8 @@ public class ChatComms {
 
         phrase = replaceFormattingCodes(phrase);
 
-        formatter.applyPattern(phrase);
-        return formatter.format(messageArguments);
+        messageFormatter.applyPattern(phrase);
+        return messageFormatter.format(messageArguments);
     }
 
     private String replaceFormattingCodes(String phrase) {
@@ -92,11 +96,16 @@ public class ChatComms {
         return t(key, new Object[]{});
     }
 
-    public String prefix() {
-        return primaryDark() + "[" +
-                primary() + t("plugin_name") +
-                primaryDark() + "]" +
-                reset() + " ";
+    public String nf(Number number) {
+        return numberFormatter.format(number);
+    }
+
+    public String nf(String integer) {
+        return numberFormatter.format(Integer.parseInt(integer));
+    }
+
+    private String prefix(String message) {
+        return t("prefix", t("plugin_name"), message);
     }
 
     public String reset() {
@@ -220,7 +229,7 @@ public class ChatComms {
                 line = "";
                 highlight = primaryDark() + strike();
             }
-            tellPlayer(" " + highlight + "<" + relativeLineNumber + ">" + reset() + " " + line);
+            tellPlayer(t("line_print", highlight, nf(relativeLineNumber), line));
         }
     }
 
@@ -230,17 +239,17 @@ public class ChatComms {
         } else if (e instanceof MissingLineSelectionException) {
             tellPlayer(t("missing_line_selection_exception"));
         } else if (e instanceof NumberParseLineSelectionException) {
-            tellPlayer(t("number_parse_line_selection_exception", e.getMessage()));
+            tellPlayer(t("number_parse_line_selection_exception", nf(e.getMessage())));
         } else if (e instanceof OutOfBoundsLineSelectionException) {
             tellPlayer(t(
                     "out_of_bounds_line_selection_exception",
-                    config.getMinLine(), config.getMaxLine(), e.getMessage()
+                    nf(config.getMinLine()), nf(config.getMaxLine()), nf(e.getMessage())
                     )
             );
         } else if (e instanceof RangeOrderLineSelectionException) {
             String lower = ((RangeOrderLineSelectionException) e).getInvalidLowerBound();
             String upper = ((RangeOrderLineSelectionException) e).getInvalidUpperBound();
-            tellPlayer(t("range_order_line_selection_exception", lower, upper, e.getMessage()));
+            tellPlayer(t("range_order_line_selection_exception", nf(lower), nf(upper), e.getMessage()));
         } else if (e instanceof RangeParseLineSelectionException) {
             String badRange = ((RangeParseLineSelectionException) e).getBadRange();
             tellPlayer(t("range_parse_line_selection_exception", badRange, e.getMessage()));
