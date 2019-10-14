@@ -20,6 +20,8 @@ import java.text.NumberFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.bukkit.Bukkit.getLogger;
 
@@ -66,26 +68,20 @@ public class ChatComms {
     }
 
     private String replaceFormattingCodes(String phrase) {
-        Map<String, String> formattingCodeReplacements = new HashMap<String, String>() {{
-            put("reset", reset());
-            put("primary", primary());
-            put("primaryLight", primaryLight());
-            put("primaryDark", primaryDark());
-            put("secondary", secondary());
-            put("highlightBefore", highlightBefore());
-            put("highlightAfter", highlightAfter());
-            put("strong", strong());
-            put("italic", italic());
-            put("strike", strike());
-            put("error", error());
-        }};
+        Set<String> formattingCodeSet = Stream.of(
+                "reset",
+                "primary", "primaryDark", "primaryLight",
+                "secondary",
+                "highlightBefore", "highlightAfter",
+                "strong", "italic", "strike", "error"
+        ).collect(Collectors.toSet());
         String formattingCodeReplacementPattern =
-                "\\{(" + StringUtils.join(formattingCodeReplacements.keySet(), "|") + ")\\}";
+                "\\{(" + StringUtils.join(formattingCodeSet, "|") + ")\\}";
         Pattern pattern = Pattern.compile(formattingCodeReplacementPattern);
         Matcher matcher = pattern.matcher(phrase);
         StringBuffer stringBuffer = new StringBuffer();
         while (matcher.find()) {
-            matcher.appendReplacement(stringBuffer, formattingCodeReplacements.get(matcher.group(1)));
+            matcher.appendReplacement(stringBuffer, phrases.getString(matcher.group(1)));
         }
         matcher.appendTail(stringBuffer);
         phrase = stringBuffer.toString();
@@ -108,48 +104,81 @@ public class ChatComms {
         return t("prefix", t("plugin_name"), message);
     }
 
+    /**
+     * @deprecated
+     */
     public String reset() {
         return "§r";
     }
 
+    /**
+     * @deprecated
+     */
     public String primary() {
-        return "§6";
+        return t("primary");
     }
 
+    /**
+     * @deprecated
+     */
     public String primaryLight() {
-        return "§e";
+        return t("primaryLight");
     }
 
+    /**
+     * @deprecated
+     */
     public String primaryDark() {
-        return "§7";
+        return t("primaryDark");
     }
 
+    /**
+     * @deprecated
+     */
     public String secondary() {
-        return "§f";
+        return "secondary";
     }
 
+    /**
+     * @deprecated
+     */
     public String highlightBefore() {
-        return "§4";
+        return t("highlightBefore");
     }
 
+    /**
+     * @deprecated
+     */
     public String highlightAfter() {
-        return "§2";
+        return t("highlightAfter");
     }
 
+    /**
+     * @deprecated
+     */
     public String strong() {
-        return "§l";
+        return t("strong");
     }
 
+    /**
+     * @deprecated
+     */
     public String italic() {
-        return "§o";
+        return t("italic");
     }
 
+    /**
+     * @deprecated
+     */
     public String strike() {
-        return "§m";
+        return t("strike");
     }
 
+    /**
+     * @deprecated
+     */
     public String error() {
-        return "§c";
+        return t("error");
     }
 
     public void informForbidden(String command, String subcommand) {
@@ -206,9 +235,9 @@ public class ChatComms {
                     afterHighlights[i] = highlightAfter();
                 }
             }
-            tellPlayer(primary() + strong() + t("before_section"));
+            tellPlayer(t("before_section"));
             dumpLines(signText.getBeforeLines(), beforeHighlights);
-            tellPlayer(primary() + strong() + t("after_section"));
+            tellPlayer(t("after_section"));
             dumpLines(signText.getAfterLines(), afterHighlights);
         }
     }
