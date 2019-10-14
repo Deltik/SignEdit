@@ -72,7 +72,7 @@ public class ChatComms {
                 "strong", "italic", "strike", "error"
         ).collect(Collectors.toSet());
         String formattingCodeReplacementPattern =
-                "\\{(" + StringUtils.join(formattingCodeSet, "|") + ")\\}";
+                "\\{(" + StringUtils.join(formattingCodeSet, "|") + ")}";
         Pattern pattern = Pattern.compile(formattingCodeReplacementPattern);
         Matcher matcher = pattern.matcher(phrase);
         StringBuffer stringBuffer = new StringBuffer();

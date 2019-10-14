@@ -43,7 +43,7 @@ public class StatusSignSubcommand implements SignSubcommand {
         } else {
             SignEditInteraction interaction = listener.getPendingInteraction(player);
             comms.tellPlayer(comms.t("pending_action_section", comms.t(interaction.getName())));
-            comms.tellPlayer(comms.t("status_hint", comms.t("right_click_sign_to_apply_action")));
+            comms.tellPlayer(comms.t("right_click_sign_to_apply_action_hint"));
         }
     }
 
