@@ -2,11 +2,11 @@ apply plugin: 'java'
 apply plugin: 'java-library'
 apply plugin: 'application'
 
-version '1.10.2'
+version '1.10.3-SNAPSHOT'
 
 // Set to '+' to use latest Bukkit
 // Otherwise, specify a version number like '1.12.2-R0.1-SNAPSHOT'
-def bukkit_version = '1.13.1-R0.1-SNAPSHOT'
+def bukkit_version = '1.14-R0.1-SNAPSHOT'
 
 mainClassName = 'org.deltik.mc.signedit.SignEditPlugin'
 
@@ -25,6 +25,7 @@ configurations {
 
 dependencies {
     compile group: 'org.bukkit', name: 'bukkit', version: bukkit_version
+    compile 'com.intellij:annotations:+@jar' // Workaround for org.bukkit.bukkit version 1.13.2-R0.1-SNAPSHOT regression
 
     compile group: 'com.google.dagger', name: 'dagger', version: '2.21'
     annotationProcessor group: 'com.google.dagger', name: 'dagger-compiler', version: '2.21'
