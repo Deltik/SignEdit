@@ -95,12 +95,12 @@ public class SignCommand implements CommandExecutor {
         Block block = getTargetBlockOfPlayer(player);
         if (shouldDoClickingMode(block)) {
             listener.setPendingInteraction(player, interaction);
-            comms.tellPlayer(comms.primary() + comms.t("right_click_sign_to_apply_action"));
+            comms.tellPlayer(comms.t("right_click_sign_to_apply_action"));
         } else if (block.getState() instanceof Sign) {
             Sign sign = (Sign) block.getState();
             interaction.interact(player, sign);
         } else {
-            comms.tellPlayer(comms.primary() + comms.t("must_look_at_sign_to_interact"));
+            comms.tellPlayer(comms.t("must_look_at_sign_to_interact"));
         }
     }
 

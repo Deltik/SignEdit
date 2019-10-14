@@ -41,7 +41,7 @@ public class CopySignEditInteraction implements SignEditInteraction {
 
         clipboardManager.setClipboard(player, signText);
 
-        comms.tellPlayer(comms.primary() + comms.strong() + comms.t("lines_copied_section"));
+        comms.tellPlayer(comms.t("lines_copied_section"));
         comms.dumpLines(signText.getLines());
     }
 

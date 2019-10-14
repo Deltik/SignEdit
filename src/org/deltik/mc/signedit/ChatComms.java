@@ -16,7 +16,6 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.text.MessageFormat;
-import java.text.NumberFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,7 +29,6 @@ public class ChatComms {
     private final Configuration config;
     private final ResourceBundle phrases;
     private final MessageFormat messageFormatter;
-    private final NumberFormat numberFormatter;
 
     @Inject
     public ChatComms(Player player, Configuration config) {
@@ -41,8 +39,6 @@ public class ChatComms {
         this.phrases = ResourceBundle.getBundle("Comms", locale, new UTF8ResourceBundleControl());
         this.messageFormatter = new MessageFormat("");
         this.messageFormatter.setLocale(locale);
-
-        this.numberFormatter = NumberFormat.getInstance(locale);
     }
 
     private Locale getSensibleLocale(Player player, Configuration config) {
@@ -92,104 +88,18 @@ public class ChatComms {
         return t(key, new Object[]{});
     }
 
-    public String nf(Number number) {
-        return numberFormatter.format(number);
-    }
-
-    public String nf(String integer) {
-        return numberFormatter.format(Integer.parseInt(integer));
-    }
-
     private String prefix(String message) {
         return t("prefix", t("plugin_name"), message);
     }
 
-    /**
-     * @deprecated
-     */
-    public String reset() {
-        return "§r";
-    }
-
-    /**
-     * @deprecated
-     */
-    public String primary() {
-        return t("primary");
-    }
-
-    /**
-     * @deprecated
-     */
-    public String primaryLight() {
-        return t("primaryLight");
-    }
-
-    /**
-     * @deprecated
-     */
-    public String primaryDark() {
-        return t("primaryDark");
-    }
-
-    /**
-     * @deprecated
-     */
-    public String secondary() {
-        return "secondary";
-    }
-
-    /**
-     * @deprecated
-     */
-    public String highlightBefore() {
-        return t("highlightBefore");
-    }
-
-    /**
-     * @deprecated
-     */
-    public String highlightAfter() {
-        return t("highlightAfter");
-    }
-
-    /**
-     * @deprecated
-     */
-    public String strong() {
-        return t("strong");
-    }
-
-    /**
-     * @deprecated
-     */
-    public String italic() {
-        return t("italic");
-    }
-
-    /**
-     * @deprecated
-     */
-    public String strike() {
-        return t("strike");
-    }
-
-    /**
-     * @deprecated
-     */
-    public String error() {
-        return t("error");
-    }
-
     public void informForbidden(String command, String subcommand) {
-        String formattedCommandAndSubcommand = primaryLight() + "/" + command + " " + subcommand + error();
-        tellPlayer(error() + t("you_cannot_use", formattedCommandAndSubcommand));
+        tellPlayer(t("you_cannot_use", "/" + command + " " + subcommand));
     }
 
     public void showHelpFor(String cmdString) {
         if (cmdString.equals("sign")) {
-            tellPlayer(secondary() + strong() + t("usage_section"));
-            showSubcommandSyntax(cmdString, "[set]", "<lines> [<text>]");
+            tellPlayer(t("usage_section"));
+            showSubcommandSyntax(cmdString, "[set]", "<lines>", "[<text>]");
             showSubcommandSyntax(cmdString, "[clear]", "<lines>");
             showSubcommandSyntax(cmdString, "ui");
             showSubcommandSyntax(cmdString, "cancel");
@@ -197,8 +107,7 @@ public class ChatComms {
             showSubcommandSyntax(cmdString, "paste");
             showSubcommandSyntax(cmdString, "status");
             showSubcommandSyntax(cmdString, "version");
-            String onlineDocsLink = reset() + "https://git.io/SignEdit-README";
-            tellPlayer(secondary() + strong() + t("online_documentation", onlineDocsLink));
+            tellPlayer(t("online_documentation", t("online_documentation_url")));
         }
     }
 
@@ -210,29 +119,21 @@ public class ChatComms {
         showSubcommandSyntax(command, subcommand, "");
     }
 
-    public void showSubcommandSyntax(String command, String subcommand, String parameters) {
-        String output = primary() + "/" + command;
-        if (!subcommand.isEmpty()) {
-            output += reset() + " " +
-                    primaryLight() + subcommand;
-        }
-        if (!parameters.isEmpty()) {
-            output += reset() + " " +
-                    primaryDark() + parameters;
-        }
-        tellPlayer(output);
+    public void showSubcommandSyntax(String command, String subcommand, String... parameters) {
+        String parametersJoined = String.join(" ", parameters);
+        tellPlayer(t("print_subcommand_usage", command, subcommand, parametersJoined));
     }
 
     public void compareSignText(SignText signText) {
         if (!signText.signChanged()) {
-            tellPlayer(primary() + t("sign_did_not_change"));
+            tellPlayer(t("sign_did_not_change"));
         } else {
             String[] beforeHighlights = new String[4];
             String[] afterHighlights = new String[4];
             for (int i = 0; i < 4; i++) {
                 if (!Objects.equals(signText.getBeforeLine(i), signText.getAfterLine(i))) {
-                    beforeHighlights[i] = highlightBefore();
-                    afterHighlights[i] = highlightAfter();
+                    beforeHighlights[i] = phrases.getString("highlightBefore");
+                    afterHighlights[i] = phrases.getString("highlightAfter");
                 }
             }
             tellPlayer(t("before_section"));
@@ -252,13 +153,13 @@ public class ChatComms {
             String line = lines[i];
             String highlight = highlights[i];
             if (highlight == null) {
-                highlight = secondary();
+                highlight = phrases.getString("secondary");
             }
             if (line == null) {
                 line = "";
-                highlight = primaryDark() + strike();
+                highlight = phrases.getString("primaryDark") + phrases.getString("strike");
             }
-            tellPlayer(t("line_print", highlight, nf(relativeLineNumber), line));
+            tellPlayer(t("print_line", highlight, relativeLineNumber, line));
         }
     }
 
@@ -268,17 +169,17 @@ public class ChatComms {
         } else if (e instanceof MissingLineSelectionException) {
             tellPlayer(t("missing_line_selection_exception"));
         } else if (e instanceof NumberParseLineSelectionException) {
-            tellPlayer(t("number_parse_line_selection_exception", nf(e.getMessage())));
+            tellPlayer(t("number_parse_line_selection_exception", e.getMessage()));
         } else if (e instanceof OutOfBoundsLineSelectionException) {
             tellPlayer(t(
                     "out_of_bounds_line_selection_exception",
-                    nf(config.getMinLine()), nf(config.getMaxLine()), nf(e.getMessage())
+                    config.getMinLine(), config.getMaxLine(), Integer.valueOf(e.getMessage())
                     )
             );
         } else if (e instanceof RangeOrderLineSelectionException) {
-            String lower = ((RangeOrderLineSelectionException) e).getInvalidLowerBound();
-            String upper = ((RangeOrderLineSelectionException) e).getInvalidUpperBound();
-            tellPlayer(t("range_order_line_selection_exception", nf(lower), nf(upper), e.getMessage()));
+            int lower = Integer.parseInt(((RangeOrderLineSelectionException) e).getInvalidLowerBound());
+            int upper = Integer.parseInt(((RangeOrderLineSelectionException) e).getInvalidUpperBound());
+            tellPlayer(t("range_order_line_selection_exception", lower, upper, e.getMessage()));
         } else if (e instanceof RangeParseLineSelectionException) {
             String badRange = ((RangeParseLineSelectionException) e).getBadRange();
             tellPlayer(t("range_parse_line_selection_exception", badRange, e.getMessage()));

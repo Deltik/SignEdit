@@ -52,7 +52,7 @@ public class CutSignEditInteraction implements SignEditInteraction {
         }
         clipboardManager.setClipboard(player, clipboard);
 
-        comms.tellPlayer(comms.primary() + comms.strong() + comms.t("lines_cut_section"));
+        comms.tellPlayer(comms.t("lines_cut_section"));
         comms.dumpLines(clipboard.getLines());
     }
 
