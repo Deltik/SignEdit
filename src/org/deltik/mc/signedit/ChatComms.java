@@ -226,13 +226,13 @@ public class ChatComms {
 
     public void reportException(Exception e) {
         if (e instanceof ForbiddenSignEditException) {
-            tellPlayer(error() + t("forbidden_sign_edit"));
+            tellPlayer(t("forbidden_sign_edit"));
         } else if (e instanceof MissingLineSelectionException) {
-            tellPlayer(error() + t("missing_line_selection_exception"));
+            tellPlayer(t("missing_line_selection_exception"));
         } else if (e instanceof NumberParseLineSelectionException) {
-            tellPlayer(error() + t("number_parse_line_selection_exception", e.getMessage()));
+            tellPlayer(t("number_parse_line_selection_exception", e.getMessage()));
         } else if (e instanceof OutOfBoundsLineSelectionException) {
-            tellPlayer(error() + t(
+            tellPlayer(t(
                     "out_of_bounds_line_selection_exception",
                     config.getMinLine(), config.getMaxLine(), e.getMessage()
                     )
@@ -240,32 +240,27 @@ public class ChatComms {
         } else if (e instanceof RangeOrderLineSelectionException) {
             String lower = ((RangeOrderLineSelectionException) e).getInvalidLowerBound();
             String upper = ((RangeOrderLineSelectionException) e).getInvalidUpperBound();
-            tellPlayer(error() + t("range_order_line_selection_exception", lower, upper, e.getMessage()));
+            tellPlayer(t("range_order_line_selection_exception", lower, upper, e.getMessage()));
         } else if (e instanceof RangeParseLineSelectionException) {
             String badRange = ((RangeParseLineSelectionException) e).getBadRange();
-            tellPlayer(error() + t("range_parse_line_selection_exception", badRange, e.getMessage()));
+            tellPlayer(t("range_parse_line_selection_exception", badRange, e.getMessage()));
         } else if (e instanceof SignTextHistoryStackBoundsException) {
-            tellPlayer(error() + t(e.getMessage()));
+            tellPlayer(t(e.getMessage()));
         } else if (e instanceof BlockStateNotPlacedException) {
-            tellPlayer(error() + t("block_state_not_placed_exception"));
+            tellPlayer(t("block_state_not_placed_exception"));
         } else if (e instanceof NullClipboardException) {
-            tellPlayer(error() + t("null_clipboard_exception"));
+            tellPlayer(t("null_clipboard_exception"));
         } else if (e instanceof SignEditorInvocationException) {
             Exception originalException = ((SignEditorInvocationException) e).getOriginalException();
-            tellPlayer(error() + strong() + t("cannot_open_sign_editor"));
-            tellPlayer(primaryDark()
-                    + t("likely_cause",
-                    reset() + t("minecraft_server_api_changed")));
-            tellPlayer(primaryDark()
-                    + t("to_server_admin",
-                    reset() + t("check_for_updates_to_this_plugin")));
-            tellPlayer("");
-            tellPlayer(primaryDark() + t("error_code", reset() + originalException.toString()));
-            tellPlayer(primary() + t("hint_more_details_with_server_admin"));
+            tellPlayer(t("cannot_open_sign_editor"));
+            tellPlayer(t("likely_cause", t("minecraft_server_api_changed")));
+            tellPlayer(t("to_server_admin", t("check_for_updates_to_this_plugin")));
+            tellPlayer(t("error_code", originalException.toString()));
+            tellPlayer(t("hint_more_details_with_server_admin"));
             getLogger().severe(ExceptionUtils.getStackTrace(originalException));
         } else {
-            tellPlayer(error() + t("uncaught_error", e.toString()));
-            tellPlayer(error() + t("hint_more_details_with_server_admin"));
+            tellPlayer(t("uncaught_error", e.toString()));
+            tellPlayer(t("hint_more_details_with_server_admin"));
             getLogger().severe(ExceptionUtils.getStackTrace(e));
         }
     }
