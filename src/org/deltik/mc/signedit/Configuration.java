@@ -152,6 +152,10 @@ public class Configuration {
         } catch (IllformedLocaleException | NullPointerException e) {
             setDefaultConfig(CONFIG_LOCALE);
         }
+
+        if (!c.isBoolean(CONFIG_FORCE_LOCALE)) {
+            setDefaultConfig(CONFIG_FORCE_LOCALE);
+        }
     }
 
     private void setDefaultConfig(String path) {
