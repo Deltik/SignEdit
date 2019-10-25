@@ -1,0 +1,33 @@
+# ${pluginName} ${pluginVersion} configuration file
+#
+# This file is managed by ${pluginName}. The configuration option values can be changed by hand, but any comment or
+# spacing changes will be overwritten automatically by ${pluginName}.
+#
+# Manual changes are applied the next time ${pluginName} is loaded.
+---
+# Sign line starts at
+# Possible values:
+#   1 - (Default) Line number 1 corresponds to the top-most line of sign blocks.
+#   0 - Line number 0 corresponds to the top-most line of sign blocks.
+line-starts-at: {{ line_starts_at }}
+
+# Sets whether a right-mouse click is required to edit a sign
+# Possible values:
+#   "auto"  - (Default) Behave like "false" when the player is looking at a sign.
+#                       Behave like "true" when the player is not looking at a sign.
+#   "false" - Edit signs by looking at them and then typing a /sign command, which instantly edits the targeted sign.
+#   "true"  - Edit signs by typing a /sign command and then right-mouse clicking a sign.
+clicking: {{ clicking }}
+
+# Language presented to the player if the player's language is not supported
+# Can be any IETF BCP 47 language tag. Details: https://tools.ietf.org/html/bcp47
+# Supported values:
+#   "en" - (Default) English
+#   "de" - German (Deutsch)
+#   "zh" - Simplified Chinese (简体中文)
+locale: {{ locale }}
+# Overrides the player's language choice
+# Possible values:
+#   false - (Default) Uses the player's language if supported; otherwise uses the language specified in the "locale" key
+#   true  - Forces all players to see the language specified in the "locale" key
+force-locale: {{ force_locale }}

@@ -228,11 +228,11 @@ All configuration is in the file `plugins/SignEdit/config.yml`.
 
 (`>= 1.1`)
 
+(`>= 1.7`) **auto** (default): Behave like `clicking: true` when you are not looking at a sign and behave like `clicking: false` when you are looking at a sign.
+
 **false** (default `< 1.7`): Edit signs by looking at them and then typing a `/sign` command, which will then instantly edit the sign you are looking at.
 
 **true**: Edit signs by typing a `/sign` command and then right-mouse clicking a sign.
-
-(`>= 1.7`) **auto** (default): Behave like `clicking: true` when you are not looking at a sign and behave like `clicking: false` when you are looking at a sign.
 
 ### `force-locale: [false|true]`
 
@@ -282,7 +282,7 @@ It is the locale used to display text to the player when the player's locale can
 ### Features from Older Versions
 These features no longer apply to the latest version of this plugin:
 
-* Edit the line `<line>` of the targeted sign to be `<text>` with `/sign set <line> [<text>]` or (`>= 1.6`) `/sign <line> [<text>]`.
+* (`< 1.10`) Edit the line `<line>` of the targeted sign to be `<text>` with `/sign set <line> [<text>]` or (`>= 1.6`) `/sign <line> [<text>]`.
 * (`>= 1.8, < 1.10`) Before editing a sign, this plugin checks if the player is allowed to edit the sign by pretending to blank out the sign and seeing if the corresponding [SignChangeEvent](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/event/block/SignChangeEvent.html) is cancelled.
 
 ### Supported Locales

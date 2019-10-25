@@ -43,7 +43,7 @@ public abstract class SignEditTest {
         Configuration config = new Configuration(File.createTempFile("SignEdit-", "-config.yml"));
         spyConfig = spy(config);
         listener = new SignEditListener(null, null);
-        doReturn(false).when(spyConfig).writeFullConfig(new YamlConfiguration());
+        doReturn(false).when(spyConfig).writeSaneConfig(new YamlConfiguration());
 
         uiSignSubcommand = mock(UiSignSubcommand.class);
         whenNew(UiSignSubcommand.class).withAnyArguments().thenReturn(uiSignSubcommand);

@@ -1,11 +1,17 @@
 package org.deltik.mc.signedit;
 
+import com.google.common.io.Files;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jtwig.JtwigModel;
+import org.jtwig.JtwigTemplate;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.IllformedLocaleException;
 import java.util.Locale;
@@ -14,7 +20,7 @@ import java.util.Map;
 @Singleton
 public class Configuration {
     private File configFile;
-    private YamlConfiguration yamlConfig;
+    private FileConfiguration bukkitConfig;
     private static final String CONFIG_CLICKING = "clicking";
     private static final String CONFIG_LINE_STARTS_AT = "line-starts-at";
     private static final String CONFIG_FORCE_LOCALE = "force-locale";
@@ -29,14 +35,6 @@ public class Configuration {
         defaults.put(CONFIG_LOCALE, "en");
     }
 
-    public File getConfigFile() {
-        return configFile;
-    }
-
-    public YamlConfiguration getYamlConfig() {
-        return yamlConfig;
-    }
-
     @Inject
     public Configuration(SignEditPlugin plugin) {
         this("plugins//" + plugin.getName() + "//config.yml");
@@ -48,24 +46,28 @@ public class Configuration {
 
     public Configuration(File f) {
         configFile = f;
-        reloadConfig();
+        try {
+            reloadConfig();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void reloadConfig() {
+    public void reloadConfig() throws IOException {
         if (!configFile.exists()) {
             writeDefaultConfig();
         }
-        yamlConfig = YamlConfiguration.loadConfiguration(configFile);
-        sanitizeConfig(yamlConfig);
+        bukkitConfig = YamlConfiguration.loadConfiguration(configFile);
+        writeSaneConfig(bukkitConfig);
     }
 
-    public boolean writeDefaultConfig() {
+    public void writeDefaultConfig() throws IOException {
         YamlConfiguration c = new YamlConfiguration();
         mergeInDefaultConfig(c);
-        return writeFullConfig(c);
+        writeSaneConfig(c);
     }
 
-    private void mergeInDefaultConfig(YamlConfiguration c) {
+    private void mergeInDefaultConfig(FileConfiguration c) {
         for (Map.Entry<String, Object> defaultConfigItem : defaults.entrySet()) {
             if (!c.contains(defaultConfigItem.getKey())) {
                 c.set(defaultConfigItem.getKey(), defaultConfigItem.getValue());
@@ -73,29 +75,34 @@ public class Configuration {
         }
     }
 
-    public boolean writeFullConfig(YamlConfiguration c) {
+    public void writeSaneConfig(FileConfiguration c) throws IOException {
         mergeInDefaultConfig(c);
         sanitizeConfig(c);
-        try {
-            c.save(configFile);
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
+        JtwigTemplate template = JtwigTemplate.classpathTemplate("config.yml.j2");
+        Map<String, Object> yamlContext = c.getValues(true);
+        Map<String, Object> jinjaContext = new HashMap<>();
+        for (Map.Entry<String, Object> entry : yamlContext.entrySet()) {
+            String key = entry.getKey();
+            String newKey = key.replaceAll("-", "_");
+            jinjaContext.put(newKey, yamlContext.get(key));
         }
+        JtwigModel model = JtwigModel.newModel(jinjaContext);
+        Files.createParentDirs(configFile);
+        OutputStream configFileOut = new FileOutputStream(configFile);
+        template.render(model, configFileOut);
+        configFileOut.close();
     }
 
-    public boolean writeFullConfig() {
-        return writeFullConfig(yamlConfig);
+    public void writeSaneConfig() throws IOException {
+        writeSaneConfig(bukkitConfig);
     }
 
     public String getClicking() {
-        return yamlConfig.getString(CONFIG_CLICKING, (String) defaults.get(CONFIG_CLICKING));
+        return bukkitConfig.getString(CONFIG_CLICKING, (String) defaults.get(CONFIG_CLICKING));
     }
 
     public void setClicking(String newValue) {
-        yamlConfig.set(CONFIG_CLICKING, newValue);
-        writeFullConfig(yamlConfig);
+        bukkitConfig.set(CONFIG_CLICKING, newValue);
     }
 
     public boolean allowedToEditSignBySight() {
@@ -109,12 +116,11 @@ public class Configuration {
     }
 
     public int getLineStartsAt() {
-        return yamlConfig.getInt(CONFIG_LINE_STARTS_AT, (int) defaults.get(CONFIG_LINE_STARTS_AT));
+        return bukkitConfig.getInt(CONFIG_LINE_STARTS_AT, (int) defaults.get(CONFIG_LINE_STARTS_AT));
     }
 
     public void setLineStartsAt(String newValue) {
-        yamlConfig.set(CONFIG_LINE_STARTS_AT, Integer.parseInt(newValue));
-        writeFullConfig(yamlConfig);
+        bukkitConfig.set(CONFIG_LINE_STARTS_AT, Integer.parseInt(newValue));
     }
 
     public int getMinLine() {
@@ -126,18 +132,16 @@ public class Configuration {
     }
 
     public boolean getforceLocale() {
-        return yamlConfig.getBoolean(CONFIG_FORCE_LOCALE);
+        return bukkitConfig.getBoolean(CONFIG_FORCE_LOCALE);
     }
 
     public Locale getLocale() {
-        return getLocale(yamlConfig);
+        String languageTag = bukkitConfig.getString(CONFIG_LOCALE);
+        if (languageTag == null) languageTag = (String) defaults.get(CONFIG_LOCALE);
+        return new Locale.Builder().setLanguageTag(languageTag).build();
     }
 
-    private Locale getLocale(YamlConfiguration yamlConfig) {
-        return new Locale.Builder().setLanguageTag(yamlConfig.getString(CONFIG_LOCALE)).build();
-    }
-
-    private void sanitizeConfig(YamlConfiguration c) {
+    private void sanitizeConfig(FileConfiguration c) {
         String clicking = c.getString(CONFIG_CLICKING);
         if (clicking == null ||
                 !(clicking.equalsIgnoreCase("true") ||
@@ -148,7 +152,7 @@ public class Configuration {
         if (lineStartsAt < 0 || lineStartsAt > 1) setDefaultConfig(CONFIG_LINE_STARTS_AT);
 
         try {
-            getLocale(c);
+            getLocale();
         } catch (IllformedLocaleException | NullPointerException e) {
             setDefaultConfig(CONFIG_LOCALE);
         }
@@ -159,6 +163,6 @@ public class Configuration {
     }
 
     private void setDefaultConfig(String path) {
-        yamlConfig.set(path, defaults.get(path));
+        bukkitConfig.set(path, defaults.get(path));
     }
 }

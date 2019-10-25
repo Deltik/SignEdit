@@ -1,5 +1,5 @@
 main: ${mainClassName}
-name: SignEdit
+name: ${pluginName}
 author: Deltik
 website: https://github.com/Deltik/SignEdit
 version: ${pluginVersion}

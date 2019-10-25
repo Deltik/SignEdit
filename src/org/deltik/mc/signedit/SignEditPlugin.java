@@ -7,6 +7,7 @@ import org.deltik.mc.signedit.commands.SignCommandTabCompleter;
 import org.deltik.mc.signedit.listeners.SignEditListener;
 
 import javax.inject.Inject;
+import java.io.IOException;
 
 public class SignEditPlugin extends JavaPlugin {
     @Inject
@@ -33,7 +34,10 @@ public class SignEditPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        config.reloadConfig();
-        config.writeFullConfig();
+        try {
+            config.reloadConfig();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

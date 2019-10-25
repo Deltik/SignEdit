@@ -36,7 +36,7 @@ public class ChatComms {
         this.config = config;
 
         Locale locale = getSensibleLocale(player, config);
-        this.phrases = ResourceBundle.getBundle("Comms", locale, new UTF8ResourceBundleControl());
+        this.phrases = ResourceBundle.getBundle("Comms", locale, new UTF8ResourceBundleControl(config.getLocale()));
         this.messageFormatter = new MessageFormat("");
         this.messageFormatter.setLocale(locale);
     }
@@ -204,7 +204,23 @@ public class ChatComms {
         }
     }
 
-    class UTF8ResourceBundleControl extends ResourceBundle.Control {
+    static class UTF8ResourceBundleControl extends ResourceBundle.Control {
+        private final Locale fallbackLocale;
+        private boolean failedFallbackLocale = false;
+
+        public UTF8ResourceBundleControl(Locale fallbackLocale) {
+            this.fallbackLocale = fallbackLocale;
+        }
+
+        @Override
+        public Locale getFallbackLocale(String s, Locale locale) {
+            if (locale.equals(fallbackLocale))
+                failedFallbackLocale = true;
+            if (failedFallbackLocale)
+                return super.getFallbackLocale(s, locale);
+            return fallbackLocale;
+        }
+
         @Override
         public ResourceBundle newBundle(String var1, Locale var2, String var3, ClassLoader var4, boolean var5)
                 throws IllegalAccessException, InstantiationException, IOException {
