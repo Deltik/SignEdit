@@ -255,7 +255,11 @@ All configuration is in the file `plugins/SignEdit/config.yml`.
 (`>= 1.10.2`)
 
 The value of `locale` is an IETF BCP 47 [language tag](#language-tags).
-It is the locale used to display text to the player when the player's locale cannot be determined.
+
+(`>= 1.10.3`) It is the locale used to display text to the player when the player's locale cannot be determined.
+If the value is not supported, English will be used as the fallback locale.
+
+(`= 1.10.2`) This option has no effect if [`force-locale`](#force-locale-falsetrue) is false (due to an implementation bug).
 
 **en** (default): Set the default/fallback locale to `en` (English).
 
