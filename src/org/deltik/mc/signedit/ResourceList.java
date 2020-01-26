@@ -31,7 +31,7 @@ public class ResourceList {
         return retval;
     }
 
-    private static Collection<String> getResources(
+    public static Collection<String> getResources(
             final String element,
             final Pattern pattern) {
         final ArrayList<String> retval = new ArrayList<String>();

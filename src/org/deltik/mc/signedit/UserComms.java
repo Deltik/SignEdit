@@ -19,10 +19,12 @@ public class UserComms {
     private String targetDirectory;
     private File overridesDir;
     private File originalsDir;
+    private String originalsSource;
 
     @Inject
     public UserComms(SignEditPlugin plugin) {
         this(plugin.getDataFolder());
+        this.originalsSource = plugin.getClass().getProtectionDomain().getCodeSource().getLocation().getFile();
     }
 
     /**
@@ -85,9 +87,13 @@ public class UserComms {
     protected Collection<String> getResourceNamesFromSelf() {
         String separator = File.separator;
 
-        Collection<String> absolutePathList = ResourceList.getResources(
-                Pattern.compile(".*" + separator + "Comms.*\\.properties")
-        );
+        Collection<String> absolutePathList;
+        Pattern commsPattern = Pattern.compile("(^|.*" + separator + ")Comms.*\\.properties");
+        if (originalsSource != null) {
+            absolutePathList = ResourceList.getResources(originalsSource, commsPattern);
+        } else {
+            absolutePathList = ResourceList.getResources(commsPattern);
+        }
         Collection<String> resourcePathList = new ArrayList<>();
 
         for (String item : absolutePathList) {
