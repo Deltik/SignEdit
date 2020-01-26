@@ -3,6 +3,7 @@ name: ${pluginName}
 author: Deltik
 website: https://github.com/Deltik/SignEdit
 version: ${pluginVersion}
+api-version: "1.13"
 description: Edit existing signs
 commands:
   sign:
