@@ -25,10 +25,10 @@ import java.util.stream.Stream;
 import static org.bukkit.Bukkit.getLogger;
 
 public class ChatComms {
-    private final Player player;
-    private final Configuration config;
-    private final ResourceBundle phrases;
-    private final MessageFormat messageFormatter;
+    private Player player;
+    private Configuration config;
+    private ResourceBundle phrases;
+    private MessageFormat messageFormatter;
 
     @Inject
     public ChatComms(Player player, Configuration config, UserComms userComms) {
@@ -36,10 +36,18 @@ public class ChatComms {
     }
 
     public ChatComms(Player player, Configuration config) {
-        this(player, config, ChatComms.class.getClassLoader());
+        initialize(player, config);
     }
 
     public ChatComms(Player player, Configuration config, ClassLoader classLoader) {
+        initialize(player, config, classLoader);
+    }
+
+    private void initialize(Player player, Configuration config) {
+        initialize(player, config, ChatComms.class.getClassLoader());
+    }
+
+    private void initialize(Player player, Configuration config, ClassLoader classLoader) {
         this.player = player;
         this.config = config;
 
@@ -68,7 +76,7 @@ public class ChatComms {
     }
 
     public String t(String key, Object... messageArguments) {
-        String phrase = phrases.getString(key);
+        String phrase = keyToPhrase(key);
 
         phrase = replaceFormattingCodes(phrase);
 
@@ -90,7 +98,7 @@ public class ChatComms {
         Matcher matcher = pattern.matcher(phrase);
         StringBuffer stringBuffer = new StringBuffer();
         while (matcher.find()) {
-            matcher.appendReplacement(stringBuffer, phrases.getString(matcher.group(1)));
+            matcher.appendReplacement(stringBuffer, keyToPhrase(matcher.group(1)));
         }
         matcher.appendTail(stringBuffer);
         phrase = stringBuffer.toString();
@@ -145,8 +153,8 @@ public class ChatComms {
             String[] afterHighlights = new String[4];
             for (int i = 0; i < 4; i++) {
                 if (!Objects.equals(signText.getBeforeLine(i), signText.getAfterLine(i))) {
-                    beforeHighlights[i] = phrases.getString("highlightBefore");
-                    afterHighlights[i] = phrases.getString("highlightAfter");
+                    beforeHighlights[i] = keyToPhrase("highlightBefore");
+                    afterHighlights[i] = keyToPhrase("highlightAfter");
                 }
             }
             tellPlayer(t("before_section"));
@@ -166,11 +174,11 @@ public class ChatComms {
             String line = lines[i];
             String highlight = highlights[i];
             if (highlight == null) {
-                highlight = phrases.getString("secondary");
+                highlight = keyToPhrase("secondary");
             }
             if (line == null) {
                 line = "";
-                highlight = phrases.getString("primaryDark") + phrases.getString("strike");
+                highlight = keyToPhrase("primaryDark") + keyToPhrase("strike");
             }
             tellPlayer(t("print_line", highlight, relativeLineNumber, line));
         }
@@ -215,6 +223,18 @@ public class ChatComms {
             tellPlayer(t("hint_more_details_with_server_admin"));
             getLogger().severe(ExceptionUtils.getStackTrace(e));
         }
+    }
+
+    private String keyToPhrase(String key) {
+        String phrase;
+        try {
+            phrase = phrases.getString(key);
+        } catch (MissingResourceException e) {
+            initialize(player, config);
+            getLogger().warning("Please update your SignEdit local override! It is missing this key: " + key);
+            phrase = phrases.getString(key);
+        }
+        return phrase;
     }
 
     static class UTF8ResourceBundleControl extends ResourceBundle.Control {
