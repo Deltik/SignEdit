@@ -17,7 +17,7 @@ line-starts-at: {{ line_starts_at }}
 #                       Behave like "true" when the player is not looking at a sign.
 #   "false" - Edit signs by looking at them and then typing a /sign command, which instantly edits the targeted sign.
 #   "true"  - Edit signs by typing a /sign command and then right-mouse clicking a sign.
-clicking: {{ clicking }}
+clicking: "{{ clicking }}"
 
 # Language presented to the player if the player's language is not supported
 # Can be any IETF BCP 47 language tag. Details: https://tools.ietf.org/html/bcp47
@@ -25,7 +25,7 @@ clicking: {{ clicking }}
 #   "en" - (Default) English
 #   "de" - German (Deutsch)
 #   "zh" - Simplified Chinese (简体中文)
-locale: {{ locale }}
+locale: "{{ locale }}"
 # Overrides the player's language choice
 # Possible values:
 #   false - (Default) Uses the player's language if supported; otherwise uses the language specified in the "locale" key
