@@ -1,10 +1,11 @@
 package org.deltik.mc.signedit;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.parboiled.common.FileUtils;
 
 import javax.inject.Inject;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -71,17 +72,13 @@ public class UserComms {
 
         for (String resourceName : getResourceNamesFromSelf()) {
             InputStream readStream = getClass().getResourceAsStream(resourceName);
-            File originalCopy = Paths.get(originalsDir.getAbsolutePath(), resourceName).toFile();
-            originalCopy.createNewFile();
-            OutputStream writeStream = new FileOutputStream(originalCopy);
-            FileUtils.copyAll(readStream, writeStream);
+            Path originalCopyPath = Paths.get(originalsDir.getAbsolutePath(), resourceName);
+            Files.copy(readStream, originalCopyPath, StandardCopyOption.REPLACE_EXISTING);
         }
 
         InputStream documentationStream = getClass().getResourceAsStream(File.separator + "README.Comms.txt");
-        File documentationFile = Paths.get(targetDirectory, "locales", "README.txt").toFile();
-        documentationFile.createNewFile();
-        OutputStream writeStream = new FileOutputStream(documentationFile);
-        FileUtils.copyAll(documentationStream, writeStream);
+        Path documentationFilePath = Paths.get(targetDirectory, "locales", "README.txt");
+        Files.copy(documentationStream, documentationFilePath, StandardCopyOption.REPLACE_EXISTING);
     }
 
     /**
