@@ -21,6 +21,7 @@ import java.util.Map;
 public class Configuration {
     private File configFile;
     private FileConfiguration bukkitConfig;
+    private JtwigTemplate template;
     private static final String CONFIG_CLICKING = "clicking";
     private static final String CONFIG_LINE_STARTS_AT = "line-starts-at";
     private static final String CONFIG_FORCE_LOCALE = "force-locale";
@@ -46,6 +47,7 @@ public class Configuration {
 
     public Configuration(File f) {
         configFile = f;
+        template = JtwigTemplate.classpathTemplate("config.yml.j2");
         try {
             reloadConfig();
         } catch (IOException e) {
@@ -78,7 +80,6 @@ public class Configuration {
     public void writeSaneConfig(FileConfiguration c) throws IOException {
         mergeInDefaultConfig(c);
         sanitizeConfig(c);
-        JtwigTemplate template = JtwigTemplate.classpathTemplate("config.yml.j2");
         Map<String, Object> yamlContext = c.getValues(true);
         Map<String, Object> jinjaContext = new HashMap<>();
         for (Map.Entry<String, Object> entry : yamlContext.entrySet()) {
