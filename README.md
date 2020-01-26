@@ -43,6 +43,9 @@
             * [`/se set 3 &4CONSTRUCTION`](#se-set-3-4construction)
             * [`/se set 1-4 Arts\&Crafts`](#se-set-1-4-artscrafts)
             * [`/sign <tab>`](#sign-tab)
+      * [Advanced Customization](#advanced-customization)
+         * [Theming and Colors](#theming-and-colors)
+         * [Custom Translations](#custom-translations)
       * [Compatibility](#compatibility)
          * [Backwards Compatibility with Omel's SignEdit v1.3](#backwards-compatibility-with-omels-signedit-v13)
 
@@ -256,7 +259,7 @@ All configuration is in the file `plugins/SignEdit/config.yml`.
 
 The value of `locale` is an IETF BCP 47 [language tag](#language-tags).
 
-(`>= 1.10.3`) It is the locale used to display text to the player when the player's locale cannot be determined.
+(`> 1.10.2`) It is the locale used to display text to the player when the player's locale cannot be determined.
 If the value is not supported, English will be used as the fallback locale.
 
 (`= 1.10.2`) This option has no effect if [`force-locale`](#force-locale-falsetrue) is false (due to an implementation bug).
@@ -282,6 +285,7 @@ If the value is not supported, English will be used as the fallback locale.
 * (`>= 1.10`) Undo and redo sign changes with `/sign undo` and `/sign redo`, respectively.
 * (`>= 1.10`) Players cannot edit signs that they do not have permission to edit.  Every attempted edit is validated through a [SignChangeEvent](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/event/block/SignChangeEvent.html) and will not succeed if another plugin or policy cancels the SignChangeEvent.
 * (`>= 1.10.2`) Automatically uses the player's language, [if supported](#supported-locales).
+* (`>= 1.11`) Fully customizable plugin text [theming and localization/translations](#advanced-customization)
 
 ### Features from Older Versions
 These features no longer apply to the latest version of this plugin:
@@ -331,6 +335,65 @@ These features no longer apply to the latest version of this plugin:
 #### `/sign <tab>`
 
 ![Screenshot of tab completion under `/sign`](https://i.imgur.com/l0QWG0R.png)
+
+## Advanced Customization
+
+(`>= 1.11`)
+
+You can customize the text displayed to the player to say whatever you want and look however you like!
+
+After starting up the plugin, a read-only copy of the theme and translation files will be copied to the plugin's data directory at `plugins/SignEdit/locales/originals`
+
+**Important caveat:** Your string (text) customizations will not automatically update in newer versions of this plugin.
+Please see the [release notes](CHANGELOG.md) under:
+* the "Added" section for new strings and
+* the "Changed" section for modified strings.
+
+If the plugin detects that you are missing a translation key, a warning will be sent to the console:
+
+> Please update your SignEdit local override! It is missing this key: …
+
+and the plugin default translation will be used for the message.
+
+### Theming and Colors
+
+The color scheme can be changed by copying the `plugins/SignEdit/locales/originals/Comms.properties` file into the `plugins/SignEdit/locales/overrides/` folder (keeping the same file name) and then editing the copy's "Theme" section.
+
+These are the possible theme properties and their defaults:
+
+```ini
+# Theme
+reset=§r           # Reset formatting after this to the client default. Not recommended to change
+primary=§6         # The primary color of the theme
+primaryDark=§7     # The dark variant of the primary color
+primaryLight=§e    # The light variant of the primary color
+secondary=§f       # The secondary color of the theme
+highlightBefore=§4 # The color to highlight the "before" line of a sign change
+highlightAfter=§2  # The color to highlight the "after" line of a sign change
+strong=§l          # Bold
+italic=§o          # Emphasis
+strike=§m          # Strikethrough
+error=§c           # The error text color
+```
+
+These properties can then be used on any other string by inserting them as `{PROPERTY}`, where `PROPERTY` is the name of the property.
+Example:
+
+```ini
+you_cannot_use={error}You are not allowed to use {primaryLight}{0}{error}.
+```
+
+### Custom Translations
+
+You can add support for a custom language by making a new file `plugins/SignEdit/locales/overrides/Comms_LANGUAGE.properties`, where `LANGUAGE` is a [language tag](#language-tags).
+
+In that new file, add keys from `plugins/SignEdit/locales/originals/Comms.properties` to translate those strings.
+Any keys that you do not add and translate will continue to use the [configured default locale](#locale-en).
+
+By default, this plugin will use the player's locale if possible.
+See the [Configuration](#configuration) section for how to override the player's locale for all players.
+
+If you have translated the plugin to your language, please help the development of this plugin by submitting your translation as [a GitHub issue](https://github.com/Deltik/SignEdit/issues/new) or [a GitHub pull request](https://github.com/Deltik/SignEdit/compare)!
 
 ## Compatibility
 
