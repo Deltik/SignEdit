@@ -108,7 +108,11 @@ public class UserComms {
      * Remove unexpected files from originals folder
      */
     protected void removeOldOriginals(File originalsDir) throws IOException {
-        Collection<File> existingFiles = new HashSet<>(Arrays.asList(Objects.requireNonNull(originalsDir.listFiles())));
+        Collection<File> existingFiles = new HashSet<>(
+                Arrays.asList(
+                        Optional.ofNullable(originalsDir.listFiles()).orElse(new File[0])
+                )
+        );
         Collection<File> expectedFiles = new HashSet<>();
 
         for (String resourceName : getResourceNamesFromSelf()) {
