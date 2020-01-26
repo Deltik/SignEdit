@@ -1,23 +1,65 @@
 package org.deltik.mc.signedit;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.parboiled.common.FileUtils;
 
+import javax.inject.Inject;
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import static org.bukkit.Bukkit.getLogger;
+
 public class UserComms {
+    private String targetDirectory;
+    private File overridesDir;
+    private File originalsDir;
+
+    @Inject
+    public UserComms(SignEditPlugin plugin) {
+        this(plugin.getDataFolder());
+    }
+
+    /**
+     * @param dataFolder The Bukkit plugin data folder
+     */
+    public UserComms(File dataFolder) {
+        this(dataFolder.getAbsolutePath());
+    }
+
+    /**
+     * @param targetDirectory The absolute path to the Bukkit plugin data folder
+     */
+    public UserComms(String targetDirectory) {
+        this.targetDirectory = targetDirectory;
+        this.overridesDir = Paths.get(targetDirectory, "locales", "overrides").toFile();
+        this.originalsDir = Paths.get(targetDirectory, "locales", "originals").toFile();
+    }
+
+    public ClassLoader getClassLoader() {
+        try {
+            return new URLClassLoader(new URL[]{
+                    overridesDir.toURI().toURL(),
+                    originalsDir.toURI().toURL()
+            }, getClass().getClassLoader());
+        } catch (MalformedURLException e) {
+            getLogger().warning(
+                    "Could not load user-defined locales; falling back to built-in locales. Details: "
+            );
+            getLogger().warning(ExceptionUtils.getStackTrace(e));
+            return getClass().getClassLoader();
+        }
+    }
+
     /**
      * Publish Comms ResourceBundles into the file system
-     *
-     * @param targetDirectory The absolute path to the directory where the ResourceBundles should be deployed
      */
-    public void deploy(String targetDirectory) throws IOException {
-        File overridesDir = Paths.get(targetDirectory, "locales", "overrides").toFile();
-        File originalsDir = Paths.get(targetDirectory, "locales", "originals").toFile();
-
+    public void deploy() throws IOException {
         overridesDir.mkdirs();
         originalsDir.mkdirs();
         removeOldOriginals(originalsDir);

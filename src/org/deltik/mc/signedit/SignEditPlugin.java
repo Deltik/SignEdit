@@ -1,5 +1,6 @@
 package org.deltik.mc.signedit;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.deltik.mc.signedit.commands.SignCommand;
@@ -12,6 +13,8 @@ import java.io.IOException;
 public class SignEditPlugin extends JavaPlugin {
     @Inject
     public Configuration config;
+    @Inject
+    UserComms userComms;
 
     @Inject
     public SignEditListener listener;
@@ -30,6 +33,13 @@ public class SignEditPlugin extends JavaPlugin {
             pluginCommand.setTabCompleter(signCommandTabCompleter);
         }
         getServer().getPluginManager().registerEvents(listener, this);
+
+        try {
+            userComms.deploy();
+        } catch (IOException e) {
+            getLogger().warning("Cannot enable user-defined locales due to error:");
+            getLogger().warning(ExceptionUtils.getStackTrace(e));
+        }
     }
 
     @Override

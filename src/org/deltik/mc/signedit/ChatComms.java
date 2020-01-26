@@ -31,12 +31,25 @@ public class ChatComms {
     private final MessageFormat messageFormatter;
 
     @Inject
+    public ChatComms(Player player, Configuration config, UserComms userComms) {
+        this(player, config, userComms.getClassLoader());
+    }
+
     public ChatComms(Player player, Configuration config) {
+        this(player, config, ChatComms.class.getClassLoader());
+    }
+
+    public ChatComms(Player player, Configuration config, ClassLoader classLoader) {
         this.player = player;
         this.config = config;
 
         Locale locale = getSensibleLocale(player, config);
-        this.phrases = ResourceBundle.getBundle("Comms", locale, new UTF8ResourceBundleControl(config.getLocale()));
+        this.phrases = ResourceBundle.getBundle(
+                "Comms",
+                locale,
+                classLoader,
+                new UTF8ResourceBundleControl(config.getLocale())
+        );
         this.messageFormatter = new MessageFormat("");
         this.messageFormatter.setLocale(locale);
     }

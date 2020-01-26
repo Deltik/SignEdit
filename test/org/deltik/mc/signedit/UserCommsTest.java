@@ -18,9 +18,9 @@ public class UserCommsTest {
 
     @Test
     public void deployDirectoryStructure() throws IOException {
-        UserComms userComms = new UserComms();
+        UserComms userComms = new UserComms(pluginConfigFolder.getRoot().getAbsolutePath());
 
-        userComms.deploy(pluginConfigFolder.getRoot().getAbsolutePath());
+        userComms.deploy();
 
         Assert.assertTrue(Paths.get(
                 pluginConfigFolder.getRoot().getAbsolutePath(), "locales", "originals"
@@ -35,9 +35,9 @@ public class UserCommsTest {
 
     @Test
     public void deployCopiesOriginals() throws IOException {
-        UserComms userComms = new UserComms();
+        UserComms userComms = new UserComms(pluginConfigFolder.getRoot().getAbsolutePath());
 
-        userComms.deploy(pluginConfigFolder.getRoot().getAbsolutePath());
+        userComms.deploy();
 
         Pattern pattern;
         pattern = Pattern.compile(".*/Comms[_.].*");
@@ -67,7 +67,7 @@ public class UserCommsTest {
 
     @Test
     public void deployRemovesUnexpectedFilesFromOriginalsCopy() throws IOException {
-        UserComms userComms = new UserComms();
+        UserComms userComms = new UserComms(pluginConfigFolder.getRoot().getAbsolutePath());
         File originalsDir = Paths.get(
                 pluginConfigFolder.getRoot().getAbsolutePath(), "locales", "originals"
         ).toFile();
@@ -82,7 +82,7 @@ public class UserCommsTest {
         Assert.assertTrue(garbageFile.exists());
         Assert.assertTrue(garbageFile2.exists());
 
-        userComms.deploy(pluginConfigFolder.getRoot().getAbsolutePath());
+        userComms.deploy();
 
         Assert.assertFalse(garbageFile.exists());
         Assert.assertFalse(garbageFile2.exists());
