@@ -21,6 +21,7 @@ package org.deltik.mc.signedit;
 
 import dagger.BindsInstance;
 import dagger.Component;
+import org.bukkit.plugin.Plugin;
 import org.deltik.mc.signedit.subcommands.SignSubcommandModule;
 
 import javax.inject.Singleton;
@@ -38,6 +39,6 @@ public interface SignEditPluginComponent {
         SignEditPluginComponent build();
 
         @BindsInstance
-        Builder plugin(SignEditPlugin plugin);
+        Builder plugin(Plugin plugin);
     }
 }

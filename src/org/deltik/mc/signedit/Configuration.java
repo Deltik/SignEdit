@@ -22,6 +22,7 @@ package org.deltik.mc.signedit;
 import com.google.common.io.Files;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 import org.jtwig.JtwigModel;
 import org.jtwig.JtwigTemplate;
 
@@ -56,7 +57,7 @@ public class Configuration {
     }
 
     @Inject
-    public Configuration(SignEditPlugin plugin) {
+    public Configuration(Plugin plugin) {
         this("plugins//" + plugin.getName() + "//config.yml");
     }
 

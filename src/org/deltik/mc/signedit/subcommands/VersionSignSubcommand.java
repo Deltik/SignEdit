@@ -19,18 +19,18 @@
 
 package org.deltik.mc.signedit.subcommands;
 
+import org.bukkit.plugin.Plugin;
 import org.deltik.mc.signedit.ChatComms;
-import org.deltik.mc.signedit.SignEditPlugin;
 import org.deltik.mc.signedit.interactions.SignEditInteraction;
 
 import javax.inject.Inject;
 
 public class VersionSignSubcommand implements SignSubcommand {
-    private final SignEditPlugin plugin;
+    private final Plugin plugin;
     private final ChatComms comms;
 
     @Inject
-    public VersionSignSubcommand(SignEditPlugin plugin, ChatComms comms) {
+    public VersionSignSubcommand(Plugin plugin, ChatComms comms) {
         this.plugin = plugin;
         this.comms = comms;
     }

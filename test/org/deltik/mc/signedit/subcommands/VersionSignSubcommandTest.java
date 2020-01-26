@@ -20,6 +20,7 @@
 package org.deltik.mc.signedit.subcommands;
 
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.deltik.mc.signedit.ChatComms;
 import org.deltik.mc.signedit.Configuration;
@@ -41,7 +42,7 @@ public class VersionSignSubcommandTest {
         when(config.getLocale()).thenReturn(new Locale("en"));
         ChatComms comms = new ChatComms(player, config);
         PluginDescriptionFile pluginDescriptionFile = mock(PluginDescriptionFile.class);
-        SignEditPlugin plugin = mock(SignEditPlugin.class);
+        Plugin plugin = mock(SignEditPlugin.class);
         when(plugin.getDescription()).thenReturn(pluginDescriptionFile);
         when(pluginDescriptionFile.getVersion()).thenReturn(expected);
         SignSubcommand subcommand = new VersionSignSubcommand(plugin, comms);

@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* The theme (colors) of this plugin can now be customized in the locale files!
+* The theme (colors) and translations of this plugin can now be customized in the locale files!
 
 ### Fixed
 
@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Under the Hood
 
 * Each source code file now contains the proper copyright and license notice.
+* Replaced various method signatures containing the `SignEditPlugin` type with the `Plugin` interface
 
 ## v1.10.2 (2019-04-11)
 

@@ -20,6 +20,7 @@
 package org.deltik.mc.signedit;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.bukkit.plugin.Plugin;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -42,7 +43,7 @@ public class UserComms {
     private String originalsSource;
 
     @Inject
-    public UserComms(SignEditPlugin plugin) {
+    public UserComms(Plugin plugin) {
         this(plugin.getDataFolder());
         this.originalsSource = plugin.getClass().getProtectionDomain().getCodeSource().getLocation().getFile();
     }
