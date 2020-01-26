@@ -45,10 +45,13 @@ public class UserComms {
 
     public ClassLoader getClassLoader() {
         try {
-            return new URLClassLoader(new URL[]{
-                    overridesDir.toURI().toURL(),
-                    originalsDir.toURI().toURL()
-            }, getClass().getClassLoader());
+            List<URL> urlList = new ArrayList<>();
+            urlList.add(overridesDir.toURI().toURL());
+            urlList.add(originalsDir.toURI().toURL());
+            if (originalsSource != null) {
+                urlList.add(new File(originalsSource).toURI().toURL());
+            }
+            return new URLClassLoader(urlList.toArray(new URL[0]));
         } catch (MalformedURLException e) {
             getLogger().warning(
                     "Could not load user-defined locales; falling back to built-in locales. Details: "
