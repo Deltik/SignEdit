@@ -84,27 +84,27 @@ public class Configuration {
             writeDefaultConfig();
         }
         bukkitConfig = YamlConfiguration.loadConfiguration(configFile);
-        writeSaneConfig(bukkitConfig);
+        writeSaneConfig();
     }
 
     public void writeDefaultConfig() throws IOException {
-        YamlConfiguration c = new YamlConfiguration();
-        mergeInDefaultConfig(c);
-        writeSaneConfig(c);
+        bukkitConfig = new YamlConfiguration();
+        mergeInDefaultConfig();
+        writeSaneConfig();
     }
 
-    private void mergeInDefaultConfig(FileConfiguration c) {
+    private void mergeInDefaultConfig() {
         for (Map.Entry<String, Object> defaultConfigItem : defaults.entrySet()) {
-            if (!c.contains(defaultConfigItem.getKey())) {
-                c.set(defaultConfigItem.getKey(), defaultConfigItem.getValue());
+            if (!bukkitConfig.contains(defaultConfigItem.getKey())) {
+                bukkitConfig.set(defaultConfigItem.getKey(), defaultConfigItem.getValue());
             }
         }
     }
 
-    public void writeSaneConfig(FileConfiguration c) throws IOException {
-        mergeInDefaultConfig(c);
-        sanitizeConfig(c);
-        Map<String, Object> yamlContext = c.getValues(true);
+    public void writeSaneConfig() throws IOException {
+        mergeInDefaultConfig();
+        sanitizeConfig();
+        Map<String, Object> yamlContext = bukkitConfig.getValues(true);
         String output = template;
         for (Map.Entry<String, Object> entry : yamlContext.entrySet()) {
             String key = entry.getKey();
@@ -117,10 +117,6 @@ public class Configuration {
             configFileParent.mkdirs();
         }
         Files.write(configFile.toPath(), output.getBytes());
-    }
-
-    public void writeSaneConfig() throws IOException {
-        writeSaneConfig(bukkitConfig);
     }
 
     public String getClicking() {
@@ -167,14 +163,14 @@ public class Configuration {
         return new Locale.Builder().setLanguageTag(languageTag).build();
     }
 
-    private void sanitizeConfig(FileConfiguration c) {
-        String clicking = c.getString(CONFIG_CLICKING);
+    private void sanitizeConfig() {
+        String clicking = bukkitConfig.getString(CONFIG_CLICKING);
         if (clicking == null ||
                 !(clicking.equalsIgnoreCase("true") ||
                         clicking.equalsIgnoreCase("false") ||
                         clicking.equalsIgnoreCase("auto"))) setDefaultConfig(CONFIG_CLICKING);
 
-        int lineStartsAt = c.getInt(CONFIG_LINE_STARTS_AT);
+        int lineStartsAt = bukkitConfig.getInt(CONFIG_LINE_STARTS_AT);
         if (lineStartsAt < 0 || lineStartsAt > 1) setDefaultConfig(CONFIG_LINE_STARTS_AT);
 
         try {
@@ -183,7 +179,7 @@ public class Configuration {
             setDefaultConfig(CONFIG_LOCALE);
         }
 
-        if (!c.isBoolean(CONFIG_FORCE_LOCALE)) {
+        if (!bukkitConfig.isBoolean(CONFIG_FORCE_LOCALE)) {
             setDefaultConfig(CONFIG_FORCE_LOCALE);
         }
     }

@@ -24,7 +24,6 @@ import org.bukkit.Server;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.PluginManager;
@@ -62,7 +61,7 @@ public abstract class SignEditTest {
         Configuration config = new Configuration(File.createTempFile("SignEdit-", "-config.yml"));
         spyConfig = spy(config);
         listener = new SignEditListener(null, null);
-        doReturn(false).when(spyConfig).writeSaneConfig(new YamlConfiguration());
+        doReturn(false).when(spyConfig).writeSaneConfig();
 
         uiSignSubcommand = mock(UiSignSubcommand.class);
         whenNew(UiSignSubcommand.class).withAnyArguments().thenReturn(uiSignSubcommand);
