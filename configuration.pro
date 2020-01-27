@@ -3,8 +3,4 @@
 }
 
 -dontobfuscate
-
--dontwarn javax.annotation.**
--dontwarn org.jetbrains.annotations.**
--dontwarn org.slf4j.**
--dontwarn com.google.common.**
+-optimizationpasses 3

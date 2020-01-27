@@ -46,6 +46,14 @@ public class SignEditPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         DaggerSignEditPluginComponent.builder().plugin(this).build().injectSignEditPlugin(this);
+
+        try {
+            config.prepare();
+        } catch (IOException e) {
+            getLogger().severe(ExceptionUtils.getStackTrace(e));
+            throw new IllegalStateException("Unrecoverable error while setting up plugin configuration");
+        }
+
         for (String alias : new String[]{"sign", "signedit", "editsign", "se"}) {
             PluginCommand pluginCommand = this.getCommand(alias);
             pluginCommand.setExecutor(signCommand);
@@ -66,7 +74,8 @@ public class SignEditPlugin extends JavaPlugin {
         try {
             config.reloadConfig();
         } catch (IOException e) {
-            e.printStackTrace();
+            getLogger().severe(ExceptionUtils.getStackTrace(e));
+            throw new IllegalStateException("Unrecoverable error while sanity checking plugin configuration");
         }
     }
 }

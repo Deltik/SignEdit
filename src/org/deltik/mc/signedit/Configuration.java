@@ -19,19 +19,17 @@
 
 package org.deltik.mc.signedit;
 
-import com.google.common.io.Files;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
-import org.jtwig.JtwigModel;
-import org.jtwig.JtwigTemplate;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.IllformedLocaleException;
 import java.util.Locale;
@@ -41,7 +39,7 @@ import java.util.Map;
 public class Configuration {
     private File configFile;
     private FileConfiguration bukkitConfig;
-    private JtwigTemplate template;
+    private String template;
     private static final String CONFIG_CLICKING = "clicking";
     private static final String CONFIG_LINE_STARTS_AT = "line-starts-at";
     private static final String CONFIG_FORCE_LOCALE = "force-locale";
@@ -67,12 +65,18 @@ public class Configuration {
 
     public Configuration(File f) {
         configFile = f;
-        template = JtwigTemplate.classpathTemplate("config.yml.j2");
-        try {
-            reloadConfig();
-        } catch (IOException e) {
-            e.printStackTrace();
+    }
+
+    public void prepare() throws IOException {
+        InputStream templateStream = getClass().getResourceAsStream("/config.yml.j2");
+        ByteArrayOutputStream result = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = templateStream.read(buffer)) != -1) {
+            result.write(buffer, 0, length);
         }
+        template = result.toString("UTF-8");
+        reloadConfig();
     }
 
     public void reloadConfig() throws IOException {
@@ -101,17 +105,18 @@ public class Configuration {
         mergeInDefaultConfig(c);
         sanitizeConfig(c);
         Map<String, Object> yamlContext = c.getValues(true);
-        Map<String, Object> jinjaContext = new HashMap<>();
+        String output = template;
         for (Map.Entry<String, Object> entry : yamlContext.entrySet()) {
             String key = entry.getKey();
             String newKey = key.replaceAll("-", "_");
-            jinjaContext.put(newKey, yamlContext.get(key));
+            output = output.replaceAll("\\{\\{[ ]*" + newKey + "[ ]*}}", yamlContext.get(key).toString());
         }
-        JtwigModel model = JtwigModel.newModel(jinjaContext);
-        Files.createParentDirs(configFile);
-        OutputStream configFileOut = new FileOutputStream(configFile);
-        template.render(model, configFileOut);
-        configFileOut.close();
+
+        File configFileParent = configFile.getCanonicalFile().getParentFile();
+        if (configFileParent != null) {
+            configFileParent.mkdirs();
+        }
+        Files.write(configFile.toPath(), output.getBytes());
     }
 
     public void writeSaneConfig() throws IOException {

@@ -47,9 +47,6 @@ dependencies {
     implementation group: 'org.bukkit', name: 'bukkit', version: bukkit_version
     implementation 'com.intellij:annotations:+@jar' // Workaround for org.bukkit.bukkit version 1.13.2-R0.1-SNAPSHOT regression
 
-    implementation group: 'org.jtwig', name: 'jtwig-core', version: '5.87.0.RELEASE'
-    extraLibs group: 'org.jtwig', name: 'jtwig-core', version: '5.87.0.RELEASE'
-
     implementation group: 'com.google.dagger', name: 'dagger', version: '2.25.4'
     extraLibs group: 'com.google.dagger', name: 'dagger', version: '2.25.4'
     annotationProcessor group: 'com.google.dagger', name: 'dagger-compiler', version: '2.25.4'
