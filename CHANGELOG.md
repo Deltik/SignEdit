@@ -7,11 +7,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v1.11.0-SNAPSHOT (UNRELEASED)
+## v1.11.0 (2020-01-28)
 
 ### Added
 
-* The theme (colors) and translations of this plugin can now be customized in the locale files!
+* The theme (colors) and translations of this plugin can now be customized in the locale files! (Fixes #9)
 
 ### Fixed
 
@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Numbers are now correctly localized
 * Chinese punctuation
 * Chinese grammar?  (Still machine-translated)
+* The Spigot `api-version` warning is now suppressed, at least from Spigot 1.13 through Spigot 1.15.2.
+* The configuration handler may excuse input/output (I/O) errors when it should not be continuing to run the plugin.  I/O errors while enabling the plugin now prevent the plugin from starting.
+* Resolved a `java.lang.NullPointerException` in the configuration handler due to some mismanaged state when the `./plugins/SignEdit/` folder doesn't exist.
 
 ### Changed
 
@@ -28,8 +31,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Under the Hood
 
+* Builds now use ProGuard to shrink the JAR file size.
 * Each source code file now contains the proper copyright and license notice.
 * Replaced various method signatures containing the `SignEditPlugin` type with the `Plugin` interface
+* Gradle now supplies the plugin name to the resource templates.
 
 ## v1.10.2 (2019-04-11)
 

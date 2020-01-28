@@ -3,7 +3,7 @@ apply plugin: 'java-library'
 apply plugin: 'application'
 
 def name = 'SignEdit'
-version '1.11.0-SNAPSHOT'
+version '1.11.0'
 
 /*
  * Copyright (C) 2017-2020 Deltik <https://www.deltik.org/>
