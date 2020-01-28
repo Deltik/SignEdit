@@ -301,6 +301,7 @@ These features no longer apply to the latest version of this plugin:
 | `en` | English | Intermediate | `>= 1.0, < 1.4` |
 | `de` | German | Native | `>= 1.10.2` |
 | `zh` | Simplified Chinese | Machine Translation | `>= 1.10.2` |
+| `nl` | Dutch | Native | `>= 1.11.1` |
 
 ### Visual Examples
 
