@@ -7,6 +7,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.11.1 (2020-01-28)
+
+### Added
+
+* Native translation for Dutch (`nl`) locale<br />
+  Credit to SBDeveloper (#10)
+
+### Fixed
+
+* In the English (`en`/default), German (`de`), and Dutch (`nl`) locales, if there is a pending sign action and the player runs `/sign status`, Minecraft 1.15+ displayed a non-breaking space block.  This character has been changed to a normal space.
+
 ## v1.11.0 (2020-01-28)
 
 ### Added
