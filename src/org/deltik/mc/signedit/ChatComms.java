@@ -250,7 +250,7 @@ public class ChatComms {
             phrase = phrases.getString(key);
         } catch (MissingResourceException e) {
             initialize(player, config);
-            getLogger().warning("Please update your SignEdit local override! It is missing this key: " + key);
+            getLogger().warning("Please update your SignEdit locale override! It is missing this key: " + key);
             phrase = phrases.getString(key);
         }
         return phrase;

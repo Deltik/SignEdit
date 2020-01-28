@@ -342,16 +342,20 @@ These features no longer apply to the latest version of this plugin:
 
 You can customize the text displayed to the player to say whatever you want and look however you like!
 
-After starting up the plugin, a read-only copy of the theme and translation files will be copied to the plugin's data directory at `plugins/SignEdit/locales/originals`
+After starting up the plugin, a read-only copy of the theme and translation files will be copied to the plugin's data directory at `plugins/SignEdit/locales/originals/`.
 
-**Important caveat:** Your string (text) customizations will not automatically update in newer versions of this plugin.
+Your customizations are loaded from `plugins/SignEdit/locales/overrides/`, which as the folder name suggests, overrides the built-in locale files.
+
+The locale files are standard [Java resource bundles](https://docs.oracle.com/javase/8/docs/api/java/util/ResourceBundle.html).
+
+**Important caveat:** Your string (text) customizations will not update automatically in newer versions of this plugin.
 Please see the [release notes](CHANGELOG.md) under:
 * the "Added" section for new strings and
 * the "Changed" section for modified strings.
 
-If the plugin detects that you are missing a translation key, a warning will be sent to the console:
+If the plugin detects that you are missing a translation key during a message, a warning will be sent to the console:
 
-> Please update your SignEdit local override! It is missing this key: …
+> Please update your SignEdit locale override! It is missing this key: …
 
 and the plugin default translation will be used for the message.
 
