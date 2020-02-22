@@ -96,7 +96,7 @@ public class UserComms {
             Files.copy(readStream, originalCopyPath, StandardCopyOption.REPLACE_EXISTING);
         }
 
-        InputStream documentationStream = getClass().getResourceAsStream(File.separator + "README.Comms.txt");
+        InputStream documentationStream = getClass().getResourceAsStream("/README.Comms.txt");
         Path documentationFilePath = Paths.get(targetDirectory, "locales", "README.txt");
         Files.copy(documentationStream, documentationFilePath, StandardCopyOption.REPLACE_EXISTING);
     }
@@ -105,10 +105,8 @@ public class UserComms {
      * Obtain a list of resources that provide Comms ResourceBundles
      */
     protected Collection<String> getResourceNamesFromSelf() {
-        String separator = File.separator;
-
         Collection<String> absolutePathList;
-        Pattern commsPattern = Pattern.compile("(^|.*" + separator + ")Comms.*\\.properties");
+        Pattern commsPattern = Pattern.compile("(^|.*/)Comms.*\\.properties");
         if (originalsSource != null) {
             absolutePathList = ResourceList.getResources(originalsSource, commsPattern);
         } else {
@@ -118,7 +116,7 @@ public class UserComms {
 
         for (String item : absolutePathList) {
             File itemAsFile = new File(item);
-            resourcePathList.add(separator + itemAsFile.getName());
+            resourcePathList.add("/" + itemAsFile.getName());
         }
 
         return resourcePathList;
