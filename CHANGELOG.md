@@ -7,11 +7,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v1.11.3 (UNRELEASED)
+## v1.11.3 (2020-02-23)
 
 ### Fixed
 
-* SignEdit `>= 1.11.0, < 1.11.3` could not load if its JAR path has any spaces or special URL characters in i. (#12)
+* On Microsoft Windows, SignEdit `>= 1.11.0, < 1.11.3` could not load if its JAR path contains any spaces or special URL characters. (#12)
 
 ### Under the Hood
 
