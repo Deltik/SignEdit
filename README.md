@@ -302,8 +302,8 @@ These features no longer apply to the latest version of this plugin:
 | `de` | German | Native | `>= 1.10.2` |
 | `nl` | Dutch | Native | `>= 1.11.1` |
 | `zh` | Simplified Chinese | Machine Translation | `>= 1.10.2, < 1.11.4` |
-| `zh-Hans` | Simplified Chinese | Intermediate | `>= 1.11.4` |
-| `zh-Hant` | Traditional Chinese | Intermediate | `>= 1.11.4` |
+| `zh-CN` | Simplified Chinese | Intermediate | `>= 1.11.4` |
+| `zh-TW` | Traditional Chinese | Intermediate | `>= 1.11.4` |
 
 ### Visual Examples
 
