@@ -23,7 +23,6 @@ import org.bukkit.Server;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.plugin.PluginManager;
 import org.deltik.mc.signedit.exceptions.BlockStateNotPlacedException;
@@ -89,6 +88,17 @@ public class SignTextTest {
     }
 
     @Test
+    public void setLineFormatsInputTextCaseInsensitive() {
+        String input = "&AHello";
+        String output = "§AHello";
+        int lineNumber = 0;
+
+        signText.setLine(lineNumber, input);
+
+        assertEquals(output, signText.getLine(lineNumber));
+    }
+
+    @Test
     public void setLineLiteralDoesNotFormatInputText() {
         String expected = "&cHello";
         int lineNumber = 0;
@@ -96,6 +106,76 @@ public class SignTextTest {
         signText.setLineLiteral(lineNumber, expected);
 
         assertEquals(expected, signText.getLine(lineNumber));
+    }
+
+    @Test
+    public void setLineFormatsHexInputText() {
+        String input = "&#f0f0f0Color";
+        String output = "§x§F§0§F§0§F§0Color";
+
+        signText.setLine(0, input);
+
+        assertEquals(output, signText.getLine(0));
+    }
+
+    @Test
+    public void setLineFormatsHexInputTextCaseInsensitive() {
+        String input = "&#FafFFCcolor";
+        String output = "§x§F§A§F§F§F§Ccolor";
+
+        signText.setLine(0, input);
+
+        assertEquals(output, signText.getLine(0));
+    }
+
+    @Test
+    public void setLineFormatsHexShorthandInputText() {
+        String input = "&#abccolor";
+        String output = "§x§A§A§B§B§C§Ccolor";
+
+        signText.setLine(0, input);
+
+        assertEquals(output, signText.getLine(0));
+    }
+
+    @Test
+    public void setLineEscapesHexFormatting() {
+        String input = "\\&#abcabcColor";
+        String output = "&#abcabcColor";
+
+        signText.setLine(0, input);
+
+        assertEquals(output, signText.getLine(0));
+    }
+
+    @Test
+    public void setLineFormatsHexLongformInputText() {
+        String input = "&x&A&a&B&b&C&ccolor";
+        String output = "§x§A§A§B§B§C§Ccolor";
+
+        signText.setLine(0, input);
+
+        assertEquals(output, signText.getLine(0));
+    }
+
+    @Test
+    public void setLineEscapesHexLongformInputText() {
+        String input = "\\&x\\&A\\&a\\&B\\&b\\&C\\&ccolor";
+        String output = "&x&A&a&B&b&C&ccolor";
+
+        signText.setLine(0, input);
+
+        assertEquals(output, signText.getLine(0));
+    }
+
+    @Test
+    public void setLineEscapesShortHexFormatting() {
+        String input = "\\&#abccolor";
+        String output = "&#abccolor";
+
+        signText.setLine(0, input);
+
+        assertEquals(output, signText.getLine(0));
     }
 
     @Test
@@ -380,82 +460,114 @@ public class SignTextTest {
 
     @Test
     public void signSetLineFormatsOnlyFormattingCodes() {
-        String[] doOp = "0123456789ABCDEFabcdefKLMNOklmnoRr".split("");
-        String[] noOp = "GHIJPQSTUVWXYZghijpqstuvwxyz~!@#$%^&*()_+`-=[]{}\\|;':\"<>,./? ".split("");
+        String[] doOp = "0123456789ABCDEFabcdefKLMNOklmnoRrXx".split("");
+        String[] noOp = "GHIJPQSTUVWYZghijpqstuvwyz~!@#$%^&*()_+`-=[]{}\\|;':\"<>,./? ".split("");
 
         for (String doOpItem : doOp) {
             String input = "&" + doOpItem;
             String expected = "§" + doOpItem;
             signText.setLine(0, input);
-            assertEquals(signText.getLine(0), expected);
+            assertEquals(expected, signText.getLine(0));
         }
 
         for (String noOpItem : noOp) {
             String input = "&" + noOpItem;
             String expected = "&" + noOpItem;
             signText.setLine(0, input);
-            assertEquals(signText.getLine(0), expected);
+            assertEquals(expected, signText.getLine(0));
         }
     }
 
     @Test
     public void signSetLineEscapesOnlyFormattingCodes() {
-        String[] doOp = "0123456789ABCDEFabcdefKLMNOklmnoRr".split("");
-        String[] noOp = "GHIJPQSTUVWXYZghijpqstuvwxyz~!@#$%^&*()_+`-=[]{}\\|;':\"<>,./? ".split("");
+        String[] doOp = "0123456789ABCDEFabcdefKLMNOklmnoRrXx".split("");
+        String[] noOp = "GHIJPQSTUVWYZghijpqstuvwyz~!@#$%^&*()_+`-=[]{}\\|;':\"<>,./? ".split("");
 
         for (String doOpItem : doOp) {
             String input = "\\&" + doOpItem;
             String expected = "&" + doOpItem;
             signText.setLine(0, input);
-            assertEquals(signText.getLine(0), expected);
+            assertEquals(expected, signText.getLine(0));
         }
 
         for (String noOpItem : noOp) {
             String input = "\\&" + noOpItem;
             String expected = "\\&" + noOpItem;
             signText.setLine(0, input);
-            assertEquals(signText.getLine(0), expected);
+            assertEquals(expected, signText.getLine(0));
         }
     }
 
     @Test
     public void signGetLineParsedParsesOnlyFormattingCodes() {
-        String[] doOp = "0123456789ABCDEFabcdefKLMNOklmnoRr".split("");
-        String[] noOp = "GHIJPQSTUVWXYZghijpqstuvwxyz~!@#$%^&*()_+`-=[]{}\\|;':\"<>,./? ".split("");
+        String[] doOp = "0123456789ABCDEFabcdefKLMNOklmnoRrXx".split("");
+        String[] noOp = "GHIJPQSTUVWYZghijpqstuvwyz~!@#$%^&*()_+`-=[]{}\\|;':\"<>,./? ".split("");
 
         for (String doOpItem : doOp) {
             String input = "§" + doOpItem;
             String expected = "&" + doOpItem;
             signText.setLineLiteral(0, input);
-            assertEquals(signText.getLineParsed(0), expected);
+            assertEquals(expected, signText.getLineParsed(0));
         }
 
         for (String noOpItem : noOp) {
             String input = "§" + noOpItem;
             String expected = "§" + noOpItem;
             signText.setLineLiteral(0, input);
-            assertEquals(signText.getLineParsed(0), expected);
+            assertEquals(expected, signText.getLineParsed(0));
         }
     }
 
     @Test
     public void signGetLineParsedEscapesOnlyFormattingCodes() {
-        String[] doOp = "0123456789ABCDEFabcdefKLMNOklmnoRr".split("");
-        String[] noOp = "GHIJPQSTUVWXYZghijpqstuvwxyz~!@#$%^&*()_+`-=[]{}\\|;':\"<>,./? ".split("");
+        String[] doOp = "0123456789ABCDEFabcdefKLMNOklmnoRrXx".split("");
+        String[] noOp = "GHIJPQSTUVWYZghijpqstuvwyz~!@#$%^&*()_+`-=[]{}\\|;':\"<>,./? ".split("");
 
         for (String doOpItem : doOp) {
             String input = "&" + doOpItem;
             String expected = "\\&" + doOpItem;
             signText.setLineLiteral(0, input);
-            assertEquals(signText.getLineParsed(0), expected);
+            assertEquals(expected, signText.getLineParsed(0));
         }
 
         for (String noOpItem : noOp) {
             String input = "&" + noOpItem;
             String expected = "&" + noOpItem;
             signText.setLineLiteral(0, input);
-            assertEquals(signText.getLineParsed(0), expected);
+            assertEquals(expected, signText.getLineParsed(0));
         }
+    }
+
+    @Test
+    public void signGetLineParsedConvertsHexCodes() {
+        String input = "§x§A§A§B§B§C§Ccolor";
+        String expected = "&#AABBCCcolor";
+        signText.setLineLiteral(0, input);
+        assertEquals(expected, signText.getLineParsed(0));
+    }
+
+    @Test
+    public void signGetLineParsedUnsectionsTooShortHexCodes() {
+        String input = "§x§a§A§bcolor";
+        String expected = "&x&a&A&bcolor";
+        signText.setLineLiteral(0, input);
+        assertEquals(expected, signText.getLineParsed(0));
+    }
+
+    @Test
+    public void signGetLineParsedPreservesEscapedHexCodes() {
+        String input = "&#aabbcccolor";
+        String expected = "\\&#aabbcccolor";
+        signText.setLineLiteral(0, input);
+        assertEquals(expected, signText.getLineParsed(0));
+    }
+
+    @Test
+    public void signGetLineParsedPreservesEscapedHexCodesLongform() {
+        String input = "&x&A&a&B&b&C&ccolor";
+        String expected = "\\&x\\&A\\&a\\&B\\&b\\&C\\&ccolor";
+        signText.setLineLiteral(0, input);
+        assertEquals(expected, signText.getLineParsed(0));
     }
 
     private Sign createSign() {

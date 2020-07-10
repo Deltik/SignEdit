@@ -102,16 +102,32 @@ These commands no longer apply to the latest version of this plugin:
 
 ### Formatting Codes
 
+(`>= 1.10`)
+
+Only ampersands (`&`) that precede a [Minecraft formatting code](https://minecraft.gamepedia.com/Formatting_codes) character turn into section signs (`§`).
+If you want to type a literal ampersand, escape it with a backslash like so: `\&a`
+
+(`>= 1.12`)
+
+In Minecraft 1.16+, the client supports text in sRGB (standard Red Green Blue – 24-bit color depth, true color, or 16 million colors) by prepending colored text with `§x§A§B§C§D§E§F`, where `A`, `B`, `C`, `D`, `E`, and `F` are the [hexadecimal representation of the color](https://en.wikipedia.org/wiki/Web_colors).
+
+This plugin supports three ways to resolve `§x§A§B§C§D§E§F`-style true color from user input:
+
+* `&#ABCDEF` – Six-digit form, similar to the representation in HTML/CSS/SVG
+* `&#ACE` – Abbreviated three-digit form, which is equivalent to the six-digit form `&#AACCEE`
+* `&x&A&B&C&D&E&F` – Expanded form, resembling how true color formatting is stored in Minecraft
+
+Regardless of which form the user inputs, when this plugin converts the raw Minecraft true color formatting to become user-editable, the six-digit form (`&#ABCDEF`) is returned.
+
+All of these forms can also be escaped by prepending the ampersands with a backslash like so: `\&#ABCDEF`, `\&#ACE`, and `\&x\&A\&B\&C\&D\&E\&F`
+
+The hex digits are case-insensitive, but the Minecraft server may internally convert them to uppercase.
+
 (`>= 1.0, < 1.10`)
 
 All ampersands (`&`) are replaced with section signs (`§`) for [Minecraft formatting codes](https://minecraft.gamepedia.com/Formatting_codes).
 
 It is not possible to type a literal ampersand in versions `>= 1.0, < 1.10`.
-
-(`>= 1.10`)
-
-Only ampersands (`&`) that precede a [Minecraft formatting code](https://minecraft.gamepedia.com/Formatting_codes) character turn into section signs (`§`).
-If you want to type a literal ampersand, escape it with a backslash like so: `\&a`
 
 #### Examples
 
@@ -126,6 +142,21 @@ If you want to type a literal ampersand, escape it with a backslash like so: `\&
 | `x\&y` | `x\&y` |
 | `\&d &e &f &g` | `&d §e §f &g` |
 | `Arts & Crafts` | `Arts & Crafts` |
+| `Arts&Crafts` | `Arts§Crafts` |
+| `Arts\&Crafts` | `Arts&Crafts` |
+
+(`>= 1.12`)
+
+| Input | Output |
+| --- | --- |
+| `&#abcdef` | `§x§A§B§C§D§E§F` |
+| `&#AbCdEf` | `§x§A§B§C§D§E§F` |
+| `\&#abcdef` | `&#abcdef` |
+| `\&#AbCdEf` | `&#AbCdEf` |
+| `&#08F` | `§x§0§0§8§8§F§F` |
+| `\&#08f` | `&#08f` |
+| `&x&0&1&2&3&4&5` | `§x§0§1§2§3§4§5` |
+| `\&x\&0\&1\&2\&3\&4\&5` | `&x&0&1&2&3&4&5` |
 
 ### Language Tags
 
@@ -279,7 +310,8 @@ If the value is not supported, English will be used as the fallback locale.
   * In `clicking: true` mode, after running the `/sign` command, right-click a sign to edit it.
   * (`>= 1.7`) In `clicking: auto` mode, the behavior is the same as `clicking: false` if you are looking at a sign and `clicking: true` if you are not looking at a sign.
 * All editing functions support [formatting codes](#formatting-codes) ([`&` turns into `§`](#se-set-3-4construction))
-* (`>= 1.10`) Escape formatting codes with backslash (e.g. [`\&C` turns into literal `&C`](#se-set-1-4-artscrafts))
+  * (`>= 1.10`) Escape formatting codes with backslash (e.g. [`\&C` turns into literal `&C`](#se-set-1-4-artscrafts))
+  * (`>= 1.12`) Since Minecraft 1.16: RGB text color (e.g. `&#800000` makes the text maroon)
 * (`>= 1.10`) [Tab completion for `/sign` subcommands](#sign-tab)
 * (`>= 1.10`) Copy, cut, and paste sign lines with `/sign copy`, `/sign cut`, and `/sign paste`, respectively.
 * (`>= 1.10`) Undo and redo sign changes with `/sign undo` and `/sign redo`, respectively.

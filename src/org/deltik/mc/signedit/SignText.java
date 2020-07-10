@@ -30,8 +30,14 @@ import org.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
 import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SignText {
+    private static final String REGEX_1_HEX = "[0-9a-fA-F]";
+    private static final String REGEX_AMP_HEX = "&(" + REGEX_1_HEX + ")";
+    private static final String REGEX_6_AMP_HEX = new String(new char[6]).replace("\0", REGEX_AMP_HEX);
+    private static final String REGEX_1_CODE = "[0-9A-Fa-fK-Ok-oRrXx]";
     private final Player player;
     private final PluginManager pluginManager;
     private String[] changedLines = new String[4];
@@ -126,13 +132,37 @@ public class SignText {
         changedLines[lineNumber] = value;
     }
 
-    public void setLine(int lineNumber, String value) {
-        if (value != null) {
-            value = value
-                    .replaceAll("(?<!\\\\)&([0-9A-Fa-fK-Ok-oRr])", "§$1")
-                    .replaceAll("\\\\&(?=[0-9A-Fa-fK-Ok-oRr])", "&");
+    public void setLine(int lineNumber, String line) {
+        if (line == null) {
+            setLineLiteral(lineNumber, line);
+            return;
         }
-        setLineLiteral(lineNumber, value);
+        line = line.replaceAll("(?<!\\\\)&[Xx]" + REGEX_6_AMP_HEX, "&#$1$2$3$4$5$6");
+
+        Matcher matcher = Pattern.compile("(?<!\\\\)&#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})").matcher(line);
+        StringBuffer lineBuffer = new StringBuffer();
+        while (matcher.find()) {
+            String hex = matcher.group(1);
+            matcher.appendReplacement(lineBuffer, hexToFormattingCode(hex));
+        }
+        matcher.appendTail(lineBuffer);
+        line = lineBuffer.toString();
+
+        line = line
+                .replaceAll("(?<!\\\\)&(" + REGEX_1_CODE + ")", "§$1")
+                .replaceAll("\\\\&(?=" + REGEX_1_CODE + "|#" + REGEX_1_HEX + "{6}|#" + REGEX_1_HEX + "{3})", "&");
+
+        setLineLiteral(lineNumber, line);
+    }
+
+    private String hexToFormattingCode(String hex) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("§x");
+        for (char hexChar : hex.toUpperCase().toCharArray()) {
+            builder.append("§").append(hexChar);
+            if (hex.length() == 3) builder.append("§").append(hexChar);
+        }
+        return builder.toString();
     }
 
     public void clearLine(int lineNumber) {
@@ -170,9 +200,26 @@ public class SignText {
     public String getLineParsed(int lineNumber) {
         String line = getLines()[lineNumber];
         if (line == null) return null;
+
         line = line
-                .replaceAll("&(?=[0-9A-Fa-fK-Ok-oRr])", "\\\\&")
-                .replaceAll("§([0-9A-Fa-fK-Ok-oRr])", "&$1");
+                .replaceAll("&(?=" + REGEX_1_CODE + "|#" + REGEX_1_HEX + "{6})", "\\\\&")
+                .replaceAll("§(" + REGEX_1_CODE + "|#" + REGEX_1_HEX + "{6})", "&$1");
+
+        Matcher matcher = Pattern.compile("&[Xx]((&" + REGEX_1_HEX + "){6})").matcher(line);
+        StringBuffer lineBuffer = new StringBuffer();
+        while (matcher.find()) {
+            String fullMatch = matcher.group();
+            matcher.appendReplacement(lineBuffer, formattingCodeToHex(fullMatch));
+        }
+        matcher.appendTail(lineBuffer);
+        line = lineBuffer.toString();
+
         return line;
+    }
+
+    private String formattingCodeToHex(String formattingCode) {
+        return formattingCode
+                .replace("&", "")
+                .replaceFirst("[Xx]", "&#");
     }
 }
