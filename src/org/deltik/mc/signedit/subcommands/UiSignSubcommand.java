@@ -19,10 +19,12 @@
 
 package org.deltik.mc.signedit.subcommands;
 
+import org.bukkit.plugin.Plugin;
 import org.deltik.mc.signedit.ChatComms;
 import org.deltik.mc.signedit.MinecraftReflector;
 import org.deltik.mc.signedit.SignText;
 import org.deltik.mc.signedit.SignTextHistoryManager;
+import org.deltik.mc.signedit.interactions.BookUiSignEditInteraction;
 import org.deltik.mc.signedit.interactions.SignEditInteraction;
 import org.deltik.mc.signedit.interactions.UiSignEditInteraction;
 import org.deltik.mc.signedit.listeners.SignEditListener;
@@ -30,6 +32,9 @@ import org.deltik.mc.signedit.listeners.SignEditListener;
 import javax.inject.Inject;
 
 public class UiSignSubcommand implements SignSubcommand {
+    private static final String FIRST_QUIRKY_CLIENT_VERSION = "v1_16_R1";
+
+    private final Plugin plugin;
     private final SignEditListener listener;
     private final SignText signText;
     private final MinecraftReflector reflector;
@@ -38,12 +43,14 @@ public class UiSignSubcommand implements SignSubcommand {
 
     @Inject
     public UiSignSubcommand(
+            Plugin plugin,
             SignEditListener listener,
             SignText signText,
             MinecraftReflector reflector,
             ChatComms comms,
             SignTextHistoryManager historyManager
     ) {
+        this.plugin = plugin;
         this.listener = listener;
         this.signText = signText;
         this.reflector = reflector;
@@ -53,6 +60,9 @@ public class UiSignSubcommand implements SignSubcommand {
 
     @Override
     public SignEditInteraction execute() {
+        if (FIRST_QUIRKY_CLIENT_VERSION.compareTo(reflector.MINECRAFT_SERVER_VERSION) <= 0) {
+            return new BookUiSignEditInteraction(plugin, listener, comms, signText, historyManager);
+        }
         return new UiSignEditInteraction(reflector, listener, comms, signText, historyManager);
     }
 }

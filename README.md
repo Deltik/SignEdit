@@ -48,6 +48,7 @@
          * [Custom Translations](#custom-translations)
       * [Compatibility](#compatibility)
          * [Backwards Compatibility with Omel's SignEdit v1.3](#backwards-compatibility-with-omels-signedit-v13)
+         * [Minecraft 1.16+ Sign Editor GUI](#minecraft-116-sign-editor-gui)
 
 ## Installation
 
@@ -301,16 +302,16 @@ If the value is not supported, English will be used as the fallback locale.
 
 ## Features
 
-* (`>= 1.8`) Edit the targeted sign in the native Minecraft sign editor with [`/sign ui`](#sign-ui).
+* (`>= 1.8`) Edit the targeted sign with [`/sign ui`](#sign-ui) in the native Minecraft sign editor ([up to Minecraft 1.15.2](#minecraft-116-sign-editor-gui)).
   * No dependencies!
-* (`>= 1.10`) Change all of the lines `<lines>` of the targeted sign to be `<text>` with [`/sign set <lines> [<text>]`](#sign-set-14-) or [`/sign <lines> [<text>]`](#sign-2-deltiks).
+* (`>= 1.10`) Change all the lines `<lines>` of the targeted sign to be `<text>` with [`/sign set <lines> [<text>]`](#sign-set-14-) or [`/sign <lines> [<text>]`](#sign-2-deltiks).
 * (`>= 1.10`) [See the sign text before and after in chat.](#se-set-3-4construction)
 * Targeting a sign works as follows:
   * In `clicking: false` mode or in version `= 1.0`, the sign you are looking at is edited.
   * In `clicking: true` mode, after running the `/sign` command, right-click a sign to edit it.
   * (`>= 1.7`) In `clicking: auto` mode, the behavior is the same as `clicking: false` if you are looking at a sign and `clicking: true` if you are not looking at a sign.
 * All editing functions support [formatting codes](#formatting-codes) ([`&` turns into `§`](#se-set-3-4construction))
-  * (`>= 1.10`) Escape formatting codes with backslash (e.g. [`\&C` turns into literal `&C`](#se-set-1-4-artscrafts))
+  * (`>= 1.10`) Escape formatting codes with a backslash (e.g. [`\&C` turns into literal `&C`](#se-set-1-4-artscrafts))
   * (`>= 1.12`) Since Minecraft 1.16: RGB text color (e.g. `&#800000` makes the text maroon)
 * (`>= 1.10`) [Tab completion for `/sign` subcommands](#sign-tab)
 * (`>= 1.10`) Copy, cut, and paste sign lines with `/sign copy`, `/sign cut`, and `/sign paste`, respectively.
@@ -458,3 +459,27 @@ SignEdit for Bukkit versions `~> 1.5` are backwards-compatible with Omel's SignE
 * (`~> 1.4.0`) Sign line numbers range from 1 to 4, whereas they ranged from 0 to 3 in older versions.
 
   Upgrade to SignEdit for Bukkit version `~> 1.5` to have the possibility of restoring the original line number range.
+
+### Minecraft 1.16+ Sign Editor GUI
+
+Starting in Minecraft 1.16.1, invoking the native sign editor GUI with `/sign ui` (`>= 1.8, < 1.12`) will open a blank sign editor without the existing sign contents.
+This is [a regression (bug) in the Minecraft client](https://web.archive.org/web/20200901000000/https://bugs.mojang.com/browse/MC-192263?focusedCommentId=755369&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-755369); there is no way to get the native sign editor to open correctly from the Bukkit server.
+
+[Mojang refused to fix the bug.](https://web.archive.org/web/20200714051840/https://bugs.mojang.com/browse/MC-192263?focusedCommentId=759126&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-759126)
+
+(`>= 1.12`)
+
+Plugin version `>= 1.12` introduces a clunky workaround that offers a sign editor GUI via a [book and quill](https://minecraft.gamepedia.com/Book_and_Quill) (AKA writable book):
+
+![Sign editor GUI implemented as a writable book](https://user-images.githubusercontent.com/1364268/87382228-1056ab80-c55c-11ea-8cf6-54e63d8c94dd.png)
+
+Instead of opening the native sign editor after the player runs `/sign ui`, this plugin places a temporary book and quill in their hand.
+To open the alternative sign editor, the player must look away from the sign and then right-mouse click.
+The writable book opens, and the first four lines represent the four lines on the sign.
+Once the player commits the changed text, the book is removed, and the sign is updated.
+
+As this implementation is a hacky workaround, note these caveats:
+* If the Bukkit server crashes or otherwise uncleanly unloads the plugin while the player is using this alternative sign editor GUI, the player will be given the book and quill, and the item originally in their hand will be destroyed.
+* If the player is in [Creative mode](https://minecraft.gamepedia.com/Creative) and selects the sign editor item in their inventory, the item will be cloned.
+
+If the caveats are too problematic, you should disable the `/sign ui` subcommand by revoking the `signedit.sign.ui` [permission](#permissions).

@@ -22,6 +22,9 @@ package org.deltik.mc.signedit.interactions;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
+import org.deltik.mc.signedit.ChatComms;
+import org.jetbrains.annotations.NotNull;
 
 public interface SignEditInteraction {
     void interact(Player player, Sign sign);
@@ -30,6 +33,20 @@ public interface SignEditInteraction {
         return this.getClass().getSimpleName();
     }
 
+    default String getActionHint(ChatComms comms) {
+        return comms.t("right_click_sign_to_apply_action_hint");
+    }
+
     default void cleanup(Event event) {
+    }
+
+    default void cleanup() {
+        cleanup(new Event() {
+            @NotNull
+            @Override
+            public HandlerList getHandlers() {
+                return new HandlerList();
+            }
+        });
     }
 }

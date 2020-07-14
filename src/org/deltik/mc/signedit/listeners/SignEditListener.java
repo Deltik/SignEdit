@@ -19,16 +19,20 @@
 
 package org.deltik.mc.signedit.listeners;
 
+import org.bukkit.Material;
 import org.bukkit.block.Sign;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.*;
+import org.bukkit.inventory.ItemStack;
 import org.deltik.mc.signedit.SignTextClipboardManager;
 import org.deltik.mc.signedit.SignTextHistoryManager;
+import org.deltik.mc.signedit.interactions.BookUiSignEditInteraction;
 import org.deltik.mc.signedit.interactions.SignEditInteraction;
 
 import javax.inject.Inject;
@@ -52,7 +56,7 @@ public class SignEditListener implements Listener {
     }
 
     @EventHandler
-    public void onInteract(PlayerInteractEvent event) {
+    public void onRightClickSign(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if (!(event.getClickedBlock().getState() instanceof Sign)) return;
 
@@ -87,11 +91,61 @@ public class SignEditListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void onSignChangeBookMode(PlayerEditBookEvent event) {
+        Player player = event.getPlayer();
+
+        if (inProgressInteractions.get(player) instanceof BookUiSignEditInteraction) {
+            removePendingInteraction(player);
+            removeInProgressInteraction(player).cleanup(event);
+        }
+    }
+
+    @EventHandler
+    public void onLeaveSignEditorBook(PlayerItemHeldEvent event) {
+        Player player = event.getPlayer();
+
+        if (inProgressInteractions.get(player) instanceof BookUiSignEditInteraction) {
+            removeInProgressInteraction(player).cleanup(event);
+        }
+    }
+
+    @EventHandler
+    public void onDropSignEditorBook(PlayerDropItemEvent event) {
+        Player player = event.getPlayer();
+        if (!isInProgress(player)) return;
+
+        ItemStack droppedItem = event.getItemDrop().getItemStack();
+        Material droppedItemType = droppedItem.getType();
+        if (droppedItemType == Material.WRITABLE_BOOK || droppedItemType == Material.WRITTEN_BOOK) {
+            ItemStack item = event.getItemDrop().getItemStack();
+            event.getItemDrop().remove();
+            player.getInventory().setItemInMainHand(item);
+            removeInProgressInteraction(player).cleanup(event);
+        }
+    }
+
+    @EventHandler
+    public void onClickSignEditorBook(InventoryClickEvent event) {
+        HumanEntity human = event.getWhoClicked();
+        if (!(human instanceof Player)) return;
+        Player player = (Player) human;
+        if (!isInProgress(player)) return;
+
+        removeInProgressInteraction(player).cleanup(event);
+    }
+
     public void setPendingInteraction(Player player, SignEditInteraction interaction) {
+        if (pendingInteractions.get(player) != null) {
+            removePendingInteraction(player).cleanup();
+        }
         pendingInteractions.put(player, interaction);
     }
 
     public void setInProgressInteraction(Player player, SignEditInteraction interaction) {
+        if (inProgressInteractions.get(player) != null) {
+            removeInProgressInteraction(player).cleanup();
+        }
         inProgressInteractions.put(player, interaction);
     }
 

@@ -7,6 +7,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.12.0 (UNRELEASED)
+
+### Added
+
+* Support for Minecraft 1.16 sRGB [text formatting](https://git.io/SignEdit-README#formatting-codes):
+  ![SignEdit for Bukkit: Support for web colors](https://user-images.githubusercontent.com/1364268/87382418-80653180-c55c-11ea-9b26-539868e6ba11.png)
+* [Alternative sign editor GUI for Minecraft 1.16+](https://git.io/SignEdit-README#minecraft-116-sign-editor-gui) implemented as a [writable book](https://minecraft.gamepedia.com/Book_and_Quill) to work around [a Minecraft 1.16 sign editor regression](https://web.archive.org/web/20200901000000/https://bugs.mojang.com/browse/MC-192263?focusedCommentId=755369&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-755369) that [Mojang refused to fix](https://web.archive.org/web/20200714051840/https://bugs.mojang.com/browse/MC-192263?focusedCommentId=759126&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-759126):
+  ![Sign editor GUI implemented as a writable book](https://user-images.githubusercontent.com/1364268/87382228-1056ab80-c55c-11ea-8cf6-54e63d8c94dd.png)
+
+* New locale strings:
+  * `sign_editor_item_name` – The display name of the ephemeral book and quill used in Minecraft 1.16+ as an alternative for the broken native sign editor
+  * `right_click_air_to_open_sign_editor` – Tells the player to look away from the targeted sign and right-mouse click to open the sign editor (Minecraft 1.16+)
+  * `right_click_air_to_apply_action_hint` – Right-mouse click air action hint shown in `/sign status`, currently only used for `/sign ui` on Minecraft 1.16
+
+### Changed
+
+* Changed locale strings:
+  * `cancelled_pending_right_click_action` has been renamed to `cancelled_pending_action` and no longer explicates the right-mouse click.
+  * `no_right_click_action_to_cancel` has been renamed to `no_pending_action_to_cancel`, and the associated action is now modified by "pending" rather than "right-click".
+
+## v1.11.4 (2020-03-05)
+
+### Added
+
+* Intermediate translation for Simplified Chinese (`zh` and `zh-CN`) locale replaces the machine translation of Chinese introduced in `= 1.10.2`.
+  Credit to Aobi for the translation (#13)
+* Intermediate translation for Traditional Chinese (`zh-TW`) locale
+  Credit to Aobi for the translation (#13)
+
+### Under the Hood
+
+* Gradle has been updated from version 6.1.1 to version 6.2.2.
+
 ## v1.11.3 (2020-02-23)
 
 ### Fixed
