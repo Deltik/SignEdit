@@ -462,21 +462,21 @@ SignEdit for Bukkit versions `~> 1.5` are backwards-compatible with Omel's SignE
 
 ### Minecraft 1.16+ Sign Editor GUI
 
-Starting in Minecraft 1.16.1, invoking the native sign editor GUI with `/sign ui` (`>= 1.8, < 1.12`) will open a blank sign editor without the existing sign contents.
+Starting in Minecraft 1.16, invoking the native sign editor GUI with `/sign ui` (`>= 1.8, < 1.12`) will open a blank sign editor without the existing sign contents.
 This is [a regression (bug) in the Minecraft client](https://web.archive.org/web/20200901000000/https://bugs.mojang.com/browse/MC-192263?focusedCommentId=755369&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-755369); there is no way to get the native sign editor to open correctly from the Bukkit server.
 
 [Mojang refused to fix the bug.](https://web.archive.org/web/20200714051840/https://bugs.mojang.com/browse/MC-192263?focusedCommentId=759126&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-759126)
 
 (`>= 1.12`)
 
-Plugin version `>= 1.12` introduces a clunky workaround that offers a sign editor GUI via a [book and quill](https://minecraft.gamepedia.com/Book_and_Quill) (AKA writable book):
+Plugin version `>= 1.12` introduces a clunky workaround for Minecraft 1.16+ that offers a sign editor GUI via a [book and quill](https://minecraft.gamepedia.com/Book_and_Quill) (AKA writable book):
 
 ![Sign editor GUI implemented as a writable book](https://user-images.githubusercontent.com/1364268/87382228-1056ab80-c55c-11ea-8cf6-54e63d8c94dd.png)
 
 Instead of opening the native sign editor after the player runs `/sign ui`, this plugin places a temporary book and quill in their hand.
 To open the alternative sign editor, the player must look away from the sign and then right-mouse click.
 The writable book opens, and the first four lines represent the four lines on the sign.
-Once the player commits the changed text, the book is removed, and the sign is updated.
+Once the player commits the changed text, the book is removed, the sign is updated, and the item they were originally holding is restored.
 
 As this implementation is a hacky workaround, note these caveats:
 * If the Bukkit server crashes or otherwise uncleanly unloads the plugin while the player is using this alternative sign editor GUI, the player will be given the book and quill, and the item originally in their hand will be destroyed.

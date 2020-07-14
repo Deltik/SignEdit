@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v1.12.0 (UNRELEASED)
+## v1.12.0 (2020-07-14)
 
 ### Added
 
@@ -26,6 +26,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Changed locale strings:
   * `cancelled_pending_right_click_action` has been renamed to `cancelled_pending_action` and no longer explicates the right-mouse click.
   * `no_right_click_action_to_cancel` has been renamed to `no_pending_action_to_cancel`, and the associated action is now modified by "pending" rather than "right-click".
+
+### Fixed
+
+* Translation improvements for the Dutch (`nl`) locale
+  Credit to SBDeveloper (#14)
+* Translation improvements for the Simplified Chinese (`zh`) and Traditional Chinese (`zh-TW`) locales
+  Credit to Aobi (#15)
 
 ## v1.11.4 (2020-03-05)
 
