@@ -7,6 +7,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.12.1 (2020-07-23)
+
+### Changed
+
+* The alternative sign editor GUI introduced in `= 1.12.0` has been restricted to Minecraft 1.16.1 only.  Previously, the GUI was present on Minecraft 1.16 and above, but the bug that necessitated it was [fixed in Minecraft 1.16.2](https://minecraft.gamepedia.com/Java_Edition_20w30a).  Using this version of the plugin on Minecraft 1.16.2 and higher will open the native sign editor GUI again.
+
+### Under the Hood
+
+* Build and test dependencies updated to their latest versions
+
 ## v1.12.0 (2020-07-14)
 
 ### Added
