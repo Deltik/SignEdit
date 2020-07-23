@@ -1,5 +1,5 @@
 def name = 'SignEdit'
-version '1.12.0'
+version '1.12.1'
 
 /*
  * Copyright (C) 2017-2020 Deltik <https://www.deltik.org/>
@@ -22,7 +22,7 @@ version '1.12.0'
 
 // Set to '+' to use latest Bukkit
 // Otherwise, specify a version number like '1.12.2-R0.1-SNAPSHOT'
-def bukkit_version = '1.15-R0.1-SNAPSHOT'
+def bukkit_version = '1.15.2-R0.1-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'java-library'
@@ -47,15 +47,15 @@ dependencies {
     implementation group: 'org.bukkit', name: 'bukkit', version: bukkit_version
     implementation 'com.intellij:annotations:+@jar' // Workaround for org.bukkit.bukkit version 1.13.2-R0.1-SNAPSHOT regression
 
-    implementation group: 'com.google.dagger', name: 'dagger', version: '2.25.4'
-    extraLibs group: 'com.google.dagger', name: 'dagger', version: '2.25.4'
-    annotationProcessor group: 'com.google.dagger', name: 'dagger-compiler', version: '2.25.4'
+    implementation group: 'com.google.dagger', name: 'dagger', version: '2.28.3'
+    extraLibs group: 'com.google.dagger', name: 'dagger', version: '2.28.3'
+    annotationProcessor group: 'com.google.dagger', name: 'dagger-compiler', version: '2.28.3'
     extraLibs group: 'javax.inject', name: 'javax.inject', version: '1'
 
     testImplementation group: 'junit', name: 'junit', version: '4.13'
-    testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.2.4'
-    testImplementation group: 'org.powermock', name: 'powermock-module-junit4', version: '2.0.4'
-    testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.4'
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.4.4'
+    testImplementation group: 'org.powermock', name: 'powermock-module-junit4', version: '2.0.7'
+    testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.7'
 }
 
 sourceSets {

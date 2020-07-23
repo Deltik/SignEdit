@@ -48,7 +48,7 @@
          * [Custom Translations](#custom-translations)
       * [Compatibility](#compatibility)
          * [Backwards Compatibility with Omel's SignEdit v1.3](#backwards-compatibility-with-omels-signedit-v13)
-         * [Minecraft 1.16+ Sign Editor GUI](#minecraft-116-sign-editor-gui)
+         * [Minecraft 1.16.1 Sign Editor GUI](#minecraft-1161-sign-editor-gui)
 
 ## Installation
 
@@ -302,7 +302,7 @@ If the value is not supported, English will be used as the fallback locale.
 
 ## Features
 
-* (`>= 1.8`) Edit the targeted sign with [`/sign ui`](#sign-ui) in the native Minecraft sign editor ([up to Minecraft 1.15.2](#minecraft-116-sign-editor-gui)).
+* (`>= 1.8`) Edit the targeted sign with [`/sign ui`](#sign-ui) in the native Minecraft sign editor ([except for Minecraft 1.16.1](#minecraft-1161-sign-editor-gui)).
   * No dependencies!
 * (`>= 1.10`) Change all the lines `<lines>` of the targeted sign to be `<text>` with [`/sign set <lines> [<text>]`](#sign-set-14-) or [`/sign <lines> [<text>]`](#sign-2-deltiks).
 * (`>= 1.10`) [See the sign text before and after in chat.](#se-set-3-4construction)
@@ -460,18 +460,26 @@ SignEdit for Bukkit versions `~> 1.5` are backwards-compatible with Omel's SignE
 
   Upgrade to SignEdit for Bukkit version `~> 1.5` to have the possibility of restoring the original line number range.
 
-### Minecraft 1.16+ Sign Editor GUI
+### Minecraft 1.16.1 Sign Editor GUI
 
-Starting in Minecraft 1.16, invoking the native sign editor GUI with `/sign ui` (`>= 1.8, < 1.12`) will open a blank sign editor without the existing sign contents.
-This is [a regression (bug) in the Minecraft client](https://web.archive.org/web/20200901000000/https://bugs.mojang.com/browse/MC-192263?focusedCommentId=755369&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-755369); there is no way to get the native sign editor to open correctly from the Bukkit server.
+In Minecraft 1.16.1, invoking the native sign editor GUI with `/sign ui` (`>= 1.8, < 1.12`) will open a blank sign editor without the existing sign contents.
+This is [a regression (bug) in the Minecraft client](https://web.archive.org/web/20200901000000/https://bugs.mojang.com/browse/MC-192263?focusedCommentId=755369&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-755369); there is no way to get the native sign editor to open correctly from the Bukkit 1.16.1 server.
 
-[Mojang refused to fix the bug.](https://web.archive.org/web/20200714051840/https://bugs.mojang.com/browse/MC-192263?focusedCommentId=759126&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-759126)
+Despite [Mojang's refusal to fix the bug](https://web.archive.org/web/20200714051840/https://bugs.mojang.com/browse/MC-192263?focusedCommentId=759126&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-759126), [it was fixed in Minecraft 1.16.2](https://minecraft.gamepedia.com/Java_Edition_20w30a).
 
-(`>= 1.12`)
+(`>= 1.12.0`)
 
-Plugin version `>= 1.12` introduces a clunky workaround for Minecraft 1.16+ that offers a sign editor GUI via a [book and quill](https://minecraft.gamepedia.com/Book_and_Quill) (AKA writable book):
+Plugin version `= 1.12.0` introduces a clunky workaround that offers a sign editor GUI via a [book and quill](https://minecraft.gamepedia.com/Book_and_Quill) (AKA writable book):
 
 ![Sign editor GUI implemented as a writable book](https://user-images.githubusercontent.com/1364268/87382228-1056ab80-c55c-11ea-8cf6-54e63d8c94dd.png)
+
+The workaround is applicable to these Minecraft versions:
+
+|Plugin [Version](#versioning)|Minecraft Version|Rationale|
+|---|---|---|
+|`= 1.12.0`|1.16 and higher|[MC-192263 was closed as invalid](https://web.archive.org/web/20200901000000/https://bugs.mojang.com/browse/MC-192263?focusedCommentId=755369&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-755369), suggesting the bug was here to stay.|
+|`>= 1.12.1`|1.16.1 only|The bug was [unexpectedly fixed in Minecraft 1.16.2](https://minecraft.gamepedia.com/Java_Edition_20w30a).|
+|`< 1.12`|_Not applicable_|The bug was unknown at the time these plugin versions were released.|
 
 Instead of opening the native sign editor after the player runs `/sign ui`, this plugin places a temporary book and quill in their hand.
 To open the alternative sign editor, the player must look away from the sign and then right-mouse click.

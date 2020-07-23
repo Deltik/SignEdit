@@ -32,7 +32,11 @@ import org.deltik.mc.signedit.listeners.SignEditListener;
 import javax.inject.Inject;
 
 public class UiSignSubcommand implements SignSubcommand {
-    private static final String FIRST_QUIRKY_CLIENT_VERSION = "v1_16_R1";
+    /**
+     * Bug reported for Minecraft 1.16.1: https://bugs.mojang.com/browse/MC-192263
+     * Bug resolved in Minecraft 1.16.2: https://minecraft.gamepedia.com/Java_Edition_20w30a
+     */
+    private static final String QUIRKY_MINECRAFT_SERVER_VERSION = "v1_16_R1";
 
     private final Plugin plugin;
     private final SignEditListener listener;
@@ -60,7 +64,7 @@ public class UiSignSubcommand implements SignSubcommand {
 
     @Override
     public SignEditInteraction execute() {
-        if (FIRST_QUIRKY_CLIENT_VERSION.compareTo(reflector.MINECRAFT_SERVER_VERSION) <= 0) {
+        if (QUIRKY_MINECRAFT_SERVER_VERSION.compareTo(reflector.MINECRAFT_SERVER_VERSION) == 0) {
             return new BookUiSignEditInteraction(plugin, listener, comms, signText, historyManager);
         }
         return new UiSignEditInteraction(reflector, listener, comms, signText, historyManager);
