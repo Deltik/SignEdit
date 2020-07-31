@@ -60,7 +60,7 @@ public abstract class SignEditTest {
     public void setUp() throws Exception {
         Configuration config = new Configuration(File.createTempFile("SignEdit-", "-config.yml"));
         spyConfig = spy(config);
-        listener = new SignEditListener(null, null);
+        listener = new SignEditListener(null, null, null);
         doReturn(false).when(spyConfig).writeSaneConfig();
 
         uiSignSubcommand = mock(UiSignSubcommand.class);

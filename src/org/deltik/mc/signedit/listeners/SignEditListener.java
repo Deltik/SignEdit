@@ -23,6 +23,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -30,12 +31,15 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+import org.deltik.mc.signedit.ChatComms;
+import org.deltik.mc.signedit.ChatCommsModule;
 import org.deltik.mc.signedit.SignTextClipboardManager;
 import org.deltik.mc.signedit.SignTextHistoryManager;
 import org.deltik.mc.signedit.interactions.BookUiSignEditInteraction;
 import org.deltik.mc.signedit.interactions.SignEditInteraction;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,14 +49,19 @@ public class SignEditListener implements Listener {
 
     private SignTextClipboardManager clipboardManager;
     private SignTextHistoryManager historyManager;
+    private final Provider<ChatCommsModule.ChatCommsComponent.Builder> commsBuilderProvider;
 
     private Map<Player, SignEditInteraction> pendingInteractions = new HashMap<>();
-    private Map<Player, SignEditInteraction> inProgressInteractions = new HashMap<>();
 
     @Inject
-    public SignEditListener(SignTextClipboardManager clipboardManager, SignTextHistoryManager historyManager) {
+    public SignEditListener(
+            SignTextClipboardManager clipboardManager,
+            SignTextHistoryManager historyManager,
+            Provider<ChatCommsModule.ChatCommsComponent.Builder> commsBuilderProvider
+    ) {
         this.clipboardManager = clipboardManager;
         this.historyManager = historyManager;
+        this.commsBuilderProvider = commsBuilderProvider;
     }
 
     @EventHandler
@@ -64,8 +73,13 @@ public class SignEditListener implements Listener {
         Player player = event.getPlayer();
 
         if (isInteractionPending(player)) {
-            SignEditInteraction interaction = removePendingInteraction(player);
-            interaction.interact(player, sign);
+            try {
+                SignEditInteraction interaction = removePendingInteraction(player);
+                interaction.interact(player, sign);
+            } catch (Exception e) {
+                ChatComms comms = commsBuilderProvider.get().player(player).build().comms();
+                comms.reportException(e);
+            }
         }
     }
 
@@ -76,18 +90,17 @@ public class SignEditListener implements Listener {
         clipboardManager.forgetPlayer(player);
         historyManager.forgetPlayer(player);
 
-        if (isInProgress(player)) {
-            removeInProgressInteraction(player).cleanup(event);
+        if (isInteractionPending(player)) {
+            endInteraction(player, event);
         }
-        removePendingInteraction(player);
     }
 
     @EventHandler
     public void onSignChange(SignChangeEvent event) {
         Player player = event.getPlayer();
 
-        if (isInProgress(player)) {
-            removeInProgressInteraction(player).cleanup(event);
+        if (isInteractionPending(player)) {
+            endInteraction(player, event);
         }
     }
 
@@ -95,9 +108,8 @@ public class SignEditListener implements Listener {
     public void onSignChangeBookMode(PlayerEditBookEvent event) {
         Player player = event.getPlayer();
 
-        if (inProgressInteractions.get(player) instanceof BookUiSignEditInteraction) {
-            removePendingInteraction(player);
-            removeInProgressInteraction(player).cleanup(event);
+        if (getPendingInteraction(player) instanceof BookUiSignEditInteraction) {
+            endInteraction(player, event);
         }
     }
 
@@ -105,15 +117,15 @@ public class SignEditListener implements Listener {
     public void onLeaveSignEditorBook(PlayerItemHeldEvent event) {
         Player player = event.getPlayer();
 
-        if (inProgressInteractions.get(player) instanceof BookUiSignEditInteraction) {
-            removeInProgressInteraction(player).cleanup(event);
+        if (getPendingInteraction(player) instanceof BookUiSignEditInteraction) {
+            endInteraction(player, event);
         }
     }
 
     @EventHandler
     public void onDropSignEditorBook(PlayerDropItemEvent event) {
         Player player = event.getPlayer();
-        if (!isInProgress(player)) return;
+        if (!isInteractionPending(player)) return;
 
         ItemStack droppedItem = event.getItemDrop().getItemStack();
         Material droppedItemType = droppedItem.getType();
@@ -121,7 +133,7 @@ public class SignEditListener implements Listener {
             ItemStack item = event.getItemDrop().getItemStack();
             event.getItemDrop().remove();
             player.getInventory().setItemInMainHand(item);
-            removeInProgressInteraction(player).cleanup(event);
+            endInteraction(player, event);
         }
     }
 
@@ -130,9 +142,18 @@ public class SignEditListener implements Listener {
         HumanEntity human = event.getWhoClicked();
         if (!(human instanceof Player)) return;
         Player player = (Player) human;
-        if (!isInProgress(player)) return;
+        if (!isInteractionPending(player)) return;
 
-        removeInProgressInteraction(player).cleanup(event);
+        endInteraction(player, event);
+    }
+
+    protected void endInteraction(Player player, Event event) {
+        try {
+            removePendingInteraction(player).cleanup(event);
+        } catch (Exception e) {
+            ChatComms comms = commsBuilderProvider.get().player(player).build().comms();
+            comms.reportException(e);
+        }
     }
 
     public void setPendingInteraction(Player player, SignEditInteraction interaction) {
@@ -142,19 +163,8 @@ public class SignEditListener implements Listener {
         pendingInteractions.put(player, interaction);
     }
 
-    public void setInProgressInteraction(Player player, SignEditInteraction interaction) {
-        if (inProgressInteractions.get(player) != null) {
-            removeInProgressInteraction(player).cleanup();
-        }
-        inProgressInteractions.put(player, interaction);
-    }
-
     public boolean isInteractionPending(Player player) {
         return pendingInteractions.containsKey(player);
-    }
-
-    public boolean isInProgress(Player player) {
-        return inProgressInteractions.containsKey(player);
     }
 
     public SignEditInteraction removePendingInteraction(Player player) {
@@ -163,9 +173,5 @@ public class SignEditListener implements Listener {
 
     public SignEditInteraction getPendingInteraction(Player player) {
         return pendingInteractions.get(player);
-    }
-
-    public SignEditInteraction removeInProgressInteraction(Player player) {
-        return inProgressInteractions.remove(player);
     }
 }

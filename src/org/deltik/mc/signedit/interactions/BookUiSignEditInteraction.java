@@ -101,8 +101,6 @@ public class BookUiSignEditInteraction implements SignEditInteraction {
         comms.tellPlayer(comms.t("right_click_air_to_open_sign_editor"));
         listener.removePendingInteraction(player);
         listener.setPendingInteraction(player, this);
-        listener.removeInProgressInteraction(player);
-        listener.setInProgressInteraction(player, this);
     }
 
     @Override
@@ -145,7 +143,7 @@ public class BookUiSignEditInteraction implements SignEditInteraction {
 
     private void cleanupInventoryClickEvent(InventoryClickEvent event) {
         if (originalItemIndex == event.getSlot()) {
-            listener.setInProgressInteraction(player, this);
+            listener.setPendingInteraction(player, this);
             event.setCancelled(true);
         }
     }

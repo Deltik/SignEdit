@@ -86,7 +86,7 @@ public class UiSignEditInteraction implements SignEditInteraction {
         signText.importSign();
 
         formatSignTextForEdit(signText);
-        listener.setInProgressInteraction(player, this);
+        listener.setPendingInteraction(player, this);
 
         try {
             openSignEditor(player, sign);

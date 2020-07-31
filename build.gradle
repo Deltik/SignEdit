@@ -1,5 +1,5 @@
 def name = 'SignEdit'
-version '1.12.1'
+version '1.12.2-SNAPSHOT'
 
 /*
  * Copyright (C) 2017-2020 Deltik <https://www.deltik.org/>
