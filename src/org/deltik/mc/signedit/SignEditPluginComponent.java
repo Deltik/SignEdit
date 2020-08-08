@@ -22,12 +22,14 @@ package org.deltik.mc.signedit;
 import dagger.BindsInstance;
 import dagger.Component;
 import org.bukkit.plugin.Plugin;
+import org.deltik.mc.signedit.interactions.SignEditInteractionModule;
 import org.deltik.mc.signedit.subcommands.SignSubcommandModule;
 
 import javax.inject.Singleton;
 
 @Component(modules = {
         SignSubcommandModule.class,
+        SignEditInteractionModule.class,
         ChatCommsModule.class
 })
 @Singleton

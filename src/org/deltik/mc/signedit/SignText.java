@@ -26,6 +26,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.plugin.PluginManager;
 import org.deltik.mc.signedit.exceptions.BlockStateNotPlacedException;
 import org.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
+import org.deltik.mc.signedit.subcommands.PerSubcommand;
 
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -33,6 +34,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@PerSubcommand
 public class SignText {
     private static final String REGEX_1_HEX = "[0-9a-fA-F]";
     private static final String REGEX_AMP_HEX = "&(" + REGEX_1_HEX + ")";

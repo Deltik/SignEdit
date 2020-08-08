@@ -26,6 +26,7 @@ import org.deltik.mc.signedit.SignText;
 import org.deltik.mc.signedit.SignTextClipboardManager;
 import org.deltik.mc.signedit.SignTextHistoryManager;
 
+import javax.inject.Inject;
 import javax.inject.Provider;
 
 public class PasteSignEditInteraction implements SignEditInteraction {
@@ -34,6 +35,7 @@ public class PasteSignEditInteraction implements SignEditInteraction {
     private final SignTextHistoryManager historyManager;
     private final ChatComms comms;
 
+    @Inject
     public PasteSignEditInteraction(
             SignTextClipboardManager clipboardManager,
             Provider<SignText> signTextProvider,

@@ -23,6 +23,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.deltik.mc.signedit.*;
 
+import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.Arrays;
 
@@ -36,6 +37,7 @@ public class CutSignEditInteraction implements SignEditInteraction {
     private final SignTextHistoryManager historyManager;
     private final ChatComms comms;
 
+    @Inject
     public CutSignEditInteraction(
             ArgParser argParser,
             Provider<SignText> signTextProvider,

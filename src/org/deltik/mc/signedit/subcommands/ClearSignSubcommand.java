@@ -20,15 +20,20 @@
 package org.deltik.mc.signedit.subcommands;
 
 import org.deltik.mc.signedit.ArgParser;
-import org.deltik.mc.signedit.ChatComms;
 import org.deltik.mc.signedit.SignText;
-import org.deltik.mc.signedit.SignTextHistoryManager;
+import org.deltik.mc.signedit.interactions.SignEditInteraction;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
+import java.util.Map;
 
 public class ClearSignSubcommand extends SetSignSubcommand {
     @Inject
-    public ClearSignSubcommand(ArgParser args, SignText t, ChatComms comms, SignTextHistoryManager historyManager) {
-        super(args, t, comms, historyManager);
+    public ClearSignSubcommand(
+            Map<String, Provider<SignEditInteraction>> interactions,
+            ArgParser argParser,
+            SignText signText
+    ) {
+        super(interactions, argParser, signText);
     }
 }

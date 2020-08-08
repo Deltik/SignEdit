@@ -19,37 +19,24 @@
 
 package org.deltik.mc.signedit.subcommands;
 
-import org.deltik.mc.signedit.*;
-import org.deltik.mc.signedit.interactions.CutSignEditInteraction;
 import org.deltik.mc.signedit.interactions.SignEditInteraction;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.util.Map;
 
 public class CutSignSubcommand implements SignSubcommand {
-    private final ArgParser argParser;
-    private final Provider<SignText> signTextProvider;
-    private final SignTextClipboardManager clipboardManager;
-    private final SignTextHistoryManager historyManager;
-    private final ChatComms comms;
+    private final Map<String, Provider<SignEditInteraction>> interactions;
 
     @Inject
     public CutSignSubcommand(
-            ArgParser argParser,
-            Provider<SignText> signTextProvider,
-            SignTextClipboardManager clipboardManager,
-            SignTextHistoryManager historyManager,
-            ChatComms comms
+            Map<String, Provider<SignEditInteraction>> interactions
     ) {
-        this.argParser = argParser;
-        this.signTextProvider = signTextProvider;
-        this.clipboardManager = clipboardManager;
-        this.historyManager = historyManager;
-        this.comms = comms;
+        this.interactions = interactions;
     }
 
     @Override
     public SignEditInteraction execute() {
-        return new CutSignEditInteraction(argParser, signTextProvider, clipboardManager, historyManager, comms);
+        return interactions.get("Cut").get();
     }
 }

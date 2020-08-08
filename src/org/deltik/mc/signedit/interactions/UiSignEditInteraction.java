@@ -31,6 +31,7 @@ import org.deltik.mc.signedit.SignTextHistoryManager;
 import org.deltik.mc.signedit.exceptions.SignEditorInvocationException;
 import org.deltik.mc.signedit.listeners.SignEditListener;
 
+import javax.inject.Inject;
 import java.lang.reflect.Field;
 import java.util.UUID;
 
@@ -41,6 +42,7 @@ public class UiSignEditInteraction implements SignEditInteraction {
     private final SignText signText;
     private final SignTextHistoryManager historyManager;
 
+    @Inject
     public UiSignEditInteraction(
             MinecraftReflector reflector,
             SignEditListener listener,

@@ -26,6 +26,7 @@ import org.deltik.mc.signedit.ChatComms;
 import org.deltik.mc.signedit.SignText;
 import org.deltik.mc.signedit.SignTextClipboardManager;
 
+import javax.inject.Inject;
 import java.util.Arrays;
 
 import static org.deltik.mc.signedit.ArgParser.ALL_LINES_SELECTED;
@@ -37,6 +38,7 @@ public class CopySignEditInteraction implements SignEditInteraction {
     private final SignTextClipboardManager clipboardManager;
     private final ChatComms comms;
 
+    @Inject
     public CopySignEditInteraction(
             ArgParser argParser,
             SignText signText,

@@ -19,36 +19,24 @@
 
 package org.deltik.mc.signedit.subcommands;
 
-import org.deltik.mc.signedit.ArgParser;
-import org.deltik.mc.signedit.ChatComms;
-import org.deltik.mc.signedit.SignText;
-import org.deltik.mc.signedit.SignTextClipboardManager;
-import org.deltik.mc.signedit.interactions.CopySignEditInteraction;
 import org.deltik.mc.signedit.interactions.SignEditInteraction;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
+import java.util.Map;
 
 public class CopySignSubcommand implements SignSubcommand {
-    private final ArgParser argParser;
-    private final SignText signText;
-    private final ChatComms comms;
-    private final SignTextClipboardManager clipboardManager;
+    private final Map<String, Provider<SignEditInteraction>> interactions;
 
     @Inject
     public CopySignSubcommand(
-            ArgParser argParser,
-            SignText signText,
-            ChatComms comms,
-            SignTextClipboardManager clipboardManager
+            Map<String, Provider<SignEditInteraction>> interactions
     ) {
-        this.argParser = argParser;
-        this.signText = signText;
-        this.comms = comms;
-        this.clipboardManager = clipboardManager;
+        this.interactions = interactions;
     }
 
     @Override
     public SignEditInteraction execute() {
-        return new CopySignEditInteraction(argParser, signText, clipboardManager, comms);
+        return interactions.get("Copy").get();
     }
 }

@@ -35,6 +35,8 @@ import org.deltik.mc.signedit.SignText;
 import org.deltik.mc.signedit.SignTextHistoryManager;
 import org.deltik.mc.signedit.listeners.SignEditListener;
 
+import javax.inject.Inject;
+
 public class BookUiSignEditInteraction implements SignEditInteraction {
     private final Plugin plugin;
     private final SignEditListener listener;
@@ -45,6 +47,7 @@ public class BookUiSignEditInteraction implements SignEditInteraction {
     protected int originalItemIndex;
     protected Player player;
 
+    @Inject
     public BookUiSignEditInteraction(
             Plugin plugin,
             SignEditListener listener,

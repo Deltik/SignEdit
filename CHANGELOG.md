@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Removed the confusing concept of "in progress" interactions.
   These are no different from "pending" interactions.
+* Cleaned up dependencies passed from `SignSubcommand` to `SignEditInteraction` by letting Dagger 2 handle them
 
 ## v1.12.1 (2020-07-23)
 

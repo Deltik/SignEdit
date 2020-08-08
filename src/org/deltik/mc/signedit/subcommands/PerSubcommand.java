@@ -28,5 +28,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Scope
 @Documented
 @Retention(RUNTIME)
-@interface PerSubcommand {
+public @interface PerSubcommand {
 }

@@ -25,11 +25,14 @@ import org.deltik.mc.signedit.ChatComms;
 import org.deltik.mc.signedit.SignText;
 import org.deltik.mc.signedit.SignTextHistoryManager;
 
+import javax.inject.Inject;
+
 public class SetSignEditInteraction implements SignEditInteraction {
     private SignText signText;
     private final ChatComms comms;
     private final SignTextHistoryManager historyManager;
 
+    @Inject
     public SetSignEditInteraction(SignText signText, ChatComms comms, SignTextHistoryManager historyManager) {
         this.signText = signText;
         this.comms = comms;

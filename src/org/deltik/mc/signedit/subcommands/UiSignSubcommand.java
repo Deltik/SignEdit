@@ -19,17 +19,13 @@
 
 package org.deltik.mc.signedit.subcommands;
 
-import org.bukkit.plugin.Plugin;
-import org.deltik.mc.signedit.ChatComms;
+import org.deltik.mc.signedit.Configuration;
 import org.deltik.mc.signedit.MinecraftReflector;
-import org.deltik.mc.signedit.SignText;
-import org.deltik.mc.signedit.SignTextHistoryManager;
-import org.deltik.mc.signedit.interactions.BookUiSignEditInteraction;
 import org.deltik.mc.signedit.interactions.SignEditInteraction;
-import org.deltik.mc.signedit.interactions.UiSignEditInteraction;
-import org.deltik.mc.signedit.listeners.SignEditListener;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
+import java.util.Map;
 
 public class UiSignSubcommand implements SignSubcommand {
     /**
@@ -38,35 +34,26 @@ public class UiSignSubcommand implements SignSubcommand {
      */
     private static final String QUIRKY_MINECRAFT_SERVER_VERSION = "v1_16_R1";
 
-    private final Plugin plugin;
-    private final SignEditListener listener;
-    private final SignText signText;
+    private final Configuration config;
+    private final Map<String, Provider<SignEditInteraction>> interactions;
     private final MinecraftReflector reflector;
-    private final ChatComms comms;
-    private final SignTextHistoryManager historyManager;
 
     @Inject
     public UiSignSubcommand(
-            Plugin plugin,
-            SignEditListener listener,
-            SignText signText,
-            MinecraftReflector reflector,
-            ChatComms comms,
-            SignTextHistoryManager historyManager
+            Configuration config,
+            Map<String, Provider<SignEditInteraction>> interactions,
+            MinecraftReflector reflector
     ) {
-        this.plugin = plugin;
-        this.listener = listener;
-        this.signText = signText;
+        this.config = config;
+        this.interactions = interactions;
         this.reflector = reflector;
-        this.comms = comms;
-        this.historyManager = historyManager;
     }
 
     @Override
     public SignEditInteraction execute() {
         if (QUIRKY_MINECRAFT_SERVER_VERSION.compareTo(reflector.MINECRAFT_SERVER_VERSION) == 0) {
-            return new BookUiSignEditInteraction(plugin, listener, comms, signText, historyManager);
+            return interactions.get("EditableBookUi").get();
         }
-        return new UiSignEditInteraction(reflector, listener, comms, signText, historyManager);
+        return interactions.get("NativeUi").get();
     }
 }
