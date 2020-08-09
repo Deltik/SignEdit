@@ -30,10 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.IllformedLocaleException;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 @Singleton
 public class Configuration {
@@ -44,6 +41,8 @@ public class Configuration {
     private static final String CONFIG_LINE_STARTS_AT = "line-starts-at";
     private static final String CONFIG_FORCE_LOCALE = "force-locale";
     private static final String CONFIG_LOCALE = "locale";
+    private static final String CONFIG_COMPAT_SIGN_UI = "compatibility.sign-ui";
+    private static final String CONFIG_COMPAT_EDIT_VALIDATION = "compatibility.edit-validation";
     private static final Map<String, Object> defaults;
 
     static {
@@ -52,6 +51,26 @@ public class Configuration {
         defaults.put(CONFIG_LINE_STARTS_AT, 1);
         defaults.put(CONFIG_FORCE_LOCALE, false);
         defaults.put(CONFIG_LOCALE, "en");
+        defaults.put(CONFIG_COMPAT_SIGN_UI, "Auto");
+        defaults.put(CONFIG_COMPAT_EDIT_VALIDATION, "Standard");
+    }
+
+    protected Object get(String key) {
+        switch (key) {
+            case CONFIG_CLICKING:
+                return getClicking();
+            case CONFIG_LINE_STARTS_AT:
+                return getLineStartsAt();
+            case CONFIG_FORCE_LOCALE:
+                return getForceLocale();
+            case CONFIG_LOCALE:
+                return getLocale();
+            case CONFIG_COMPAT_SIGN_UI:
+                return getSignUi();
+            case CONFIG_COMPAT_EDIT_VALIDATION:
+                return getEditValidation();
+        }
+        return null;
     }
 
     @Inject
@@ -108,7 +127,7 @@ public class Configuration {
         String output = template;
         for (Map.Entry<String, Object> entry : yamlContext.entrySet()) {
             String key = entry.getKey();
-            String newKey = key.replaceAll("-", "_");
+            String newKey = key.replaceAll("-", "_").replaceAll("\\.", "__");
             output = output.replaceAll("\\{\\{[ ]*" + newKey + "[ ]*}}", yamlContext.get(key).toString());
         }
 
@@ -120,7 +139,14 @@ public class Configuration {
     }
 
     public String getClicking() {
-        return bukkitConfig.getString(CONFIG_CLICKING, (String) defaults.get(CONFIG_CLICKING));
+        String def = (String) defaults.get(CONFIG_CLICKING);
+        String clicking = bukkitConfig.getString(CONFIG_CLICKING, def);
+        if (clicking == null) return def;
+        clicking = clicking.toLowerCase();
+        if (!Arrays.asList(new String[]{"auto", "false", "true"}).contains(clicking)) {
+            return def;
+        }
+        return clicking;
     }
 
     public void setClicking(String newValue) {
@@ -138,7 +164,10 @@ public class Configuration {
     }
 
     public int getLineStartsAt() {
-        return bukkitConfig.getInt(CONFIG_LINE_STARTS_AT, (int) defaults.get(CONFIG_LINE_STARTS_AT));
+        int def = (int) defaults.get(CONFIG_LINE_STARTS_AT);
+        int lineStartsAt = bukkitConfig.getInt(CONFIG_LINE_STARTS_AT, def);
+        if (lineStartsAt < 0 || lineStartsAt > 1) return def;
+        return lineStartsAt;
     }
 
     public void setLineStartsAt(String newValue) {
@@ -153,38 +182,44 @@ public class Configuration {
         return getLineStartsAt() + 3;
     }
 
-    public boolean getforceLocale() {
+    public boolean getForceLocale() {
         return bukkitConfig.getBoolean(CONFIG_FORCE_LOCALE);
     }
 
     public Locale getLocale() {
-        String languageTag = bukkitConfig.getString(CONFIG_LOCALE);
-        if (languageTag == null) languageTag = (String) defaults.get(CONFIG_LOCALE);
-        return new Locale.Builder().setLanguageTag(languageTag).build();
+        String def = (String) defaults.get(CONFIG_LOCALE);
+        try {
+            String languageTag = bukkitConfig.getString(CONFIG_LOCALE);
+            if (languageTag == null) languageTag = def;
+            return new Locale.Builder().setLanguageTag(languageTag).build();
+        } catch (IllformedLocaleException | NullPointerException e) {
+            return new Locale.Builder().setLanguageTag(def).build();
+        }
+    }
+
+    public String getSignUi() {
+        String def = (String) defaults.get(CONFIG_COMPAT_SIGN_UI);
+        String signUi = bukkitConfig.getString(CONFIG_COMPAT_SIGN_UI, def);
+        if (signUi == null) return def;
+        if (!Arrays.asList(new String[]{"auto", "editablebook", "native"}).contains(signUi.toLowerCase())) {
+            return def;
+        }
+        return signUi;
+    }
+
+    public String getEditValidation() {
+        String def = (String) defaults.get(CONFIG_COMPAT_EDIT_VALIDATION);
+        String editValidator = bukkitConfig.getString(CONFIG_COMPAT_EDIT_VALIDATION, def);
+        if (editValidator == null) return def;
+        if (!Arrays.asList(new String[]{"standard", "extra", "none"}).contains(editValidator.toLowerCase())) {
+            return def;
+        }
+        return editValidator;
     }
 
     private void sanitizeConfig() {
-        String clicking = bukkitConfig.getString(CONFIG_CLICKING);
-        if (clicking == null ||
-                !(clicking.equalsIgnoreCase("true") ||
-                        clicking.equalsIgnoreCase("false") ||
-                        clicking.equalsIgnoreCase("auto"))) setDefaultConfig(CONFIG_CLICKING);
-
-        int lineStartsAt = bukkitConfig.getInt(CONFIG_LINE_STARTS_AT);
-        if (lineStartsAt < 0 || lineStartsAt > 1) setDefaultConfig(CONFIG_LINE_STARTS_AT);
-
-        try {
-            getLocale();
-        } catch (IllformedLocaleException | NullPointerException e) {
-            setDefaultConfig(CONFIG_LOCALE);
+        for (String configItem : defaults.keySet()) {
+            bukkitConfig.set(configItem, get(configItem));
         }
-
-        if (!bukkitConfig.isBoolean(CONFIG_FORCE_LOCALE)) {
-            setDefaultConfig(CONFIG_FORCE_LOCALE);
-        }
-    }
-
-    private void setDefaultConfig(String path) {
-        bukkitConfig.set(path, defaults.get(path));
     }
 }

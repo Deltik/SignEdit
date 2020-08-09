@@ -51,6 +51,15 @@ public class UiSignSubcommand implements SignSubcommand {
 
     @Override
     public SignEditInteraction execute() {
+        String value = config.getSignUi().toLowerCase();
+
+        if ("editablebook".equals(value)) {
+            return interactions.get("EditableBookUi").get();
+        } else if ("native".equals(value)) {
+            return interactions.get("NativeUi").get();
+        }
+
+        // Auto mode
         if (QUIRKY_MINECRAFT_SERVER_VERSION.compareTo(reflector.MINECRAFT_SERVER_VERSION) == 0) {
             return interactions.get("EditableBookUi").get();
         }

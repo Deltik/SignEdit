@@ -28,3 +28,19 @@ locale: "{{ locale }}"
 #   false - (Default) Uses the player's language if supported; otherwise uses the language specified in the "locale" key
 #   true  - Forces all players to see the language specified in the "locale" key
 force-locale: {{ force_locale }}
+
+# Workarounds for bugs in Minecraft or other Bukkit plugins
+compatibility:
+  # Choose whether to use the alternative sign editor graphical user interface
+  # Possible values:
+  #   "Auto"         - (Default) Only show the alternative sign editor on Minecraft 1.16.1
+  #   "EditableBook" - Always show the alternative sign editor regardless of Minecraft version
+  #   "Native"       - (Not recommended) Always show the native sign editor regardless of Minecraft version
+  sign-ui: "{{ compatibility__sign_ui }}"
+
+  # Events to send to permission validation plugins when a player edits a sign
+  # Possible values:
+  #   "Standard" - (Default) Only send SignChangeEvent to other plugins for validation
+  #   "Extra"    - Send BlockBreakEvent, BlockPlaceEvent, and SignChangeEvent to other plugins for validation
+  #   "None"     - (Not recommended) Disable permission validation by not sending any Events
+  edit-validation: "{{ compatibility__edit_validation }}"

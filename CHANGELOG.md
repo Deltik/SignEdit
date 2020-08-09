@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.12.2 (UNRELEASED)
 
+### Added
+
+* Allow the administrator to opt in or out of the alternative sign editor GUI introduced in `= 1.12.0` with the new configuration option `compatibility.sign-ui: [Auto|EditableBook|Native]`
+* New configuration option to send extra events (`BlockBreakEvent` and `BlockPlaceEvent`) on sign edit: `compatibility.edit-validation: [Standard|Extra|None]`
+
 ### Fixed
 
 * If there was an error while editing a sign in two or more steps (e.g. right-mouse click action, sign editor GUI), the error won't be shown to the player, and the server console shows a "Cannot pass event … to SignEdit v…" error and stack trace. (#16)
@@ -18,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Removed the confusing concept of "in progress" interactions.
   These are no different from "pending" interactions.
 * Cleaned up dependencies passed from `SignSubcommand` to `SignEditInteraction` by letting Dagger 2 handle them
+* `Configuration` getters now validate their options and return the default if the existing value is invalid.
 
 ## v1.12.1 (2020-07-23)
 

@@ -31,6 +31,8 @@
          * [`force-locale: [false|true]`](#force-locale-falsetrue)
          * [`line-starts-at: [1|0]`](#line-starts-at-10)
          * [`locale: [en|…]`](#locale-en)
+         * [`compatibility.sign-ui: [Auto|EditableBook|Native]`](#compatibilitysign-ui-autoeditablebooknative)
+         * [`compatibility.edit-validation: [Standard|Extra|None]`](#compatibilityedit-validation-standardextranone)
       * [Features](#features)
          * [Features from Older Versions](#features-from-older-versions)
          * [Supported Locales](#supported-locales)
@@ -48,6 +50,7 @@
          * [Custom Translations](#custom-translations)
       * [Compatibility](#compatibility)
          * [Backwards Compatibility with Omel's SignEdit v1.3](#backwards-compatibility-with-omels-signedit-v13)
+         * [Compatibility with Permissions Plugins](#compatibility-with-permissions-plugins)
          * [Minecraft 1.16.1 Sign Editor GUI](#minecraft-1161-sign-editor-gui)
 
 ## Installation
@@ -300,6 +303,30 @@ If the value is not supported, English will be used as the fallback locale.
 
 **…**: Set the default/fallback locale to `…`.  Go to [Supported Locales](#supported-locales) for a table of supported languages.
 
+### `compatibility.sign-ui: [Auto|EditableBook|Native]`
+
+(`>= 1.12.2`)
+
+Choose which visual sign editor to show for all players that run `/sign ui`.
+
+**Auto** (default): Shows the native Minecraft sign editor GUI, except for on a Minecraft 1.16.1 server, which shows the book and quill alternative sign editor GUI instead.
+
+**EditableBook**: Shows the book and quill alternative sign editor GUI regardless of Minecraft server version
+
+**Native** (not recommended): Shows the native Minecraft sign editor GUI regardless of Minecraft server version
+
+### `compatibility.edit-validation: [Standard|Extra|None]`
+
+(`>= 1.12.2`)
+
+Decide what events to send to other plugins for sign edit permission validation when a player edits a sign with this plugin.
+
+**Standard** (default): Only emit [`SignChangeEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/SignChangeEvent.html).  This option is the most compliant with the Bukkit API.
+
+**Extra**: Emit [`BlockBreakEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/BlockBreakEvent.html), [`BlockPlaceEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/BlockPlaceEvent.html), and [`SignChangeEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/SignChangeEvent.html) (in that order).  The edited sign block will not actually be broken and replaced.  This option improves compatibility with permissions plugins that don't handle `SignChangeEvent` correctly, but it may conflict with plugins that expect block breaking or block placement behavior.
+
+**None** (not recommended): Bypass all permission validation by not sending any events.  All players with access to `/sign` modification commands will be able to edit all signs on the server.  This option matches the behavior of this plugin version `< 1.8`.
+
 ## Features
 
 * (`>= 1.8`) Edit the targeted sign with [`/sign ui`](#sign-ui) in the native Minecraft sign editor ([except for Minecraft 1.16.1](#minecraft-1161-sign-editor-gui)).
@@ -316,7 +343,7 @@ If the value is not supported, English will be used as the fallback locale.
 * (`>= 1.10`) [Tab completion for `/sign` subcommands](#sign-tab)
 * (`>= 1.10`) Copy, cut, and paste sign lines with `/sign copy`, `/sign cut`, and `/sign paste`, respectively.
 * (`>= 1.10`) Undo and redo sign changes with `/sign undo` and `/sign redo`, respectively.
-* (`>= 1.10`) Players cannot edit signs that they do not have permission to edit.  Every attempted edit is validated through a [SignChangeEvent](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/event/block/SignChangeEvent.html) and will not succeed if another plugin or policy cancels the SignChangeEvent.
+* (`>= 1.12.2`) Players cannot edit signs that they do not have permission to edit.  Every attempted edit is validated through an [admin-configurable chain of events](#compatibilityedit-validation-standardextranone) and will not succeed if another plugin or policy cancels any of the events.
 * (`>= 1.10.2`) Automatically uses the player's language, [if supported](#supported-locales).
 * (`>= 1.11`) Fully customizable plugin text [theming and localization/translations](#advanced-customization)
 
@@ -324,7 +351,8 @@ If the value is not supported, English will be used as the fallback locale.
 These features no longer apply to the latest version of this plugin:
 
 * (`< 1.10`) Edit the line `<line>` of the targeted sign to be `<text>` with `/sign set <line> [<text>]` or (`>= 1.6`) `/sign <line> [<text>]`.
-* (`>= 1.8, < 1.10`) Before editing a sign, this plugin checks if the player is allowed to edit the sign by pretending to blank out the sign and seeing if the corresponding [SignChangeEvent](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/event/block/SignChangeEvent.html) is cancelled.
+* (`>= 1.8, < 1.10`) Before editing a sign, this plugin checks if the player is allowed to edit the sign by pretending to blank out the sign and seeing if the corresponding [`SignChangeEvent`](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/event/block/SignChangeEvent.html) is cancelled.
+* (`>= 1.10, < 1.12.2`) Players cannot edit signs that they do not have permission to edit.  Every attempted edit is validated through a [`SignChangeEvent`](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/event/block/SignChangeEvent.html) and will not succeed if another plugin or policy cancels the `SignChangeEvent`.
 
 ### Supported Locales
 
@@ -450,7 +478,7 @@ SignEdit for Bukkit versions `~> 1.5` are backwards-compatible with Omel's SignE
 
 * (`~> 1.5`) By default, sign line numbers range from 1 to 4 in this plugin instead of 0 to 3 in the original plugin.
 
-  To restore the original behavior and start line numbers at 0, set `line-starts-at: 0` in `plugins/SignEdit/config.yml`.
+  To restore the original behavior and start line numbers at 0, set [`line-starts-at: 0`](#line-starts-at-10) in `plugins/SignEdit/config.yml`.
 * (`~> 1.7`) By default, `clicking` mode is activated when the player is not looking at a sign.
 
   To force `clicking` mode on at all times, set `clicking: true` in `plugins/SignEdit/config.yml`.
@@ -459,6 +487,14 @@ SignEdit for Bukkit versions `~> 1.5` are backwards-compatible with Omel's SignE
 * (`~> 1.4.0`) Sign line numbers range from 1 to 4, whereas they ranged from 0 to 3 in older versions.
 
   Upgrade to SignEdit for Bukkit version `~> 1.5` to have the possibility of restoring the original line number range.
+
+### Compatibility with Permissions Plugins
+
+Since `>= 1.8`, other plugins can receive a [`SignChangeEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/SignChangeEvent.html) from SignEdit for Bukkit and cancel the event to deny the player from editing a sign through this plugin.
+
+In `>= 1.8, < 1.10`, this plugin emitted `SignChangeEvent`s with blank lines.  This is incompatible with plugins that validate the contents of sign changes (e.g. censorship or "bad word" plugins).  In `>= 1.10`, the new sign contents are sent with the `SignChangeEvent`, which allows other plugins to validate the text of the sign change.
+
+Some permissions plugins that check if a player can break or place a block do not also check if the player can edit signs.  It is typically undesirable for a player to be able to edit a sign that they cannot place or break.  To improve compatibility with these plugins, SignEdit for Bukkit `>= 1.12.2` offers [a configuration option](#compatibilityedit-validation-standardextranone) to send a [`BlockBreakEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/BlockBreakEvent.html) and a [`BlockPlaceEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/BlockPlaceEvent.html) before the `SignChangeEvent` as if the player broke, replaced, and rewrote the targeted sign.  The extra events will not reflect the actual condition of the sign block; it will not be broken and replaced―only changed.
 
 ### Minecraft 1.16.1 Sign Editor GUI
 
@@ -477,11 +513,12 @@ The workaround is applicable to these Minecraft versions:
 
 |Plugin [Version](#versioning)|Minecraft Version|Rationale|
 |---|---|---|
+|`>= 1.12.2`|[_Admin's choice_](#compatibilitysign-ui-autoeditablebooknative)|To offer the choice of which sign editor GUI implementation to use|
+|`= 1.12.1`|1.16.1 only|The bug was [unexpectedly fixed in Minecraft 1.16.2](https://minecraft.gamepedia.com/Java_Edition_20w30a).|
 |`= 1.12.0`|1.16 and higher|[MC-192263 was closed as invalid](https://web.archive.org/web/20200901000000/https://bugs.mojang.com/browse/MC-192263?focusedCommentId=755369&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-755369), suggesting the bug was here to stay.|
-|`>= 1.12.1`|1.16.1 only|The bug was [unexpectedly fixed in Minecraft 1.16.2](https://minecraft.gamepedia.com/Java_Edition_20w30a).|
 |`< 1.12`|_Not applicable_|The bug was unknown at the time these plugin versions were released.|
 
-Instead of opening the native sign editor after the player runs `/sign ui`, this plugin places a temporary book and quill in their hand.
+When using the workaround, instead of opening the native sign editor after the player runs `/sign ui`, this plugin places a temporary book and quill in their hand.
 To open the alternative sign editor, the player must look away from the sign and then right-mouse click.
 The writable book opens, and the first four lines represent the four lines on the sign.
 Once the player commits the changed text, the book is removed, the sign is updated, and the item they were originally holding is restored.
