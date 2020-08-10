@@ -17,28 +17,19 @@
  * along with SignEdit for Bukkit.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.deltik.mc.signedit;
+package org.deltik.mc.signedit.integrations;
 
-import dagger.BindsInstance;
-import dagger.Component;
-import org.bukkit.plugin.Plugin;
-import org.deltik.mc.signedit.subcommands.SignSubcommandModule;
+import org.bukkit.block.Sign;
+import org.deltik.mc.signedit.SignText;
 
-import javax.inject.Singleton;
+import javax.inject.Inject;
 
-@Component(modules = {
-        SignSubcommandModule.class,
-        ChatCommsModule.class
-})
-@Singleton
-public interface SignEditPluginComponent {
-    void injectSignEditPlugin(SignEditPlugin plugin);
+public class NoopSignEditValidator implements SignEditValidator {
+    @Inject
+    public NoopSignEditValidator() {
+    }
 
-    @Component.Builder
-    interface Builder {
-        SignEditPluginComponent build();
-
-        @BindsInstance
-        Builder plugin(Plugin plugin);
+    @Override
+    public void validate(Sign target, SignText signText) {
     }
 }

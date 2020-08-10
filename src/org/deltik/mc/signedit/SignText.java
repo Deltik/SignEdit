@@ -21,16 +21,12 @@ package org.deltik.mc.signedit;
 
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
-import org.bukkit.entity.Player;
-import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.plugin.PluginManager;
 import org.deltik.mc.signedit.exceptions.BlockStateNotPlacedException;
-import org.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
+import org.deltik.mc.signedit.integrations.SignEditValidator;
 import org.deltik.mc.signedit.subcommands.PerSubcommand;
 
 import javax.inject.Inject;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,21 +36,15 @@ public class SignText {
     private static final String REGEX_AMP_HEX = "&(" + REGEX_1_HEX + ")";
     private static final String REGEX_6_AMP_HEX = new String(new char[6]).replace("\0", REGEX_AMP_HEX);
     private static final String REGEX_1_CODE = "[0-9A-Fa-fK-Ok-oRrXx]";
-    private final Player player;
-    private final PluginManager pluginManager;
+    private final SignEditValidator validator;
     private String[] changedLines = new String[4];
     private String[] beforeLines = new String[4];
     private String[] afterLines = new String[4];
     private Sign targetSign;
 
     @Inject
-    public SignText(Player player) {
-        this(player, player.getServer().getPluginManager());
-    }
-
-    public SignText(Player player, PluginManager pluginManager) {
-        this.player = player;
-        this.pluginManager = pluginManager;
+    public SignText(SignEditValidator validator) {
+        this.validator = validator;
     }
 
     public Sign getTargetSign() {
@@ -65,31 +55,22 @@ public class SignText {
         this.targetSign = targetSign;
     }
 
-    public void applySign() {
-        SignChangeEvent signChangeEvent = new SignChangeEvent(
-                targetSign.getBlock(),
-                player,
-                targetSign.getLines().clone()
-        );
-        applySign(signChangeEvent);
-    }
-
-    public void applySign(SignChangeEvent signChangeEvent) {
-        if (!Objects.equals(signChangeEvent.getBlock(), targetSign.getBlock())) {
-            throw new RuntimeException("Refusing to apply a sign change to a different SignChangeEvent");
-        }
+    public void stageSign() {
         verifyBlockPlaced(targetSign);
         beforeLines = targetSign.getLines().clone();
         for (int i = 0; i < changedLines.length; i++) {
             String line = getLine(i);
             if (line != null) {
-                signChangeEvent.setLine(i, line);
                 targetSign.setLine(i, line);
             }
         }
-        callSignChangeEvent(signChangeEvent);
-        targetSign.update();
         afterLines = targetSign.getLines().clone();
+    }
+
+    public void applySign() {
+        stageSign();
+        validator.validate(targetSign, this);
+        targetSign.update();
     }
 
     private void verifyBlockPlaced(BlockState blockState) {
@@ -98,16 +79,8 @@ public class SignText {
         }
     }
 
-    private void callSignChangeEvent(SignChangeEvent signChangeEvent) {
-        pluginManager.callEvent(signChangeEvent);
-        if (signChangeEvent.isCancelled()) {
-            throw new ForbiddenSignEditException();
-        }
-    }
-
     public void revertSign() {
         verifyBlockPlaced(targetSign);
-        SignChangeEvent signChangeEvent = new SignChangeEvent(targetSign.getBlock(), player, beforeLines);
         for (int i = 0; i < beforeLines.length; i++) {
             if (changedLines[i] != null) {
                 targetSign.setLine(i, beforeLines[i]);
@@ -118,7 +91,7 @@ public class SignText {
         beforeLines = afterLines;
         afterLines = _tmp;
 
-        callSignChangeEvent(signChangeEvent);
+        validator.validate(targetSign, this);
         targetSign.update();
     }
 

@@ -19,14 +19,16 @@
 
 package org.deltik.mc.signedit;
 
-import org.bukkit.Server;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.plugin.PluginManager;
 import org.deltik.mc.signedit.exceptions.BlockStateNotPlacedException;
 import org.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
+import org.deltik.mc.signedit.integrations.NoopSignEditValidator;
+import org.deltik.mc.signedit.integrations.StandardSignEditValidator;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.stubbing.Answer;
@@ -40,22 +42,7 @@ public class SignTextTest {
 
     @Before
     public void newTestObject() {
-        Player player = mock(Player.class);
-        PluginManager pluginManager = mock(PluginManager.class);
-        signText = new SignText(player, pluginManager);
-    }
-
-    @Test
-    public void constructionWithJustPlayerGetsPluginManagerFromPlayer() {
-        Player player = mock(Player.class);
-        Server server = mock(Server.class);
-        PluginManager pluginManager = mock(PluginManager.class);
-        when(player.getServer()).thenReturn(server);
-        when(server.getPluginManager()).thenReturn(pluginManager);
-
-        signText = new SignText(player);
-
-        verify(server, times(1)).getPluginManager();
+        signText = new SignText(new NoopSignEditValidator());
     }
 
     @Test
@@ -283,33 +270,19 @@ public class SignTextTest {
         verify(sign, times(0)).setLine(eq(3), any());
     }
 
-    @Test(expected = RuntimeException.class)
-    public void applySignValidatesEventIsRelated() {
-        Sign sign = mock(Sign.class);
-        Block eventBlock = mock(Block.class);
-        Block signBlock = mock(Block.class);
-        when(sign.getBlock()).thenReturn(signBlock);
-        SignChangeEvent event = mock(SignChangeEvent.class);
-        when(event.getBlock()).thenReturn(eventBlock);
-
-        signText.setTargetSign(sign);
-        signText.applySign(event);
-    }
-
     @Test(expected = ForbiddenSignEditException.class)
     public void throwForbiddenSignEditExceptionWhenSignChangeEventIsCancelled() {
         Sign sign = createSign();
         Player player = mock(Player.class);
         PluginManager pluginManager = mock(PluginManager.class);
-        signText = new SignText(player, pluginManager);
-        SignChangeEvent signChangeEvent = mock(SignChangeEvent.class);
-        Block sameBlock = mock(Block.class);
-        when(sign.getBlock()).thenReturn(sameBlock);
-        when(signChangeEvent.getBlock()).thenReturn(sameBlock);
-        when(signChangeEvent.isCancelled()).thenReturn(true);
+        signText = new SignText(new StandardSignEditValidator(player, pluginManager));
+        doAnswer((Answer<Void>) invocation -> {
+            ((SignChangeEvent) invocation.getArgument(0)).setCancelled(true);
+            return null;
+        }).when(pluginManager).callEvent(any(Event.class));
 
         signText.setTargetSign(sign);
-        signText.applySign(signChangeEvent);
+        signText.applySign();
     }
 
     @Test(expected = BlockStateNotPlacedException.class)

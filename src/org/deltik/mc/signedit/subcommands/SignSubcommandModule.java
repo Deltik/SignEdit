@@ -24,6 +24,7 @@ import dagger.Module;
 import dagger.Subcomponent;
 import dagger.multibindings.IntoMap;
 import dagger.multibindings.StringKey;
+import org.deltik.mc.signedit.interactions.SignEditInteractionModule;
 
 @Module(subcomponents = {
         SignSubcommandModule.SetSignSubcommandComponent.class,
@@ -45,7 +46,7 @@ public abstract class SignSubcommandModule {
     abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindSetSignSubcommand(SetSignSubcommandComponent.Builder command);
 
     @PerSubcommand
-    @Subcomponent
+    @Subcomponent(modules = {SignEditInteractionModule.class})
     public interface SetSignSubcommandComponent extends SignSubcommandInjector<SetSignSubcommand> {
         @Subcomponent.Builder
         abstract class Builder extends SignSubcommandInjector.Builder<SetSignSubcommand> {
@@ -58,7 +59,7 @@ public abstract class SignSubcommandModule {
     abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindClearSignSubcommand(ClearSignSubcommandComponent.Builder command);
 
     @PerSubcommand
-    @Subcomponent
+    @Subcomponent(modules = {SignEditInteractionModule.class})
     public interface ClearSignSubcommandComponent extends SignSubcommandInjector<ClearSignSubcommand> {
         @Subcomponent.Builder
         abstract class Builder extends SignSubcommandInjector.Builder<ClearSignSubcommand> {
@@ -71,7 +72,7 @@ public abstract class SignSubcommandModule {
     abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindUiSignSubcommand(UiSignSubcommandComponent.Builder command);
 
     @PerSubcommand
-    @Subcomponent
+    @Subcomponent(modules = {SignEditInteractionModule.class})
     public interface UiSignSubcommandComponent extends SignSubcommandInjector<UiSignSubcommand> {
         @Subcomponent.Builder
         abstract class Builder extends SignSubcommandInjector.Builder<UiSignSubcommand> {
@@ -84,7 +85,7 @@ public abstract class SignSubcommandModule {
     abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindCancelSignSubcommand(CancelSignSubcommandComponent.Builder command);
 
     @PerSubcommand
-    @Subcomponent
+    @Subcomponent(modules = {SignEditInteractionModule.class})
     public interface CancelSignSubcommandComponent extends SignSubcommandInjector<CancelSignSubcommand> {
         @Subcomponent.Builder
         abstract class Builder extends SignSubcommandInjector.Builder<CancelSignSubcommand> {
@@ -97,7 +98,7 @@ public abstract class SignSubcommandModule {
     abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindStatusSignSubcommand(StatusSignSubcommandComponent.Builder command);
 
     @PerSubcommand
-    @Subcomponent
+    @Subcomponent(modules = {SignEditInteractionModule.class})
     public interface StatusSignSubcommandComponent extends SignSubcommandInjector<StatusSignSubcommand> {
         @Subcomponent.Builder
         abstract class Builder extends SignSubcommandInjector.Builder<StatusSignSubcommand> {
@@ -110,7 +111,7 @@ public abstract class SignSubcommandModule {
     abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindCopySignSubcommand(CopySignSubcommandComponent.Builder command);
 
     @PerSubcommand
-    @Subcomponent
+    @Subcomponent(modules = {SignEditInteractionModule.class})
     public interface CopySignSubcommandComponent extends SignSubcommandInjector<CopySignSubcommand> {
         @Subcomponent.Builder
         abstract class Builder extends SignSubcommandInjector.Builder<CopySignSubcommand> {
@@ -123,7 +124,7 @@ public abstract class SignSubcommandModule {
     abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindCutSignSubcommand(CutSignSubcommandComponent.Builder command);
 
     @PerSubcommand
-    @Subcomponent
+    @Subcomponent(modules = {SignEditInteractionModule.class})
     public interface CutSignSubcommandComponent extends SignSubcommandInjector<CutSignSubcommand> {
         @Subcomponent.Builder
         abstract class Builder extends SignSubcommandInjector.Builder<CutSignSubcommand> {
@@ -136,7 +137,7 @@ public abstract class SignSubcommandModule {
     abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindPasteSignSubcommand(PasteSignSubcommandComponent.Builder command);
 
     @PerSubcommand
-    @Subcomponent
+    @Subcomponent(modules = {SignEditInteractionModule.class})
     public interface PasteSignSubcommandComponent extends SignSubcommandInjector<PasteSignSubcommand> {
         @Subcomponent.Builder
         abstract class Builder extends SignSubcommandInjector.Builder<PasteSignSubcommand> {
@@ -149,7 +150,7 @@ public abstract class SignSubcommandModule {
     abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindUndoSignSubcommand(UndoSignSubcommandComponent.Builder command);
 
     @PerSubcommand
-    @Subcomponent
+    @Subcomponent(modules = {SignEditInteractionModule.class})
     public interface UndoSignSubcommandComponent extends SignSubcommandInjector<UndoSignSubcommand> {
         @Subcomponent.Builder
         abstract class Builder extends SignSubcommandInjector.Builder<UndoSignSubcommand> {
@@ -162,7 +163,7 @@ public abstract class SignSubcommandModule {
     abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindRedoSignSubcommand(RedoSignSubcommandComponent.Builder command);
 
     @PerSubcommand
-    @Subcomponent
+    @Subcomponent(modules = {SignEditInteractionModule.class})
     public interface RedoSignSubcommandComponent extends SignSubcommandInjector<RedoSignSubcommand> {
         @Subcomponent.Builder
         abstract class Builder extends SignSubcommandInjector.Builder<RedoSignSubcommand> {
@@ -175,7 +176,7 @@ public abstract class SignSubcommandModule {
     abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindVersionSignSubcommand(VersionSignSubcommandComponent.Builder command);
 
     @PerSubcommand
-    @Subcomponent
+    @Subcomponent(modules = {SignEditInteractionModule.class})
     public interface VersionSignSubcommandComponent extends SignSubcommandInjector<VersionSignSubcommand> {
         @Subcomponent.Builder
         abstract class Builder extends SignSubcommandInjector.Builder<VersionSignSubcommand> {

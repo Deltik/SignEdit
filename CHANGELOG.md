@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * If there was an error while editing a sign in two or more steps (e.g. right-mouse click action, sign editor GUI), the error won't be shown to the player, and the server console shows a "Cannot pass event … to SignEdit v…" error and stack trace. (#16)
+* The `SignChangeEvent` emitted natively by the native sign editor GUI is no longer sent twice.
 
 ### Under the Hood
 

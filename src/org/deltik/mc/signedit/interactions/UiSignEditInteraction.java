@@ -28,6 +28,7 @@ import org.deltik.mc.signedit.ChatComms;
 import org.deltik.mc.signedit.MinecraftReflector;
 import org.deltik.mc.signedit.SignText;
 import org.deltik.mc.signedit.SignTextHistoryManager;
+import org.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
 import org.deltik.mc.signedit.exceptions.SignEditorInvocationException;
 import org.deltik.mc.signedit.listeners.SignEditListener;
 
@@ -64,19 +65,35 @@ public class UiSignEditInteraction implements SignEditInteraction {
 
     @Override
     public void cleanup(Event event) {
-        formatSignTextForSave(signText);
-        if (!(event instanceof SignChangeEvent)) {
+        if (event instanceof SignChangeEvent) {
+            SignChangeEvent signChangeEvent = (SignChangeEvent) event;
+            Player player = signChangeEvent.getPlayer();
+            if (listener.isInteractionPending(player)) {
+                runEarlyEventTask(signChangeEvent);
+            } else {
+                runLateEventTask(signChangeEvent);
+            }
             return;
         }
+        formatSignTextForSave(signText);
+    }
 
-        SignChangeEvent signChangeEvent = (SignChangeEvent) event;
-        String[] lines = signChangeEvent.getLines();
+    protected void runEarlyEventTask(SignChangeEvent event) {
+        String[] lines = event.getLines();
         for (int i = 0; i < lines.length; i++) {
             signText.setLine(i, lines[i]);
+            event.setLine(i, signText.getLine(i));
         }
-        signText.applySign(signChangeEvent);
+    }
+
+    protected void runLateEventTask(SignChangeEvent event) {
+        if (event.isCancelled()) {
+            throw new ForbiddenSignEditException();
+        }
+
+        signText.stageSign();
         if (signText.signChanged()) {
-            historyManager.getHistory(signChangeEvent.getPlayer()).push(signText);
+            historyManager.getHistory(event.getPlayer()).push(signText);
         }
 
         comms.compareSignText(signText);

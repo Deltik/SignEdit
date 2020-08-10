@@ -25,6 +25,7 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.SignChangeEvent;
@@ -95,8 +96,17 @@ public class SignEditListener implements Listener {
         }
     }
 
-    @EventHandler
-    public void onSignChange(SignChangeEvent event) {
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onSignChangeDoReformat(SignChangeEvent event) {
+        Player player = event.getPlayer();
+
+        if (isInteractionPending(player)) {
+            getPendingInteraction(player).cleanup(event);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onSignChangeDoSaveResult(SignChangeEvent event) {
         Player player = event.getPlayer();
 
         if (isInteractionPending(player)) {

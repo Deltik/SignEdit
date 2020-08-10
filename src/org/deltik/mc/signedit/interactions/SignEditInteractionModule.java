@@ -23,8 +23,11 @@ import dagger.Binds;
 import dagger.Module;
 import dagger.multibindings.IntoMap;
 import dagger.multibindings.StringKey;
+import org.deltik.mc.signedit.integrations.SignEditValidatorModule;
 
-@Module
+@Module(includes = {
+        SignEditValidatorModule.class,
+})
 public abstract class SignEditInteractionModule {
     @Binds
     @IntoMap
