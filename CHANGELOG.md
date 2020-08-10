@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v1.12.2 (UNRELEASED)
+## v1.12.2 (2020-08-10)
 
 ### Added
 
@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   These are no different from "pending" interactions.
 * Cleaned up dependencies passed from `SignSubcommand` to `SignEditInteraction` by letting Dagger 2 handle them
 * `Configuration` getters now validate their options and return the default if the existing value is invalid.
+* Builds now use the Bukkit v1.13 library to limit feature development to the minimum version supported
 
 ## v1.12.1 (2020-07-23)
 
@@ -52,6 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+* Minimum Bukkit version is now v1.13 (was v1.12) due to the usage of Bukkit v1.13 materials for the alternative sign editor GUI
 * Changed locale strings:
   * `cancelled_pending_right_click_action` has been renamed to `cancelled_pending_action` and no longer explicates the right-mouse click.
   * `no_right_click_action_to_cancel` has been renamed to `no_pending_action_to_cancel`, and the associated action is now modified by "pending" rather than "right-click".

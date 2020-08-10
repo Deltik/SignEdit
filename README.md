@@ -49,6 +49,7 @@
          * [Theming and Colors](#theming-and-colors)
          * [Custom Translations](#custom-translations)
       * [Compatibility](#compatibility)
+         * [Version Compatibility Table](#version-compatibility-table)
          * [Backwards Compatibility with Omel's SignEdit v1.3](#backwards-compatibility-with-omels-signedit-v13)
          * [Compatibility with Permissions Plugins](#compatibility-with-permissions-plugins)
          * [Minecraft 1.16.1 Sign Editor GUI](#minecraft-1161-sign-editor-gui)
@@ -472,6 +473,16 @@ Since this plugin does not use deprecated methods, it is expected to be compatib
 
 Support for Bukkit v1.8 and lower was dropped in plugin version `>= 1.3.1`.  This is because plugin version `>= 1.3.1` compiles with a method signature introduced in Bukkit commit [e1f54099](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/commits/e1f54099c8d6ba708c2895803464a0b89cacd3b9#src/main/java/org/bukkit/entity/LivingEntity.java), which landed in [Bukkit v1.8.3](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/commits/ca4fd8554d297f3922d36328efd4612b05f9d8aa#pom.xml).
 
+### Version Compatibility Table
+
+|Plugin [Version](#versioning)|Minimum Minecraft Version|Maximum Minecraft Version|Cause of Compatibility Change|
+|---|---|---|---|
+|`<= 1.3`|1.2.2|1.11.2|Deprecated API removed in Bukkit v1.12|
+|`>= 1.3.1, < 1.8`|1.8.3|_No known incompatibility_|[Switched to the non-deprecated Bukkit v1.8.3 API method](https://github.com/Deltik/SignEdit/commit/f1ca24893b3a0099da846f1dbd4b7770c2821c4a)|
+|`>= 1.8, < 1.10.2`|1.8.3|1.15.2|[Native sign editor defect in Minecraft 1.16.1](#minecraft-1161-sign-editor-gui)|
+|`>= 1.10.2, < 1.12`|1.12|1.15.2|[Localization features](#supported-locales) only available starting in Bukkit v1.12|
+|`~> 1.12`|1.13|_No known incompatibility_|Workaround for [native sign editor defect in Minecraft 1.16.1](#minecraft-1161-sign-editor-gui) uses Bukkit v1.13 materials|
+
 ### Backwards Compatibility with Omel's SignEdit v1.3
 
 SignEdit for Bukkit versions `~> 1.5` are backwards-compatible with Omel's SignEdit v1.3, but the following caveats apply:
@@ -499,7 +510,7 @@ Some permissions plugins that check if a player can break or place a block do no
 ### Minecraft 1.16.1 Sign Editor GUI
 
 In Minecraft 1.16.1, invoking the native sign editor GUI with `/sign ui` (`>= 1.8, < 1.12`) will open a blank sign editor without the existing sign contents.
-This is [a regression (bug) in the Minecraft client](https://web.archive.org/web/20200901000000/https://bugs.mojang.com/browse/MC-192263?focusedCommentId=755369&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-755369); there is no way to get the native sign editor to open correctly from the Bukkit 1.16.1 server.
+This is [a regression (bug) in the Minecraft client](https://web.archive.org/web/20200901000000/https://bugs.mojang.com/browse/MC-192263?focusedCommentId=755369&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-755369); there is no way to get the native sign editor to open correctly from the Bukkit v1.16.1 server.
 
 Despite [Mojang's refusal to fix the bug](https://web.archive.org/web/20200714051840/https://bugs.mojang.com/browse/MC-192263?focusedCommentId=759126&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-759126), [it was fixed in Minecraft 1.16.2](https://minecraft.gamepedia.com/Java_Edition_20w30a).
 
