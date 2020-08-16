@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * `/sign cut` only put empty lines into the clipboard (#17)
+* Line selection validation for `/sign cut` and `/sign copy`
 
 ## v1.12.2 (2020-08-10)
 

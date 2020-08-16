@@ -29,6 +29,7 @@ import org.deltik.mc.signedit.ArgParser;
 import org.deltik.mc.signedit.ChatComms;
 import org.deltik.mc.signedit.ChatCommsModule;
 import org.deltik.mc.signedit.Configuration;
+import org.deltik.mc.signedit.exceptions.LineSelectionException;
 import org.deltik.mc.signedit.interactions.SignEditInteraction;
 import org.deltik.mc.signedit.listeners.SignEditListener;
 import org.deltik.mc.signedit.subcommands.SignSubcommand;
@@ -79,6 +80,12 @@ public class SignCommand implements CommandExecutor {
 
         if (subcommandProvider == null) {
             comms.showHelpFor(command.getName());
+            return true;
+        }
+
+        LineSelectionException selectedLinesError = argParser.getSelectedLinesError();
+        if (selectedLinesError != null) {
+            comms.reportException(selectedLinesError);
             return true;
         }
 

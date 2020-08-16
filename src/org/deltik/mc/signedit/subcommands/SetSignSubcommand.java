@@ -21,7 +21,6 @@ package org.deltik.mc.signedit.subcommands;
 
 import org.deltik.mc.signedit.ArgParser;
 import org.deltik.mc.signedit.SignText;
-import org.deltik.mc.signedit.exceptions.LineSelectionException;
 import org.deltik.mc.signedit.exceptions.MissingLineSelectionException;
 import org.deltik.mc.signedit.interactions.SignEditInteraction;
 
@@ -47,10 +46,6 @@ public class SetSignSubcommand implements SignSubcommand {
 
     @Override
     public SignEditInteraction execute() {
-        LineSelectionException selectedLinesError = argParser.getSelectedLinesError();
-        if (selectedLinesError != null) {
-            throw selectedLinesError;
-        }
         int[] selectedLines = argParser.getSelectedLines();
         if (selectedLines.length <= 0) {
             throw new MissingLineSelectionException();
