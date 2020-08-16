@@ -22,9 +22,9 @@ package org.deltik.mc.signedit.interactions;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.deltik.mc.signedit.*;
+import org.deltik.mc.signedit.integrations.SignEditValidator;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import java.util.Arrays;
 
 import static org.deltik.mc.signedit.ArgParser.ALL_LINES_SELECTED;
@@ -32,7 +32,8 @@ import static org.deltik.mc.signedit.ArgParser.NO_LINES_SELECTED;
 
 public class CutSignEditInteraction implements SignEditInteraction {
     private final ArgParser argParser;
-    private final Provider<SignText> signTextProvider;
+    private final SignText sourceSign;
+    private final SignText clipboard;
     private final SignTextClipboardManager clipboardManager;
     private final SignTextHistoryManager historyManager;
     private final ChatComms comms;
@@ -40,12 +41,14 @@ public class CutSignEditInteraction implements SignEditInteraction {
     @Inject
     public CutSignEditInteraction(
             ArgParser argParser,
-            Provider<SignText> signTextProvider,
+            SignText signText,
+            SignEditValidator validator,
             SignTextClipboardManager clipboardManager,
             SignTextHistoryManager historyManager,
             ChatComms comms) {
         this.argParser = argParser;
-        this.signTextProvider = signTextProvider;
+        this.sourceSign = signText;
+        this.clipboard = new SignText(validator);
         this.clipboardManager = clipboardManager;
         this.historyManager = historyManager;
         this.comms = comms;
@@ -58,8 +61,6 @@ public class CutSignEditInteraction implements SignEditInteraction {
             selectedLines = ALL_LINES_SELECTED;
         }
 
-        SignText clipboard = signTextProvider.get();
-        SignText sourceSign = signTextProvider.get();
         sourceSign.setTargetSign(sign);
 
         for (int selectedLine : selectedLines) {
