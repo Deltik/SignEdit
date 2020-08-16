@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.12.3 (UNRELEASED)
 
+### Changed
+
+* `/sign` subcommands are now case-insensitive.  For example, `/sign ClEaR` is now the same as `/sign clear`.
+  Previously, capitalized subcommands would not be understood as valid subcommands.
+
 ### Fixed
 
 * `/sign cut` only put empty lines into the clipboard (#17)

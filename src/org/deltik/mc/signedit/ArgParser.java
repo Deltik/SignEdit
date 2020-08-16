@@ -79,8 +79,8 @@ public class ArgParser {
             return;
         }
 
-        if (subcommandMap.containsKey(argsArray.get(0))) {
-            subcommand = argsArray.remove(0);
+        if (subcommandMap.containsKey(argsArray.get(0).toLowerCase())) {
+            subcommand = argsArray.remove(0).toLowerCase();
         }
         if (argsArray.size() <= 0) {
             selectedLines = NO_LINES_SELECTED;
