@@ -277,4 +277,18 @@ public class ArgParserTest {
 
         assertTrue(selectedLinesError instanceof NumberParseLineSelectionException);
     }
+
+    @Test
+    public void parseSignLinesFailsEmptyDelimiterAtStart() {
+        parse("set ,1,3");
+
+        assertTrue(selectedLinesError instanceof NumberParseLineSelectionException);
+    }
+
+    @Test
+    public void parseSignLinesFailsEmptyDelimiterAtEnd() {
+        parse("set 1,3,");
+
+        assertTrue(selectedLinesError instanceof NumberParseLineSelectionException);
+    }
 }

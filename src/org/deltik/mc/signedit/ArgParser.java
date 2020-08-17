@@ -108,7 +108,7 @@ public class ArgParser {
 
     private void parseLineSelection(String rawLineGroups) {
         byte selectedLinesMask = 0;
-        String[] linesGroup = rawLineGroups.split(",");
+        String[] linesGroup = rawLineGroups.split(",", -1);
         for (String lineRange : linesGroup) {
             if (lineRange.startsWith("-")) {
                 parseLineNumberFromString(lineRange);
