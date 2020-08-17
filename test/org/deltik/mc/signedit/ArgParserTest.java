@@ -68,8 +68,8 @@ public class ArgParserTest {
         ArgParser argParser = new ArgParser(argsSplit, config, subcommandMap);
 
         subcommand = argParser.getSubcommand();
-        selectedLines = argParser.getSelectedLines();
-        selectedLinesError = argParser.getSelectedLinesError();
+        selectedLines = argParser.getLinesSelection();
+        selectedLinesError = argParser.getLinesSelectionError();
         remainder = argParser.getRemainder();
     }
 

@@ -83,7 +83,7 @@ public class SignCommand implements CommandExecutor {
             return true;
         }
 
-        LineSelectionException selectedLinesError = argParser.getSelectedLinesError();
+        LineSelectionException selectedLinesError = argParser.getLinesSelectionError();
         if (selectedLinesError != null) {
             comms.reportException(selectedLinesError);
             return true;

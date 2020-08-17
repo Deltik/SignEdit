@@ -52,7 +52,7 @@ public class CopySignEditInteraction implements SignEditInteraction {
 
     @Override
     public void interact(Player player, Sign sign) {
-        int[] selectedLines = argParser.getSelectedLines();
+        int[] selectedLines = argParser.getLinesSelection();
         if (Arrays.equals(selectedLines, NO_LINES_SELECTED)) {
             selectedLines = ALL_LINES_SELECTED;
         }

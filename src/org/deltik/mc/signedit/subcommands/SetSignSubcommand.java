@@ -46,7 +46,7 @@ public class SetSignSubcommand implements SignSubcommand {
 
     @Override
     public SignEditInteraction execute() {
-        int[] selectedLines = argParser.getSelectedLines();
+        int[] selectedLines = argParser.getLinesSelection();
         if (selectedLines.length <= 0) {
             throw new MissingLineSelectionException();
         }

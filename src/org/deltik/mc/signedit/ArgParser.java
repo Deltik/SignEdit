@@ -57,11 +57,11 @@ public class ArgParser {
         return subcommand;
     }
 
-    public int[] getSelectedLines() {
+    public int[] getLinesSelection() {
         return selectedLines;
     }
 
-    public LineSelectionException getSelectedLinesError() {
+    public LineSelectionException getLinesSelectionError() {
         return selectedLinesError;
     }
 
@@ -108,8 +108,8 @@ public class ArgParser {
 
     private void parseLineSelection(String rawLineGroups) {
         byte selectedLinesMask = 0;
-        String[] linesGroup = rawLineGroups.split(",", -1);
-        for (String lineRange : linesGroup) {
+        String[] lineRanges = rawLineGroups.split(",", -1);
+        for (String lineRange : lineRanges) {
             if (lineRange.startsWith("-")) {
                 parseLineNumberFromString(lineRange);
             }

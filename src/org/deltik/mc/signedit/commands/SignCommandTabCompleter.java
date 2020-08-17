@@ -120,7 +120,7 @@ public class SignCommandTabCompleter implements TabCompleter {
             return completion;
         }
         if (doLineSelectorCompletion) {
-            int[] linesSelectedSoFar = argParser.getSelectedLines();
+            int[] linesSelectedSoFar = argParser.getLinesSelection();
             if (linesSelectedSoFar == ArgParser.ALL_LINES_SELECTED
                     || linesSelectedSoFar == ArgParser.NO_LINES_SELECTED) {
                 return completion;

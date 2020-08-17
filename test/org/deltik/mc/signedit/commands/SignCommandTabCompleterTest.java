@@ -146,7 +146,6 @@ public class SignCommandTabCompleterTest {
     @Test
     public void signSubcommandLineSelectorShorthandNoDuplicateHint() {
         List<String> result = tabComplete("2 ");
-
         assertEquals(0, result.size());
 
         result = tabComplete(" ");
