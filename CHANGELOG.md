@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.12.3 (UNRELEASED)
 
+### Added
+
+* Tab completion for multi-line selection (e.g. `/sign 1,2,…` and `/sign cut 3-4,1-…`)
+
 ### Changed
 
 * `/sign` subcommands are now case-insensitive.  For example, `/sign ClEaR` is now the same as `/sign clear`.
