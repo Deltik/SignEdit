@@ -80,7 +80,10 @@ public class UiSignEditInteraction implements SignEditInteraction {
 
     protected void runEarlyEventTask(SignChangeEvent event) {
         String[] lines = event.getLines();
+        Sign originalSign = signText.getTargetSign();
         for (int i = 0; i < lines.length; i++) {
+            signText.setLine(i, signText.getLine(i));
+            originalSign.setLine(i, signText.getLine(i));
             signText.setLine(i, lines[i]);
             event.setLine(i, signText.getLine(i));
         }
