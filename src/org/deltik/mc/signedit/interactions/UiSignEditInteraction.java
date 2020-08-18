@@ -35,6 +35,7 @@ import org.deltik.mc.signedit.listeners.SignEditListener;
 import javax.inject.Inject;
 import java.lang.reflect.Field;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 public class UiSignEditInteraction implements SignEditInteraction {
     private final MinecraftReflector reflector;
@@ -42,6 +43,8 @@ public class UiSignEditInteraction implements SignEditInteraction {
     private final ChatComms comms;
     private final SignText signText;
     private final SignTextHistoryManager historyManager;
+
+    protected Player player;
 
     @Inject
     public UiSignEditInteraction(
@@ -75,14 +78,15 @@ public class UiSignEditInteraction implements SignEditInteraction {
             }
             return;
         }
-        formatSignTextForSave(signText);
+        if (player != null) {
+            formatSignForSave(player, signText.getTargetSign());
+        }
     }
 
     protected void runEarlyEventTask(SignChangeEvent event) {
         String[] lines = event.getLines();
         Sign originalSign = signText.getTargetSign();
         for (int i = 0; i < lines.length; i++) {
-            signText.setLine(i, signText.getLine(i));
             originalSign.setLine(i, signText.getLine(i));
             signText.setLine(i, lines[i]);
             event.setLine(i, signText.getLine(i));
@@ -106,14 +110,15 @@ public class UiSignEditInteraction implements SignEditInteraction {
     public void interact(Player player, Sign sign) {
         signText.setTargetSign(sign);
         signText.importSign();
+        this.player = player;
 
-        formatSignTextForEdit(signText);
+        formatSignForEdit(player, sign);
         listener.setPendingInteraction(player, this);
 
         try {
             openSignEditor(player, sign);
         } catch (Exception e) {
-            formatSignTextForSave(signText);
+            formatSignForSave(player, sign);
             throw new SignEditorInvocationException(e);
         }
     }
@@ -251,17 +256,13 @@ public class UiSignEditInteraction implements SignEditInteraction {
         throw new NoSuchFieldException("Cannot match " + desiredType.getName() + " in ancestry of " + source.getName());
     }
 
-    private void formatSignTextForEdit(SignText signText) {
-        for (int i = 0; i < 4; i++) {
-            signText.setLineLiteral(i, signText.getLineParsed(i));
-        }
-        signText.applySign();
+    private void formatSignForEdit(Player player, Sign sign) {
+        String[] parsedLines = IntStream.range(0, 4).mapToObj(signText::getLineParsed).toArray(String[]::new);
+        player.sendSignChange(sign.getLocation(), parsedLines);
     }
 
-    private void formatSignTextForSave(SignText signText) {
-        for (int i = 0; i < 4; i++) {
-            signText.setLine(i, signText.getLine(i));
-        }
-        signText.applySign();
+    private void formatSignForSave(Player player, Sign sign) {
+        String[] originalLines = IntStream.range(0, 4).mapToObj(signText::getLine).toArray(String[]::new);
+        player.sendSignChange(sign.getLocation(), originalLines);
     }
 }
