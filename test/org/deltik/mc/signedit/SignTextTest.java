@@ -382,6 +382,24 @@ public class SignTextTest {
         assertEquals(defaultSignLines[0], signText.getAfterLine(0));
     }
 
+    @Test
+    public void signRevertKeepsPreApplyChangedLines() {
+        String expected = "cotton eyed joe";
+        Sign sign = createSign();
+        signText.setTargetSign(sign);
+
+        signText.setLine(0, expected);
+        assertEquals(expected, signText.getLine(0));
+
+        signText.applySign();
+
+        assertEquals(expected, signText.getLine(0));
+
+        signText.revertSign();
+
+        assertEquals(expected, signText.getLine(0));
+    }
+
     @Test(expected = BlockStateNotPlacedException.class)
     public void preventRevertSignWhenBlockIsInoperable() {
         Sign sign = createSign();

@@ -82,21 +82,14 @@ public class SignText {
     }
 
     public void revertSign() {
-        verifyBlockPlaced(targetSign);
-        for (int i = 0; i < beforeLines.length; i++) {
+        String[] changedLinesTmp = changedLines.clone();
+        for (int i = 0; i < changedLines.length; i++) {
             if (changedLines[i] != null) {
-                targetSign.setLine(i, beforeLines[i]);
+                this.setLineLiteral(i, beforeLines[i]);
             }
         }
-
-        String[] _tmp = beforeLines;
-        beforeLines = stagedLines;
-        stagedLines = _tmp;
-
-        validator.validate(targetSign, this);
-        targetSign.update();
-
-        afterLines = targetSign.getLines().clone();
+        applySign();
+        changedLines = changedLinesTmp;
     }
 
     public boolean signChanged() {
