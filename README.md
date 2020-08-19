@@ -5,7 +5,7 @@
 
 **SignEdit for Bukkit** is a [Bukkit plugin](https://www.spigotmc.org/resources/categories/bukkit.4/) that allows players to edit sign objects by looking at them or clicking on them and typing in a SignEdit command.
 
-![Screenshot of usage help in SignEdit for Bukkit v1.10.0](https://i.imgur.com/aFOvM67.png)
+![Screenshot of usage help in SignEdit for Bukkit v1.12.3](https://i.imgur.com/xqPELRa.png)
 
 ## Table of Contents
 
@@ -44,6 +44,7 @@
             * [`/sign set 1,4 &1#&2#&3#&4#&5#&6#&7#&8#&9#&a#&b#&c#&d#&e#&f#`](#sign-set-14-123456789abcdef)
             * [`/se set 3 &4CONSTRUCTION`](#se-set-3-4construction)
             * [`/se set 1-4 Arts\&Crafts`](#se-set-1-4-artscrafts)
+            * [`/sign copy`](#sign-copy)
             * [`/sign <tab>`](#sign-tab)
       * [Advanced Customization](#advanced-customization)
          * [Theming and Colors](#theming-and-colors)
@@ -357,16 +358,16 @@ These features no longer apply to the latest version of this plugin:
 
 ### Supported Locales
 
-| Language Tag | Language | Proficiency | [Version](#versioning) |
-| --- | --- | --- | --- |
-| `en` | English | Native | `>= 1.4` |
-| `en` | English | Intermediate | `>= 1.0, < 1.4` |
-| `de` | German | Native | `>= 1.10.2` |
-| `nl` | Dutch | Native | `>= 1.11.1` |
-| `zh` | Simplified Chinese | Intermediate | `>= 1.11.4` |
-| `zh` | Simplified Chinese | Machine Translation | `>= 1.10.2, < 1.11.4` |
-| `zh-CN` | Simplified Chinese | Intermediate | `>= 1.11.4` |
-| `zh-TW` | Traditional Chinese | Intermediate | `>= 1.11.4` |
+| Language Tag | Language | Proficiency | Maintainer(s) | [Version](#versioning) |
+| --- | --- | --- | --- | --- |
+| `en` | English | Native | [Deltik](https://git.io/Deltik) | `>= 1.4` |
+| `en` | English | Intermediate | [Omel](https://www.spigotmc.org/members/omel.85850/) | `>= 1.0, < 1.4` |
+| `de` | German | Native | [bleeding182](https://github.com/bleeding182) | `>= 1.10.2` |
+| `nl` | Dutch | Native | [SBDeveloper](https://github.com/stijnb1234), \_\_Dutch\_\_ | `>= 1.11.1` |
+| `zh` | Simplified Chinese | Intermediate | [Aobi](https://github.com/AobiYT) | `>= 1.11.4` |
+| `zh` | Simplified Chinese | Machine Translation | [Deltik](https://git.io/Deltik) | `>= 1.10.2, < 1.11.4` |
+| `zh-CN` | Simplified Chinese | Intermediate | [Aobi](https://github.com/AobiYT) | `>= 1.11.4` |
+| `zh-TW` | Traditional Chinese | Intermediate | [Aobi](https://github.com/AobiYT) | `>= 1.11.4` |
 
 ### Visual Examples
 
@@ -397,6 +398,10 @@ These features no longer apply to the latest version of this plugin:
 #### `/se set 1-4 Arts\&Crafts`
 
 ![Screenshot of formatting code escaping in `/sign <lines> <text>`](https://i.imgur.com/ovZ2ZmI.png)
+
+#### `/sign copy`
+
+![Screenshot of `/sign copy`](https://i.imgur.com/F5LCdsP.png)
 
 #### `/sign <tab>`
 
@@ -518,7 +523,7 @@ Despite [Mojang's refusal to fix the bug](https://web.archive.org/web/2020071405
 
 Plugin version `= 1.12.0` introduces a clunky workaround that offers a sign editor GUI via a [book and quill](https://minecraft.gamepedia.com/Book_and_Quill) (AKA writable book):
 
-![Sign editor GUI implemented as a writable book](https://user-images.githubusercontent.com/1364268/87382228-1056ab80-c55c-11ea-8cf6-54e63d8c94dd.png)
+![Sign editor GUI implemented as a writable book](https://i.imgur.com/KAetJWB.png)
 
 The workaround is applicable to these Minecraft versions:
 

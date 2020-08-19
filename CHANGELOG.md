@@ -41,6 +41,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.12.2 (2020-08-10)
 
+> ## Major Bug Notice (#17)
+>
+> ### Affected Versions
+>
+> * v1.12.2
+>
+> ### Upgrade Paths
+>
+> * v1.12.2 → v1.12.3
+>
+> ### Description
+>
+> On affected versions, `/sign cut` will only put empty lines into the clipboard.
+>
+> All affected users are encouraged to upgrade to v1.12.3 or newer to resolve this bug.
+>
+> ### Workaround
+>
+> Run `/sign copy` followed by `/sign 1-4`, which is functionally equivalent to the intended behavior of `/sign cut`.
+
 ### Added
 
 * Allow the administrator to opt in or out of the alternative sign editor GUI introduced in `= 1.12.0` with the new configuration option `compatibility.sign-ui: [Auto|EditableBook|Native]`
@@ -74,9 +94,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Support for Minecraft 1.16 sRGB [text formatting](https://git.io/SignEdit-README#formatting-codes):
-  ![SignEdit for Bukkit: Support for web colors](https://user-images.githubusercontent.com/1364268/87382418-80653180-c55c-11ea-9b26-539868e6ba11.png)
+  ![SignEdit for Bukkit: Support for web colors](https://i.imgur.com/0HxGwpz.png)
 * [Alternative sign editor GUI for Minecraft 1.16+](https://git.io/SignEdit-README#minecraft-116-sign-editor-gui) implemented as a [writable book](https://minecraft.gamepedia.com/Book_and_Quill) to work around [a Minecraft 1.16 sign editor regression](https://web.archive.org/web/20200901000000/https://bugs.mojang.com/browse/MC-192263?focusedCommentId=755369&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-755369) that [Mojang refused to fix](https://web.archive.org/web/20200714051840/https://bugs.mojang.com/browse/MC-192263?focusedCommentId=759126&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-759126):
-  ![Sign editor GUI implemented as a writable book](https://user-images.githubusercontent.com/1364268/87382228-1056ab80-c55c-11ea-8cf6-54e63d8c94dd.png)
+  ![Sign editor GUI implemented as a writable book](https://i.imgur.com/KAetJWB.png)
 
 * New locale strings:
   * `sign_editor_item_name` – The display name of the ephemeral book and quill used in Minecraft 1.16+ as an alternative for the broken native sign editor
@@ -173,11 +193,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Localization for all chat messages
 * Native translation for English (`en`) locale
-  ![Locale_en](https://user-images.githubusercontent.com/1364268/55949780-02a7cd00-5c19-11e9-83b5-a23da3a60c8d.png)
+  ![Locale_en](https://i.imgur.com/sCFaPVG.png)
 * Native translation for German (`de`) locale
-  ![Locale_de](https://user-images.githubusercontent.com/1364268/55949779-02a7cd00-5c19-11e9-9e2a-b09b69700218.png)
+  ![Locale_de](https://i.imgur.com/j89WCaZ.png)
 * Machine translation for Simplified Chinese (`zh`) locale
-  ![Locale_zh](https://user-images.githubusercontent.com/1364268/55949781-02a7cd00-5c19-11e9-80a8-57c37e3a6a99.png)
+  ![Locale_zh](https://i.imgur.com/XlGkhyv.png)
 
 ### Under the Hood
 
