@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * `/sign cut` only put empty lines into the clipboard (#17)
 * `/sign ui` with the native sign editor incorrectly puts the de-formatted sign text into the history (regression from `= 1.12.2`)
 * `/sign ui` on Minecraft 1.16.2+ loses all formatting codes when opening the default (native) sign editor GUI.
+* `/sign ui` with the native sign editor would not show the actual "after" sign lines if another plugin modified the `SignChangeEvent` originating from the Minecraft client.
 * Line selection validation for `/sign cut` and `/sign copy`
 * Line selection validation accepts empty delimiters at the end (e.g. `/sign set 1,3,,,,`) but should not
 

@@ -98,7 +98,7 @@ public class UiSignEditInteraction implements SignEditInteraction {
             throw new ForbiddenSignEditException();
         }
 
-        signText.stageSign();
+        signText.importAuthoritativeSignChangeEvent(event);
         if (signText.signChanged()) {
             historyManager.getHistory(event.getPlayer()).push(signText);
         }

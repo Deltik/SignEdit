@@ -21,6 +21,7 @@ package org.deltik.mc.signedit;
 
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
+import org.bukkit.event.block.SignChangeEvent;
 import org.deltik.mc.signedit.exceptions.BlockStateNotPlacedException;
 import org.deltik.mc.signedit.integrations.SignEditValidator;
 import org.deltik.mc.signedit.subcommands.PerSubcommand;
@@ -55,7 +56,7 @@ public class SignText {
         this.targetSign = targetSign;
     }
 
-    public void stageSign() {
+    public void applySign() {
         verifyBlockPlaced(targetSign);
         beforeLines = targetSign.getLines().clone();
         for (int i = 0; i < changedLines.length; i++) {
@@ -64,13 +65,11 @@ public class SignText {
                 targetSign.setLine(i, line);
             }
         }
-        afterLines = targetSign.getLines().clone();
-    }
 
-    public void applySign() {
-        stageSign();
         validator.validate(targetSign, this);
         targetSign.update();
+
+        afterLines = targetSign.getLines().clone();
     }
 
     private void verifyBlockPlaced(BlockState blockState) {
@@ -97,6 +96,12 @@ public class SignText {
 
     public boolean signChanged() {
         return !Arrays.equals(beforeLines, afterLines);
+    }
+
+    public void importAuthoritativeSignChangeEvent(SignChangeEvent event) {
+        targetSign = (Sign) event.getBlock().getState();
+        beforeLines = targetSign.getLines().clone();
+        afterLines = event.getLines();
     }
 
     public void importSign() {
