@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v1.12.3 (UNRELEASED)
+## v1.12.3 (2020-08-19)
 
 ### Added
 
@@ -37,7 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * `/sign ui` on Minecraft 1.16.2+ loses all formatting codes when opening the default (native) sign editor GUI.
 * `/sign ui` with the native sign editor would not show the actual "after" sign lines if another plugin modified the `SignChangeEvent` originating from the Minecraft client.
 * Line selection validation for `/sign cut` and `/sign copy`
-* Line selection validation accepts empty delimiters at the end (e.g. `/sign set 1,3,,,,`) but should not
+* Line selection validation should not accept empty delimiters at the end (e.g. `/sign set 1,3,,,,`)
 
 ## v1.12.2 (2020-08-10)
 
