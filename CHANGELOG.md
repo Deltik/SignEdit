@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Tab completion for multi-line selection (e.g. `/sign 1,2,…` and `/sign cut 3-4,1-…`)
+* If another plugin changes the sign text after using this plugin to edit a sign, a warning will be displayed.
+  The example below shows the warning when another plugin strips out formatting codes from the execution of `/sign set 3 &b&lSignEdit`:
+  !["Modified by another plugin" warning](https://i.imgur.com/nv2Utnl.png)
+* New locale strings:
+  * `modified_by_another_plugin` – Warning to the player that another plugin changed their applied sign text
+  * `section_decorator` – Theme to apply to the text shown at the end of `before_section` and `after_section`
 
 ### Changed
 
@@ -19,6 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Previously, capitalized subcommands would not be understood as valid subcommands.
 * `/sign ui` with the native sign editor no longer modifies the real sign on the server to present human-editable formatting codes.
   Only the player who invoked the command will see the reformatted sign.
+* If a different plugin undoes the sign edit but does not cancel the corresponding `SignChangeEvent`, this plugin will now tell the player "Sign edit forbidden by policy or other plugin" instead of "Sign did not change".
+* Changed locale strings:
+  * `before_section` now takes one argument (`{0}`) for optional text that may be shown at the end of the same line as the section.
+  * `after_section` now takes one argument (`{0}`) for optional text that may be shown at the end of the same line as the section.
 
 ### Fixed
 

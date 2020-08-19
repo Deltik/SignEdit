@@ -165,8 +165,13 @@ public class ChatComms {
     }
 
     public void compareSignText(SignText signText) {
+        boolean textModifiedByOtherPlugin = !SignText.linesMatch(signText.getStagedLines(), signText.getAfterLines());
         if (!signText.signChanged()) {
-            tellPlayer(t("sign_did_not_change"));
+            if (textModifiedByOtherPlugin) {
+                tellPlayer(t("forbidden_sign_edit"));
+            } else {
+                tellPlayer(t("sign_did_not_change"));
+            }
         } else {
             String[] beforeHighlights = new String[4];
             String[] afterHighlights = new String[4];
@@ -176,9 +181,16 @@ public class ChatComms {
                     afterHighlights[i] = keyToPhrase("highlightAfter");
                 }
             }
-            tellPlayer(t("before_section"));
+
+            String beforeSectionSummary = "";
+            String afterSectionSummary = "";
+            if (textModifiedByOtherPlugin) {
+                afterSectionSummary = t("section_decorator", t("modified_by_another_plugin"));
+            }
+
+            tellPlayer(t("before_section", beforeSectionSummary));
             dumpLines(signText.getBeforeLines(), beforeHighlights);
-            tellPlayer(t("after_section"));
+            tellPlayer(t("after_section", afterSectionSummary));
             dumpLines(signText.getAfterLines(), afterHighlights);
         }
     }

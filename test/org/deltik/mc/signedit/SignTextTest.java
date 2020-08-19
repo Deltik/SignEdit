@@ -321,6 +321,28 @@ public class SignTextTest {
     }
 
     @Test
+    public void importSignFromSignChangeEvent() {
+        Sign sign = createSign();
+        Player player = mock(Player.class);
+        String expectedCancellation = "Canceled!";
+        int expectedCancellationLine = 2;
+        String[] expectedAfter = new String[]{"w", "x", "y", "z"};
+        SignChangeEvent signChangeEvent = new SignChangeEvent(
+                sign.getBlock(),
+                player,
+                expectedAfter
+        );
+
+        signText.setLine(expectedCancellationLine, expectedCancellation);
+        signText.importAuthoritativeSignChangeEvent(signChangeEvent);
+
+        assertSame(sign, signText.getTargetSign());
+        assertArrayEquals(sign.getLines(), signText.getBeforeLines());
+        assertEquals(expectedCancellation, signText.getStagedLine(2));
+        assertArrayEquals(expectedAfter, signText.getAfterLines());
+    }
+
+    @Test
     public void signBackupAndRestore() {
         Sign sign = createSign();
 
@@ -429,6 +451,26 @@ public class SignTextTest {
         for (int i = 0; i < 4; i++) {
             assertEquals(expectedSignLines[i], signText.getAfterLine(i));
         }
+    }
+
+    @Test
+    public void getStagedLinesIsUnaffectedBySignChangeEvent() {
+        Sign sign = createSign();
+        Player player = mock(Player.class);
+        PluginManager pluginManager = mock(PluginManager.class);
+        signText = new SignText(new StandardSignEditValidator(player, pluginManager));
+        doAnswer(invocation -> {
+            SignChangeEvent event = invocation.getArgument(0);
+            event.setLine(1, "OTHER");
+            return null;
+        }).when(pluginManager).callEvent(any(Event.class));
+
+        signText.setTargetSign(sign);
+        signText.setLineLiteral(1, "CHANGED");
+        signText.applySign();
+
+        assertEquals("CHANGED", signText.getStagedLine(1));
+        assertEquals("OTHER", signText.getAfterLine(1));
     }
 
     @Test
@@ -546,6 +588,7 @@ public class SignTextTest {
     private Sign createSign() {
         Sign sign = mock(Sign.class);
         Block block = mock(Block.class);
+        when(block.getState()).thenReturn(sign);
         when(sign.getBlock()).thenReturn(block);
         String[] signLines = defaultSignLines.clone();
         when(sign.getLines()).thenReturn(signLines);

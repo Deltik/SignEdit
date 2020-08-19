@@ -314,7 +314,7 @@ Choose which visual sign editor to show for all players that run `/sign ui`.
 
 **EditableBook**: Shows the book and quill alternative sign editor GUI regardless of Minecraft server version
 
-**Native** (not recommended): Shows the native Minecraft sign editor GUI regardless of Minecraft server version
+**Native**: Shows the native Minecraft sign editor GUI regardless of Minecraft server version
 
 ### `compatibility.edit-validation: [Standard|Extra|None]`
 

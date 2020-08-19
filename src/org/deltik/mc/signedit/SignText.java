@@ -40,6 +40,7 @@ public class SignText {
     private final SignEditValidator validator;
     private String[] changedLines = new String[4];
     private String[] beforeLines = new String[4];
+    private String[] stagedLines = new String[4];
     private String[] afterLines = new String[4];
     private Sign targetSign;
 
@@ -66,6 +67,8 @@ public class SignText {
             }
         }
 
+        stagedLines = targetSign.getLines().clone();
+
         validator.validate(targetSign, this);
         targetSign.update();
 
@@ -87,20 +90,27 @@ public class SignText {
         }
 
         String[] _tmp = beforeLines;
-        beforeLines = afterLines;
-        afterLines = _tmp;
+        beforeLines = stagedLines;
+        stagedLines = _tmp;
 
         validator.validate(targetSign, this);
         targetSign.update();
+
+        afterLines = targetSign.getLines().clone();
     }
 
     public boolean signChanged() {
-        return !Arrays.equals(beforeLines, afterLines);
+        return !linesMatch(beforeLines, afterLines);
+    }
+
+    protected static boolean linesMatch(String[] beforeLines, String[] afterLines) {
+        return Arrays.equals(beforeLines, afterLines);
     }
 
     public void importAuthoritativeSignChangeEvent(SignChangeEvent event) {
         targetSign = (Sign) event.getBlock().getState();
         beforeLines = targetSign.getLines().clone();
+        stagedLines = changedLines;
         afterLines = event.getLines();
     }
 
@@ -161,6 +171,10 @@ public class SignText {
         return beforeLines;
     }
 
+    public String[] getStagedLines() {
+        return stagedLines;
+    }
+
     public String[] getAfterLines() {
         return afterLines;
     }
@@ -171,6 +185,10 @@ public class SignText {
 
     public String getBeforeLine(int lineNumber) {
         return getBeforeLines()[lineNumber];
+    }
+
+    public String getStagedLine(int lineNumber) {
+        return getStagedLines()[lineNumber];
     }
 
     public String getAfterLine(int lineNumber) {
