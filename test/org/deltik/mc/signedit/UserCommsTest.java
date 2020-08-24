@@ -19,42 +19,43 @@
 
 package org.deltik.mc.signedit;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 public class UserCommsTest {
-    @Rule
-    public TemporaryFolder pluginConfigFolder = new TemporaryFolder();
+    @TempDir
+    Path pluginConfigFolder;
 
     @Test
     public void deployDirectoryStructure() throws IOException {
-        UserComms userComms = new UserComms(pluginConfigFolder.getRoot().getAbsolutePath());
+        UserComms userComms = new UserComms(pluginConfigFolder.toAbsolutePath().toString());
 
         userComms.deploy();
 
-        Assert.assertTrue(Paths.get(
-                pluginConfigFolder.getRoot().getAbsolutePath(), "locales", "originals"
+        assertTrue(Paths.get(
+                pluginConfigFolder.toAbsolutePath().toString(), "locales", "originals"
         ).toFile().isDirectory());
-        Assert.assertTrue(Paths.get(
-                pluginConfigFolder.getRoot().getAbsolutePath(), "locales", "overrides"
+        assertTrue(Paths.get(
+                pluginConfigFolder.toAbsolutePath().toString(), "locales", "overrides"
         ).toFile().isDirectory());
-        Assert.assertTrue(Paths.get(
-                pluginConfigFolder.getRoot().getAbsolutePath(), "locales", "README.txt"
+        assertTrue(Paths.get(
+                pluginConfigFolder.toAbsolutePath().toString(), "locales", "README.txt"
         ).toFile().length() > 0);
     }
 
     @Test
     public void deployCopiesOriginals() throws IOException {
-        UserComms userComms = new UserComms(pluginConfigFolder.getRoot().getAbsolutePath());
+        UserComms userComms = new UserComms(pluginConfigFolder.toAbsolutePath().toString());
 
         userComms.deploy();
 
@@ -64,9 +65,9 @@ public class UserCommsTest {
         for (final String name : list) {
             String fileName = Paths.get(name).getFileName().toString();
             File file = Paths.get(
-                    pluginConfigFolder.getRoot().getAbsolutePath(), "locales", "originals", fileName
+                    pluginConfigFolder.toAbsolutePath().toString(), "locales", "originals", fileName
             ).toFile();
-            Assert.assertTrue(file.isFile());
+            assertTrue(file.isFile());
 
             Scanner scanner = new Scanner(file);
             Pattern contentCheckRegex = Pattern.compile("^# .* locale file$");
@@ -79,16 +80,16 @@ public class UserCommsTest {
                 }
             }
             if (!contentCheckPassed) {
-                Assert.fail(file.getAbsolutePath() + " does not contain regex match: " + contentCheckRegex.toString());
+                fail(file.getAbsolutePath() + " does not contain regex match: " + contentCheckRegex.toString());
             }
         }
     }
 
     @Test
     public void deployRemovesUnexpectedFilesFromOriginalsCopy() throws IOException {
-        UserComms userComms = new UserComms(pluginConfigFolder.getRoot().getAbsolutePath());
+        UserComms userComms = new UserComms(pluginConfigFolder.toAbsolutePath().toString());
         File originalsDir = Paths.get(
-                pluginConfigFolder.getRoot().getAbsolutePath(), "locales", "originals"
+                pluginConfigFolder.toAbsolutePath().toString(), "locales", "originals"
         ).toFile();
         originalsDir.mkdirs();
         File garbageDir = Paths.get(originalsDir.getAbsolutePath(), "FOLDER-NONSENSE", "NEST-ME").toFile();
@@ -98,12 +99,12 @@ public class UserCommsTest {
         File garbageFile2 = Paths.get(originalsDir.getAbsolutePath(), "REMOVE-ME").toFile();
         garbageFile2.createNewFile();
 
-        Assert.assertTrue(garbageFile.exists());
-        Assert.assertTrue(garbageFile2.exists());
+        assertTrue(garbageFile.exists());
+        assertTrue(garbageFile2.exists());
 
         userComms.deploy();
 
-        Assert.assertFalse(garbageFile.exists());
-        Assert.assertFalse(garbageFile2.exists());
+        assertFalse(garbageFile.exists());
+        assertFalse(garbageFile2.exists());
     }
 }

@@ -19,11 +19,13 @@
 
 package org.deltik.mc.signedit;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class ChatCommsTest {
     @Test
@@ -32,7 +34,7 @@ public class ChatCommsTest {
         Locale badLocale = new Locale.Builder().setLanguageTag("hu-HU").build();
         ResourceBundle.Control control = new ChatComms.UTF8ResourceBundleControl(fallbackLocale);
 
-        Assert.assertEquals(
+        assertEquals(
                 fallbackLocale,
                 control.getFallbackLocale("Comms", badLocale)
         );
@@ -44,7 +46,7 @@ public class ChatCommsTest {
         Locale badLocale = new Locale.Builder().setLanguageTag("en-US").build();
         ResourceBundle.Control control = new ChatComms.UTF8ResourceBundleControl(fallbackLocale);
 
-        Assert.assertNotEquals(
+        assertNotEquals(
                 fallbackLocale,
                 control.getFallbackLocale("Comms", badLocale)
         );

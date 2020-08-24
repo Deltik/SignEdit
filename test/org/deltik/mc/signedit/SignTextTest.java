@@ -29,18 +29,18 @@ import org.deltik.mc.signedit.exceptions.BlockStateNotPlacedException;
 import org.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
 import org.deltik.mc.signedit.integrations.NoopSignEditValidator;
 import org.deltik.mc.signedit.integrations.StandardSignEditValidator;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class SignTextTest {
     private SignText signText;
     private final String[] defaultSignLines = new String[]{"a", "b", "c", "d"};
 
-    @Before
+    @BeforeEach
     public void newTestObject() {
         signText = new SignText(new NoopSignEditValidator());
     }
@@ -270,7 +270,7 @@ public class SignTextTest {
         verify(sign, times(0)).setLine(eq(3), any());
     }
 
-    @Test(expected = ForbiddenSignEditException.class)
+    @Test
     public void throwForbiddenSignEditExceptionWhenSignChangeEventIsCancelled() {
         Sign sign = createSign();
         Player player = mock(Player.class);
@@ -282,17 +282,17 @@ public class SignTextTest {
         }).when(pluginManager).callEvent(any(Event.class));
 
         signText.setTargetSign(sign);
-        signText.applySign();
+        assertThrows(ForbiddenSignEditException.class, () -> signText.applySign());
     }
 
-    @Test(expected = BlockStateNotPlacedException.class)
+    @Test
     public void preventApplySignWhenBlockIsInoperable() {
         Sign sign = createSign();
         when(sign.update()).thenReturn(false);
 
         signText.setTargetSign(sign);
         signText.setLine(0, "doesn't matter");
-        signText.applySign();
+        assertThrows(BlockStateNotPlacedException.class, () -> signText.applySign());
     }
 
     @Test
@@ -400,13 +400,13 @@ public class SignTextTest {
         assertEquals(expected, signText.getLine(0));
     }
 
-    @Test(expected = BlockStateNotPlacedException.class)
+    @Test
     public void preventRevertSignWhenBlockIsInoperable() {
         Sign sign = createSign();
         when(sign.update()).thenReturn(false);
 
         signText.setTargetSign(sign);
-        signText.revertSign();
+        assertThrows(BlockStateNotPlacedException.class, () -> signText.revertSign());
     }
 
     @Test

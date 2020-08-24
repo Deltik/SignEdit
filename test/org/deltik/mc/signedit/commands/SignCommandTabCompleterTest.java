@@ -21,27 +21,22 @@ package org.deltik.mc.signedit.commands;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.Plugin;
 import org.deltik.mc.signedit.Configuration;
-import org.deltik.mc.signedit.DaggerSignEditPluginComponent;
-import org.deltik.mc.signedit.SignEditPluginComponent;
 import org.deltik.mc.signedit.subcommands.SignSubcommand;
 import org.deltik.mc.signedit.subcommands.SignSubcommandInjector;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.util.collections.Sets;
 
 import javax.inject.Provider;
-import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@Singleton
 public class SignCommandTabCompleterTest {
     final int lineStartsAt = 1;
 
@@ -53,7 +48,6 @@ public class SignCommandTabCompleterTest {
     private final Map<String, Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>>> subcommandMap = new HashMap<>();
 
     public SignCommandTabCompleterTest() {
-        SignEditPluginComponent test = DaggerSignEditPluginComponent.builder().plugin(mock(Plugin.class)).build();
         config = mock(Configuration.class);
         when(config.getLineStartsAt()).thenReturn(lineStartsAt);
         when(config.getMinLine()).thenCallRealMethod();
@@ -87,14 +81,13 @@ public class SignCommandTabCompleterTest {
         List<String> result = tabComplete("");
 
         for (String subcommand : subcommandMap.keySet()) {
-            assertTrue(subcommand + " is not in empty tab completion", result.contains(subcommand));
+            assertTrue(result.contains(subcommand), subcommand + " is not in empty tab completion");
         }
 
         for (int line = config.getMinLine(); line <= config.getMaxLine(); line++) {
             assertTrue(
-                    "Line " + line + " not offered for empty tab completion",
-                    result.contains(String.valueOf(line))
-            );
+                    result.contains(String.valueOf(line)),
+                    "Line " + line + " not offered for empty tab completion");
         }
 
         assertEquals(subcommandMap.size() + (config.getMaxLine() - config.getMinLine() + 1), result.size());

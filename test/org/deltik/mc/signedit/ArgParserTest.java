@@ -25,12 +25,12 @@ import org.deltik.mc.signedit.exceptions.RangeOrderLineSelectionException;
 import org.deltik.mc.signedit.exceptions.RangeParseLineSelectionException;
 import org.deltik.mc.signedit.subcommands.SignSubcommand;
 import org.deltik.mc.signedit.subcommands.SignSubcommandInjector;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.inject.Provider;
 import java.util.*;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

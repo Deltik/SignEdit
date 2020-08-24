@@ -25,7 +25,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.deltik.mc.signedit.ChatComms;
 import org.deltik.mc.signedit.Configuration;
 import org.deltik.mc.signedit.SignEditPlugin;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Locale;
 
