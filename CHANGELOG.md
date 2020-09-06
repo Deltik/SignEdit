@@ -14,9 +14,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Tab completion of existing sign text when using `/sign set` and looking at a sign (#19)
   ![`/sign set 1-4 <tab>`](https://i.imgur.com/sZCRS5E.png)
 
+### Fixed
+
+* When undoing and redoing, the "before" section of the comparison now uses the current text/state of the sign rather than the remembered state from when the edit was made, which may be outdated.
+* `/sign undo` after using `/sign ui` would show "Sign did not change".
+
 ### Under the Hood
 
 * Migrated tests from JUnit 4 to JUnit 5
+* `SignText.verifyBlockPlaced()` no longer tries to update the block's state to check if the block is placed.  It is now called `SignText.reloadTargetSign()` uses the non-invasive `BlockState.isPlaced()` method.
 
 ## v1.12.3 (2020-08-19)
 

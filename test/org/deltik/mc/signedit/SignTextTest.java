@@ -288,7 +288,7 @@ public class SignTextTest {
     @Test
     public void preventApplySignWhenBlockIsInoperable() {
         Sign sign = createSign();
-        when(sign.update()).thenReturn(false);
+        when(sign.isPlaced()).thenReturn(false);
 
         signText.setTargetSign(sign);
         signText.setLine(0, "doesn't matter");
@@ -403,7 +403,7 @@ public class SignTextTest {
     @Test
     public void preventRevertSignWhenBlockIsInoperable() {
         Sign sign = createSign();
-        when(sign.update()).thenReturn(false);
+        when(sign.isPlaced()).thenReturn(false);
 
         signText.setTargetSign(sign);
         assertThrows(BlockStateNotPlacedException.class, () -> signText.revertSign());
@@ -614,7 +614,7 @@ public class SignTextTest {
         doAnswer(invocation ->
                 signLines[(int) invocation.getArgument(0)] = invocation.getArgument(1)
         ).when(sign).setLine(anyInt(), anyString());
-        when(sign.update()).thenReturn(true);
+        when(sign.isPlaced()).thenReturn(true);
         return sign;
     }
 }

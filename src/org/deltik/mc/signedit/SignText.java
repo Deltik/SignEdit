@@ -63,25 +63,34 @@ public class SignText {
     }
 
     public void applySign() {
-        verifyBlockPlaced(targetSign);
-        beforeLines = targetSign.getLines().clone();
+        reloadTargetSign();
+        beforeLines = getTargetSign().getLines().clone();
         for (int i = 0; i < changedLines.length; i++) {
             String line = getLine(i);
             if (line != null) {
-                targetSign.setLine(i, line);
+                getTargetSign().setLine(i, line);
             }
         }
 
-        stagedLines = targetSign.getLines().clone();
+        stagedLines = getTargetSign().getLines().clone();
 
-        validator.validate(targetSign, this);
-        targetSign.update();
+        validator.validate(getTargetSign(), this);
+        getTargetSign().update();
 
-        afterLines = targetSign.getLines().clone();
+        afterLines = getTargetSign().getLines().clone();
     }
 
-    private void verifyBlockPlaced(BlockState blockState) {
-        if (!blockState.update()) {
+    private void reloadTargetSign() {
+        BlockState newBlockState;
+        try {
+            newBlockState = targetSign.getBlock().getState();
+        } catch (IllegalStateException ignored) {
+            newBlockState = null;
+        }
+
+        if (newBlockState instanceof Sign && newBlockState.isPlaced()) {
+            targetSign = (Sign) newBlockState;
+        } else {
             throw new BlockStateNotPlacedException();
         }
     }
