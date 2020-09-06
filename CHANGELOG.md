@@ -7,12 +7,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v1.12.4 (UNRELEASED)
+## v1.12.4 (2020-09-06)
 
 ### Added
 
 * Tab completion of existing sign text when using `/sign set` and looking at a sign (#19)
   ![`/sign set 1-4 <tab>`](https://i.imgur.com/sZCRS5E.png)
+
+### Changed
+
+* Undoing and redoing sign text will now only change the sign text.
+  Previously, the sign orientation and dye color would also be modified to what was remembered in the history stack.
+* Undoing and redoing sign text is now possible even if the sign is replaced with one of a new material (e.g. a spruce sign in place of an oak sign) as long as the new sign is in the same position.
+* `/sign redo` now puts the current sign text into the history, so undoing the redo will now restore the latest sign text instead of the staged (remembered at the time of the first undo) text in the history.
 
 ### Fixed
 
@@ -22,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Under the Hood
 
 * Migrated tests from JUnit 4 to JUnit 5
-* `SignText.verifyBlockPlaced()` no longer tries to update the block's state to check if the block is placed.  It is now called `SignText.reloadTargetSign()` uses the non-invasive `BlockState.isPlaced()` method.
+* `SignText.verifyBlockPlaced()` no longer tries to update the block's state to check if the block is placed.  It is now called `SignText.reloadTargetSign()` and uses the non-invasive `BlockState.isPlaced()` method.
 
 ## v1.12.3 (2020-08-19)
 
