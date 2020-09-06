@@ -23,6 +23,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.event.block.SignChangeEvent;
 import org.deltik.mc.signedit.exceptions.BlockStateNotPlacedException;
+import org.deltik.mc.signedit.integrations.NoopSignEditValidator;
 import org.deltik.mc.signedit.integrations.SignEditValidator;
 import org.deltik.mc.signedit.subcommands.PerSubcommand;
 
@@ -43,6 +44,10 @@ public class SignText {
     private String[] stagedLines = new String[4];
     private String[] afterLines = new String[4];
     private Sign targetSign;
+
+    public SignText() {
+        this(new NoopSignEditValidator());
+    }
 
     @Inject
     public SignText(SignEditValidator validator) {

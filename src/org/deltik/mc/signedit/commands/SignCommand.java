@@ -20,6 +20,7 @@
 package org.deltik.mc.signedit.commands;
 
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -118,19 +119,19 @@ public class SignCommand implements CommandExecutor {
     private void autointeract(Player player, SignEditInteraction interaction, ChatComms comms) {
         if (interaction == null) return;
 
-        Block block = getTargetBlockOfPlayer(player);
-        if (shouldDoClickingMode(block)) {
+        Block targetBlock = getTargetBlockOfPlayer(player);
+        BlockState targetBlockState = targetBlock.getState();
+        if (shouldDoClickingMode(targetBlock)) {
             listener.setPendingInteraction(player, interaction);
             comms.tellPlayer(comms.t("right_click_sign_to_apply_action"));
-        } else if (block.getState() instanceof Sign) {
-            Sign sign = (Sign) block.getState();
-            interaction.interact(player, sign);
+        } else if (targetBlockState instanceof Sign) {
+            interaction.interact(player, (Sign) targetBlockState);
         } else {
             comms.tellPlayer(comms.t("must_look_at_sign_to_interact"));
         }
     }
 
-    private Block getTargetBlockOfPlayer(Player player) {
+    public static Block getTargetBlockOfPlayer(Player player) {
         return player.getTargetBlock(null, 10);
     }
 

@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.12.4 (UNRELEASED)
 
+### Added
+
+* Tab completion of existing sign text when using `/sign set` and looking at a sign (#19)
+  ![`/sign set 1-4 <tab>`](https://i.imgur.com/sZCRS5E.png)
+
 ### Under the Hood
 
 * Migrated tests from JUnit 4 to JUnit 5

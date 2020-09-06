@@ -19,13 +19,19 @@
 
 package org.deltik.mc.signedit.commands;
 
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.deltik.mc.signedit.Configuration;
 import org.deltik.mc.signedit.subcommands.SignSubcommand;
 import org.deltik.mc.signedit.subcommands.SignSubcommandInjector;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.util.collections.Sets;
+import org.mockito.stubbing.Answer;
 
 import javax.inject.Provider;
 import java.util.HashMap;
@@ -34,8 +40,8 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 public class SignCommandTabCompleterTest {
     final int lineStartsAt = 1;
@@ -46,6 +52,13 @@ public class SignCommandTabCompleterTest {
     private final Command command;
     private final String alias = "sign";
     private final Map<String, Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>>> subcommandMap = new HashMap<>();
+
+    private final String[] fancySignLines = new String[]{
+            "§x§2§2§4§4§A§ADot",
+            "§x§2§2§A§A§4§4Line",
+            "§x§4§4§4§4§4§4Jason",
+            "§x§F§F§F§F§8§8Sunny"
+    };
 
     public SignCommandTabCompleterTest() {
         config = mock(Configuration.class);
@@ -66,8 +79,32 @@ public class SignCommandTabCompleterTest {
         subcommandMap.put("version", null);
         this.tabCompleter = new SignCommandTabCompleter(subcommandMap, config);
 
-        commandSender = mock(CommandSender.class);
+        commandSender = mock(Player.class);
         command = mock(Command.class);
+    }
+
+    @BeforeEach
+    public void setUp() {
+        Sign sign = createSign(fancySignLines);
+        Block block = mock(Block.class);
+        when(block.getState()).thenReturn(sign);
+        when(sign.getBlock()).thenReturn(block);
+        when(((Player) commandSender).getTargetBlock(any(), anyInt())).thenReturn(block);
+    }
+
+    private static Sign createSign(String[] signLines) {
+        Sign sign = mock(Sign.class);
+        Block block = mock(Block.class);
+        when(block.getState()).thenReturn(sign);
+        when(sign.getBlock()).thenReturn(block);
+        String[] signLinesCopy = signLines.clone();
+        when(sign.getLines()).thenReturn(signLinesCopy);
+        when(sign.getLine(anyInt())).then((Answer) invocation -> signLinesCopy[(int) invocation.getArgument(0)]);
+        doAnswer(invocation ->
+                signLinesCopy[(int) invocation.getArgument(0)] = invocation.getArgument(1)
+        ).when(sign).setLine(anyInt(), anyString());
+        when(sign.update()).thenReturn(true);
+        return sign;
     }
 
     private List<String> tabComplete(String args) {
@@ -138,6 +175,11 @@ public class SignCommandTabCompleterTest {
 
     @Test
     public void signSubcommandLineSelectorShorthandNoDuplicateHint() {
+        BlockState dummyBlockState = mock(BlockState.class);
+        Block block = mock(Block.class);
+        when(block.getState()).thenReturn(dummyBlockState);
+        when(((Player) commandSender).getTargetBlock(any(), anyInt())).thenReturn(block);
+
         List<String> result = tabComplete("2 ");
         assertEquals(0, result.size());
 
@@ -243,5 +285,73 @@ public class SignCommandTabCompleterTest {
 
         result = tabComplete("clear 5");
         assertEquals(0, result.size());
+    }
+
+    @Test
+    public void signSetCompleteExistingSignLines() {
+        List<String> result;
+
+        result = tabComplete("set 1 ");
+        assertTrue(result.contains("&#2244AADot"));
+        assertEquals(1, result.size());
+
+        result = tabComplete("2");
+        assertTrue(result.contains("2-"));
+        assertTrue(result.contains("2,"));
+        assertEquals(2, result.size());
+
+        result = tabComplete("2 ");
+        assertTrue(result.contains("&#22AA44Line"));
+        assertEquals(1, result.size());
+
+        result = tabComplete("4,2-3,1 ");
+        assertTrue(result.contains("&#2244AADot"));
+        assertTrue(result.contains("&#22AA44Line"));
+        assertTrue(result.contains("&#444444Jason"));
+        assertTrue(result.contains("&#FFFF88Sunny"));
+        assertEquals(4, result.size());
+    }
+
+    @Test
+    public void signSetCompleteExistingSignLinesPartiallyFilled() {
+        List<String> result;
+
+        result = tabComplete("set 1-4 &#22");
+        assertTrue(result.contains("&#2244AADot"));
+        assertTrue(result.contains("&#22AA44Line"));
+        assertEquals(2, result.size());
+
+        result = tabComplete("1-4 other");
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    public void signSetNoCompletionIfNotLookingAtSign() {
+        BlockState dummyBlockState = mock(BlockState.class);
+        Block block = mock(Block.class);
+        when(block.getState()).thenReturn(dummyBlockState);
+        when(((Player) commandSender).getTargetBlock(any(), anyInt())).thenReturn(block);
+
+        List<String> result;
+
+        result = tabComplete("2 ");
+        assertEquals(0, result.size());
+
+        result = tabComplete("1-4 ");
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    public void signSetNoCompletionOutsideOfSubcommand() {
+        List<String> result;
+
+        result = tabComplete("clear 1-4 ");
+        assertTrue(result.isEmpty());
+
+        result = tabComplete("");
+        assertFalse(result.contains("&#2244AADot"));
+
+        result = tabComplete("4-2 ");
+        assertTrue(result.isEmpty());
     }
 }

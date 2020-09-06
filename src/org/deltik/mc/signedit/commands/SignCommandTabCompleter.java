@@ -19,11 +19,16 @@
 
 package org.deltik.mc.signedit.commands;
 
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 import org.deltik.mc.signedit.ArgParser;
 import org.deltik.mc.signedit.Configuration;
+import org.deltik.mc.signedit.SignText;
 import org.deltik.mc.signedit.subcommands.SignSubcommand;
 import org.deltik.mc.signedit.subcommands.SignSubcommandInjector;
 
@@ -60,13 +65,46 @@ public class SignCommandTabCompleter implements TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> completion = new ArrayList<>();
+
         if (args.length == 1) {
             completion.addAll(completeSubcommand(args[0].toLowerCase()));
             completion.addAll(completeLines(args.clone()));
         } else if (args.length == 2) {
             completion.addAll(completeLines(args.clone()));
         }
+
+        completion.addAll(completeExistingLines((Player) sender, args));
+
         return completion;
+    }
+
+    private List<String> completeExistingLines(Player player, String[] args) {
+        List<String> nothing = new ArrayList<>();
+
+        ArgParser argParser = new ArgParser(args, config, subcommandMap);
+        if (!"set".equals(argParser.getSubcommand()) || argParser.getRemainder().size() <= 0) {
+            return nothing;
+        }
+
+        Block targetBlock = SignCommand.getTargetBlockOfPlayer(player);
+        BlockState targetBlockState = targetBlock.getState();
+        if (targetBlockState instanceof Sign) {
+            Sign targetSign = (Sign) targetBlockState;
+            SignText signText = new SignText();
+            signText.setTargetSign(targetSign);
+            signText.importSign();
+            List<String> qualifyingLines = new ArrayList<>();
+            for (int selectedLine : argParser.getLinesSelection()) {
+                qualifyingLines.add(signText.getLineParsed(selectedLine));
+            }
+            return qualifyingLines.stream()
+                    .filter(
+                            line -> line.startsWith(String.join(" ", argParser.getRemainder()))
+                    )
+                    .collect(Collectors.toList());
+        }
+
+        return nothing;
     }
 
     /**
