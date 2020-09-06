@@ -286,9 +286,21 @@ public class SignTextTest {
     }
 
     @Test
-    public void preventApplySignWhenBlockIsInoperable() {
+    public void preventApplySignWhenBlockIsNotPlaced() {
         Sign sign = createSign();
         when(sign.isPlaced()).thenReturn(false);
+
+        signText.setTargetSign(sign);
+        signText.setLine(0, "doesn't matter");
+        assertThrows(BlockStateNotPlacedException.class, () -> signText.applySign());
+    }
+
+    @Test
+    public void preventApplySignWhenBlockIsInoperable() {
+        Sign sign = createSign();
+        Block block = mock(Block.class);
+        when(block.getState()).thenThrow(IllegalStateException.class);
+        when(sign.getBlock()).thenReturn(block);
 
         signText.setTargetSign(sign);
         signText.setLine(0, "doesn't matter");

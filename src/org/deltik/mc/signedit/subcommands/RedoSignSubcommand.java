@@ -43,8 +43,8 @@ public class RedoSignSubcommand implements SignSubcommand {
     @Override
     public SignEditInteraction execute() {
         SignTextHistory history = historyManager.getHistory(player);
-        SignText undoneSignText = history.redo();
-        comms.compareSignText(undoneSignText);
+        SignText redoneSignText = history.redo();
+        comms.compareSignText(redoneSignText);
         return null;
     }
 }
