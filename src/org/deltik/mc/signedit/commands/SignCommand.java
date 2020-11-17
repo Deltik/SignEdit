@@ -35,6 +35,7 @@ import org.deltik.mc.signedit.interactions.SignEditInteraction;
 import org.deltik.mc.signedit.listeners.SignEditListener;
 import org.deltik.mc.signedit.subcommands.SignSubcommand;
 import org.deltik.mc.signedit.subcommands.SignSubcommandInjector;
+import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -123,7 +124,8 @@ public class SignCommand implements CommandExecutor {
         if (interaction == null) return;
 
         Block targetBlock = getTargetBlockOfPlayer(player);
-        BlockState targetBlockState = targetBlock.getState();
+        BlockState targetBlockState = null;
+        if (targetBlock != null) targetBlockState = targetBlock.getState();
         if (shouldDoClickingMode(targetBlock)) {
             listener.setPendingInteraction(player, interaction);
             comms.tellPlayer(comms.t("right_click_sign_to_apply_action"));
@@ -134,6 +136,7 @@ public class SignCommand implements CommandExecutor {
         }
     }
 
+    @Nullable
     public static Block getTargetBlockOfPlayer(Player player) {
         try {
             Method method = Player.class.getMethod("getTargetBlockExact", int.class);
