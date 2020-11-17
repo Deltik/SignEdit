@@ -39,11 +39,14 @@ import org.deltik.mc.signedit.subcommands.SignSubcommandInjector;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Map;
 
 @Singleton
 public class SignCommand implements CommandExecutor {
 
+    private static final int MAX_DISTANCE = 20;
     private Configuration configuration;
     private final SignEditListener listener;
     private final Provider<ChatCommsModule.ChatCommsComponent.Builder> commsBuilderProvider;
@@ -132,7 +135,12 @@ public class SignCommand implements CommandExecutor {
     }
 
     public static Block getTargetBlockOfPlayer(Player player) {
-        return player.getTargetBlock(null, 10);
+        try {
+            Method method = Player.class.getMethod("getTargetBlockExact", int.class);
+            return (Block) method.invoke(player, MAX_DISTANCE);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            return player.getTargetBlock(null, MAX_DISTANCE);
+        }
     }
 
     private boolean shouldDoClickingMode(Block block) {
