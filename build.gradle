@@ -2,7 +2,7 @@ def name = 'SignEdit'
 version '1.12.6'
 
 /*
- * Copyright (C) 2017-2020 Deltik <https://www.deltik.org/>
+ * Copyright (C) 2017-2021 Deltik <https://www.deltik.org/>
  *
  * This file is part of SignEdit for Bukkit.
  *
