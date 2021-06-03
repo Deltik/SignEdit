@@ -28,6 +28,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -292,13 +293,13 @@ public class ChatComms {
             Object var7 = null;
             if (var3.equals("java.class")) {
                 try {
-                    Class var8 = var4.loadClass(var6);
+                    Class<?> var8 = var4.loadClass(var6);
                     if (!ResourceBundle.class.isAssignableFrom(var8)) {
                         throw new ClassCastException(var8.getName() + " cannot be cast to ResourceBundle");
                     }
 
-                    var7 = var8.newInstance();
-                } catch (ClassNotFoundException var19) {
+                    var7 = var8.getDeclaredConstructor().newInstance();
+                } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException ignored) {
                 }
             } else {
                 if (!var3.equals("java.properties")) {
@@ -312,7 +313,7 @@ public class ChatComms {
 
                 final ClassLoader var9 = var4;
                 final boolean var10 = var5;
-                InputStream var11 = null;
+                InputStream var11;
 
                 try {
                     var11 = AccessController.doPrivileged((PrivilegedExceptionAction<InputStream>) () -> {

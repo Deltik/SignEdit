@@ -30,8 +30,6 @@ apply plugin: 'application'
 
 mainClassName = 'org.deltik.mc.signedit.SignEditPlugin'
 
-sourceCompatibility = 1.8
-
 repositories {
     mavenCentral()
     maven {
@@ -47,13 +45,14 @@ dependencies {
     implementation group: 'org.bukkit', name: 'bukkit', version: bukkit_version
     implementation 'com.intellij:annotations:+@jar' // Workaround for org.bukkit.bukkit version 1.13.2-R0.1-SNAPSHOT regression
 
-    implementation group: 'com.google.dagger', name: 'dagger', version: '2.28.3'
-    extraLibs group: 'com.google.dagger', name: 'dagger', version: '2.28.3'
-    annotationProcessor group: 'com.google.dagger', name: 'dagger-compiler', version: '2.28.3'
+    implementation group: 'com.google.dagger', name: 'dagger', version: '2.36'
+    extraLibs group: 'com.google.dagger', name: 'dagger', version: '2.36'
+    annotationProcessor group: 'com.google.dagger', name: 'dagger-compiler', version: '2.36'
     extraLibs group: 'javax.inject', name: 'javax.inject', version: '1'
 
-    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.7.0-RC1'
-    testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.5.5'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.7.2'
+    testImplementation group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '5.7.2'
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.10.0'
 }
 
 sourceSets {
@@ -100,7 +99,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.sf.proguard', name: 'proguard-gradle', version: '6.2.2'
+        classpath group: 'com.guardsquare', name: 'proguard-gradle', version: '7.1.0-beta5'
     }
 }
 
