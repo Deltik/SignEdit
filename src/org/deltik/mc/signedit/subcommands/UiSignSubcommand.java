@@ -20,7 +20,7 @@
 package org.deltik.mc.signedit.subcommands;
 
 import org.deltik.mc.signedit.Configuration;
-import org.deltik.mc.signedit.MinecraftReflector;
+import org.deltik.mc.signedit.CraftBukkitReflector;
 import org.deltik.mc.signedit.interactions.SignEditInteraction;
 
 import javax.inject.Inject;
@@ -32,17 +32,17 @@ public class UiSignSubcommand implements SignSubcommand {
      * Bug reported for Minecraft 1.16.1: https://bugs.mojang.com/browse/MC-192263
      * Bug resolved in Minecraft 1.16.2: https://minecraft.gamepedia.com/Java_Edition_20w30a
      */
-    private static final String QUIRKY_MINECRAFT_SERVER_VERSION = "v1_16_R1";
+    private static final String QUIRKY_BUKKIT_SERVER_VERSION = "v1_16_R1";
 
     private final Configuration config;
     private final Map<String, Provider<SignEditInteraction>> interactions;
-    private final MinecraftReflector reflector;
+    private final CraftBukkitReflector reflector;
 
     @Inject
     public UiSignSubcommand(
             Configuration config,
             Map<String, Provider<SignEditInteraction>> interactions,
-            MinecraftReflector reflector
+            CraftBukkitReflector reflector
     ) {
         this.config = config;
         this.interactions = interactions;
@@ -60,7 +60,7 @@ public class UiSignSubcommand implements SignSubcommand {
         }
 
         // Auto mode
-        if (QUIRKY_MINECRAFT_SERVER_VERSION.compareTo(reflector.MINECRAFT_SERVER_VERSION) == 0) {
+        if (QUIRKY_BUKKIT_SERVER_VERSION.compareTo(reflector.BUKKIT_SERVER_VERSION) == 0) {
             return interactions.get("EditableBookUi").get();
         }
         return interactions.get("NativeUi").get();

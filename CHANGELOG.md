@@ -7,6 +7,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.12.7 (2021-06-13)
+
+### Fixed
+
+* `/sign ui` compatibility with Minecraft 1.17
+
+### Under the Hood
+
+* `UiSignEditInteraction` now uses much less reflection, which should hopefully make it more resistant to breaking changes in the unstable Minecraft server API.
+* `MinecraftReflector` has been renamed to `CraftBukkitReflector` and no longer tries to access `net.minecraft.…` packages by name.
+  This plugin now performs reflection name lookups against CraftBukkit, which is hopefully more stable.
+* Java 1.8 (bytecode version 52.0) remains the minimum version for broader compatibility, even though Minecraft 1.17 itself requires Java 16.
+* Gradle has been updated from version 6.5.1 to version 7.0.2.
+
 ## v1.12.6 (2020-11-17)
 
 ### Fixed
