@@ -54,16 +54,28 @@ public class CraftBukkitReflector {
     }
 
     public static Field getFirstFieldOfType(Object source, Class<?> desiredType) throws NoSuchFieldException {
-        return getFirstFieldOfType(source.getClass(), desiredType);
+        return getFirstFieldOfType(source, desiredType, ~0x0);
     }
 
-    public static Field getFirstFieldOfType(Class<?> source, Class<?> desiredType) throws NoSuchFieldException {
+    public static Field getFirstFieldOfType(
+            Object source,
+            Class<?> desiredType,
+            int modifierMask
+    ) throws NoSuchFieldException {
+        return getFirstFieldOfType(source.getClass(), desiredType, modifierMask);
+    }
+
+    public static Field getFirstFieldOfType(
+            Class<?> source,
+            Class<?> desiredType,
+            int modifierMask
+    ) throws NoSuchFieldException {
         Class<?> ancestor = source;
         while (ancestor != null) {
             Field[] fields = ancestor.getDeclaredFields();
             for (Field field : fields) {
                 Class<?> candidateType = field.getType();
-                if (desiredType.isAssignableFrom(candidateType)) {
+                if (desiredType.isAssignableFrom(candidateType) && (field.getModifiers() & modifierMask) > 0) {
                     field.setAccessible(true);
                     return field;
                 }

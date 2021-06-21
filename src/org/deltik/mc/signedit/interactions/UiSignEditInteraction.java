@@ -35,6 +35,7 @@ import org.deltik.mc.signedit.listeners.SignEditListener;
 import javax.inject.Inject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.stream.IntStream;
 
 import static org.deltik.mc.signedit.CraftBukkitReflector.getDeclaredMethodRecursive;
@@ -144,10 +145,10 @@ public class UiSignEditInteraction implements SignEditInteraction {
     }
 
     /**
-     * FIXME: Find a more reliable way than looking for the first boolean to mark the TileEntitySign as editable
+     * FIXME: Find a more reliable way than looking for the first public boolean to mark the TileEntitySign as editable
      */
     private void makeTileEntitySignEditable(Object tileEntitySign) throws Exception {
-        Field signIsEditable = getFirstFieldOfType(tileEntitySign, boolean.class);
+        Field signIsEditable = getFirstFieldOfType(tileEntitySign, boolean.class, Modifier.PUBLIC);
         signIsEditable.setAccessible(true);
         signIsEditable.set(tileEntitySign, true);
     }
