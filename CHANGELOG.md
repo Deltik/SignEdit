@@ -7,13 +7,78 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.12.9 (UNRELEASED)
+
+### Fixed
+
+* If another plugin modified the lines in a `SignChangeEvent`, SignEdit for Bukkit may ignore the updated lines and apply the staged lines, bypassing other plugins' changes. (#22)
+
+  This defect is a regression from SignEdit for Bukkit `= 1.12.2`.
+  The cause of this defect was an incorrect assumption that the sign lines array passed in the `SignChangeEvent` would be mutated in place by the Bukkit event handler and other listening plugins.
+
 ## v1.12.8 (2021-06-21)
+
+> ## Major Bug Notice (#22)
+>
+> ### Affected Versions
+>
+> * v1.12.2
+> * v1.12.3
+> * v1.12.4
+> * v1.12.5
+> * v1.12.6
+> * v1.12.7
+> * v1.12.8
+>
+> ### Upgrade Paths
+>
+> * v1.12.x → v1.12.9
+>
+> ### Description
+>
+> On affected versions, Standard or Extra sign edit permission validation (`compatibility.edit-validation: Standard` or `compatibility.edit-validation: Extra`) may ignore the result of changed sign lines by other plugins.
+>
+> This bug bypasses sign content/text restrictions imposed by other plugins for anyone using `/sign` subcommands that change the text of a sign.
+>
+> All users who run affected versions and have enabled sign edit permission validation (this is the default behavior) should upgrade to v1.12.9 immediately to prevent exploitation of this bug.
+>
+> ### Workaround
+>
+> If you are unable to upgrade to v1.12.9, you should downgrade to v1.12.1 or disable SignEdit for Bukkit.
 
 ### Fixed
 
 * `/sign ui` compatibility with Paper 1.17 (#21)
 
 ## v1.12.7 (2021-06-13)
+
+> ## Major Bug Notice (#22)
+>
+> ### Affected Versions
+>
+> * v1.12.2
+> * v1.12.3
+> * v1.12.4
+> * v1.12.5
+> * v1.12.6
+> * v1.12.7
+> * v1.12.8
+>
+> ### Upgrade Paths
+>
+> * v1.12.x → v1.12.9
+>
+> ### Description
+>
+> On affected versions, Standard or Extra sign edit permission validation (`compatibility.edit-validation: Standard` or `compatibility.edit-validation: Extra`) may ignore the result of changed sign lines by other plugins.
+>
+> This bug bypasses sign content/text restrictions imposed by other plugins for anyone using `/sign` subcommands that change the text of a sign.
+>
+> All users who run affected versions and have enabled sign edit permission validation (this is the default behavior) should upgrade to v1.12.9 immediately to prevent exploitation of this bug.
+>
+> ### Workaround
+>
+> If you are unable to upgrade to v1.12.9, you should downgrade to v1.12.1 or disable SignEdit for Bukkit.
 
 ### Fixed
 
@@ -29,11 +94,67 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.12.6 (2020-11-17)
 
+> ## Major Bug Notice (#22)
+>
+> ### Affected Versions
+>
+> * v1.12.2
+> * v1.12.3
+> * v1.12.4
+> * v1.12.5
+> * v1.12.6
+> * v1.12.7
+> * v1.12.8
+>
+> ### Upgrade Paths
+>
+> * v1.12.x → v1.12.9
+>
+> ### Description
+>
+> On affected versions, Standard or Extra sign edit permission validation (`compatibility.edit-validation: Standard` or `compatibility.edit-validation: Extra`) may ignore the result of changed sign lines by other plugins.
+>
+> This bug bypasses sign content/text restrictions imposed by other plugins for anyone using `/sign` subcommands that change the text of a sign.
+>
+> All users who run affected versions and have enabled sign edit permission validation (this is the default behavior) should upgrade to v1.12.9 immediately to prevent exploitation of this bug.
+>
+> ### Workaround
+>
+> If you are unable to upgrade to v1.12.9, you should downgrade to v1.12.1 or disable SignEdit for Bukkit.
+
 ### Fixed
 
 * Regression from version `= 1.12.5` caused `Uncaught error: java.lang.NullPointerException` when trying to target air
 
 ## v1.12.5 (2020-11-17)
+
+> ## Major Bug Notice (#22)
+>
+> ### Affected Versions
+>
+> * v1.12.2
+> * v1.12.3
+> * v1.12.4
+> * v1.12.5
+> * v1.12.6
+> * v1.12.7
+> * v1.12.8
+>
+> ### Upgrade Paths
+>
+> * v1.12.x → v1.12.9
+>
+> ### Description
+>
+> On affected versions, Standard or Extra sign edit permission validation (`compatibility.edit-validation: Standard` or `compatibility.edit-validation: Extra`) may ignore the result of changed sign lines by other plugins.
+>
+> This bug bypasses sign content/text restrictions imposed by other plugins for anyone using `/sign` subcommands that change the text of a sign.
+>
+> All users who run affected versions and have enabled sign edit permission validation (this is the default behavior) should upgrade to v1.12.9 immediately to prevent exploitation of this bug.
+>
+> ### Workaround
+>
+> If you are unable to upgrade to v1.12.9, you should downgrade to v1.12.1 or disable SignEdit for Bukkit.
 
 ### Changed
 
@@ -44,6 +165,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Improved sign targeting precision for Minecraft 1.13.2+ (#20)
 
 ## v1.12.4 (2020-09-06)
+
+> ## Major Bug Notice (#22)
+>
+> ### Affected Versions
+>
+> * v1.12.2
+> * v1.12.3
+> * v1.12.4
+> * v1.12.5
+> * v1.12.6
+> * v1.12.7
+> * v1.12.8
+>
+> ### Upgrade Paths
+>
+> * v1.12.x → v1.12.9
+>
+> ### Description
+>
+> On affected versions, Standard or Extra sign edit permission validation (`compatibility.edit-validation: Standard` or `compatibility.edit-validation: Extra`) may ignore the result of changed sign lines by other plugins.
+>
+> This bug bypasses sign content/text restrictions imposed by other plugins for anyone using `/sign` subcommands that change the text of a sign.
+>
+> All users who run affected versions and have enabled sign edit permission validation (this is the default behavior) should upgrade to v1.12.9 immediately to prevent exploitation of this bug.
+>
+> ### Workaround
+>
+> If you are unable to upgrade to v1.12.9, you should downgrade to v1.12.1 or disable SignEdit for Bukkit.
 
 ### Added
 
@@ -68,6 +217,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * `SignText.verifyBlockPlaced()` no longer tries to update the block's state to check if the block is placed.  It is now called `SignText.reloadTargetSign()` and uses the non-invasive `BlockState.isPlaced()` method.
 
 ## v1.12.3 (2020-08-19)
+
+> ## Major Bug Notice (#22)
+>
+> ### Affected Versions
+>
+> * v1.12.2
+> * v1.12.3
+> * v1.12.4
+> * v1.12.5
+> * v1.12.6
+> * v1.12.7
+> * v1.12.8
+>
+> ### Upgrade Paths
+>
+> * v1.12.x → v1.12.9
+>
+> ### Description
+>
+> On affected versions, Standard or Extra sign edit permission validation (`compatibility.edit-validation: Standard` or `compatibility.edit-validation: Extra`) may ignore the result of changed sign lines by other plugins.
+> 
+> This bug bypasses sign content/text restrictions imposed by other plugins for anyone using `/sign` subcommands that change the text of a sign.
+> 
+> All users who run affected versions and have enabled sign edit permission validation (this is the default behavior) should upgrade to v1.12.9 immediately to prevent exploitation of this bug.
+>
+> ### Workaround
+>
+> If you are unable to upgrade to v1.12.9, you should downgrade to v1.12.1 or disable SignEdit for Bukkit.
 
 ### Added
 
@@ -101,6 +278,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.12.2 (2020-08-10)
 
+> ## Major Bug Notice (#22)
+>
+> ### Affected Versions
+>
+> * v1.12.2
+> * v1.12.3
+> * v1.12.4
+> * v1.12.5
+> * v1.12.6
+> * v1.12.7
+> * v1.12.8
+>
+> ### Upgrade Paths
+>
+> * v1.12.x → v1.12.9
+>
+> ### Description
+>
+> On affected versions, Standard or Extra sign edit permission validation (`compatibility.edit-validation: Standard` or `compatibility.edit-validation: Extra`) may ignore the result of changed sign lines by other plugins.
+>
+> This bug bypasses sign content/text restrictions imposed by other plugins for anyone using `/sign` subcommands that change the text of a sign.
+>
+> All users who run affected versions and have enabled sign edit permission validation (this is the default behavior) should upgrade to v1.12.9 immediately to prevent exploitation of this bug.
+>
+> ### Workaround
+>
+> If you are unable to upgrade to v1.12.9, you should downgrade to v1.12.1 or disable SignEdit for Bukkit.
+> 
 > ## Major Bug Notice (#17)
 >
 > ### Affected Versions

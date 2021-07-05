@@ -52,5 +52,9 @@ public class StandardSignEditValidator implements SignEditValidator {
         if (signChangeEvent.isCancelled()) {
             throw new ForbiddenSignEditException();
         }
+        String[] newLines = signChangeEvent.getLines();
+        for (int i = 0; i < newLines.length; i++) {
+            target.setLine(i, newLines[i]);
+        }
     }
 }
