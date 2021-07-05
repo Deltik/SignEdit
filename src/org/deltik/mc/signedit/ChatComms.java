@@ -143,10 +143,10 @@ public class ChatComms {
             showSubcommandSyntax(cmdString, "[set]", "<lines>", "[<text>]");
             showSubcommandSyntax(cmdString, "[clear]", "<lines>");
             showSubcommandSyntax(cmdString, "ui");
-            showSubcommandSyntax(cmdString, "cancel");
+            showSubcommandSyntax(cmdString, "{status,cancel}");
             showSubcommandSyntax(cmdString, "{copy,cut}", "[<lines>]");
             showSubcommandSyntax(cmdString, "paste");
-            showSubcommandSyntax(cmdString, "status");
+            showSubcommandSyntax(cmdString, "{undo,redo}");
             showSubcommandSyntax(cmdString, "version");
             tellPlayer(t("online_documentation", t("online_documentation_url")));
         }

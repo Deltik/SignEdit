@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
   This defect is a regression from SignEdit for Bukkit `= 1.12.2`.
   The cause of this defect was an incorrect assumption that the sign lines array passed in the `SignChangeEvent` would be mutated in place by the Bukkit event handler and other listening plugins.
+* `/sign undo` and `/sign redo` missing from `/sign help` (#23)
 
 ## v1.12.8 (2021-06-21)
 
