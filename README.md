@@ -72,7 +72,7 @@
 | `/sign` | Show the usage of the `/sign` subcommands. | `>= 1.0` |
 | `/sign ui` | Invoke the native Minecraft sign editor on the targeted sign. | `>= 1.8` |
 | `/sign set <lines> [<text>]` | Change each of the [lines](#selecting-multiple-lines) `<lines>` of the targeted sign to `<text>`.  [Formatting codes](#formatting-codes) are parsed with `&` in place of `§`.  If `<text>` is blank, erase the lines `<lines>`. | `>= 1.10` |
-| `/sign clear <lines>` | Erase the lines `<lines>` of the targeted sign. | `>= 1.10` |
+| `/sign clear [<lines>]` | Erase all text on the targeted sign.  If `<lines>` is specified, only those lines are blanked out. | `>= 1.13` |
 | `/sign cancel` | Abort your pending right-mouse click sign edit action. | `>= 1.9` |
 | `/sign status` | Show the pending action, what is in the copy buffer, and an overview of the undo/redo history stack. | `>= 1.10` |
 | `/sign copy [<lines>]` | Copy the targeted sign's text.  If `<lines>` is specified, only those lines are copied. | `>= 1.10` |
@@ -90,6 +90,7 @@ These commands no longer apply to the latest version of this plugin:
 | --- | --- | --- |
 | `/sign set <line> <text>` | Change the line `<line>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. | `>= 1.0, < 1.4` |
 | `/sign set <line> [<text>]` | Change the line `<line>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. If `<text>` is blank, erase the line `<line>`. | `>= 1.4, < 1.10` |
+| `/sign clear <lines>` | Erase the lines `<lines>` of the targeted sign. | `>= 1.10, < 1.13` |
 | `/sign clear <line>` | Erase the line `<line>` of the targeted sign. | `>= 1.4, < 1.10` |
 
 ### Aliases

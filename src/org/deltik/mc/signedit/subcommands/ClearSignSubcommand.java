@@ -27,13 +27,33 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.Map;
 
-public class ClearSignSubcommand extends SetSignSubcommand {
+public class ClearSignSubcommand implements SignSubcommand {
+    private final Map<String, Provider<SignEditInteraction>> interactions;
+    private final ArgParser argParser;
+    private final SignText signText;
+
     @Inject
     public ClearSignSubcommand(
             Map<String, Provider<SignEditInteraction>> interactions,
             ArgParser argParser,
             SignText signText
     ) {
-        super(interactions, argParser, signText);
+        this.interactions = interactions;
+        this.argParser = argParser;
+        this.signText = signText;
+    }
+
+    @Override
+    public SignEditInteraction execute() {
+        int[] selectedLines = argParser.getLinesSelection();
+        if (selectedLines.length <= 0) {
+            selectedLines = ArgParser.ALL_LINES_SELECTED;
+        }
+
+        for (int selectedLine : selectedLines) {
+            signText.setLine(selectedLine, "");
+        }
+
+        return interactions.get("Set").get();
     }
 }

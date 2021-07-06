@@ -51,12 +51,7 @@ public class SetSignSubcommand implements SignSubcommand {
             throw new MissingLineSelectionException();
         }
 
-        String text;
-        if (argParser.getSubcommand().equals("clear")) {
-            text = "";
-        } else {
-            text = String.join(" ", argParser.getRemainder());
-        }
+        String text = String.join(" ", argParser.getRemainder());
 
         for (int selectedLine : selectedLines) {
             signText.setLine(selectedLine, text);

@@ -24,7 +24,7 @@ commands:
       /<command> <lines> [<text>]
         Alias of /<command> set <lines> [<text>]
 
-      /<command> clear <lines>
+      /<command> clear [<lines>]
         Erase the lines <lines> of the targeted sign.
 
       /<command> <lines>

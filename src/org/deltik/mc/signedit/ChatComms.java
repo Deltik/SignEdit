@@ -141,7 +141,7 @@ public class ChatComms {
         if (cmdString.equals("sign")) {
             tellPlayer(t("usage_section"));
             showSubcommandSyntax(cmdString, "[set]", "<lines>", "[<text>]");
-            showSubcommandSyntax(cmdString, "[clear]", "<lines>");
+            showSubcommandSyntax(cmdString, "clear", "[<lines>]");
             showSubcommandSyntax(cmdString, "ui");
             showSubcommandSyntax(cmdString, "{status,cancel}");
             showSubcommandSyntax(cmdString, "{copy,cut}", "[<lines>]");
