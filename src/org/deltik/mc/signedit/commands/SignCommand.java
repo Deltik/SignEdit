@@ -139,6 +139,7 @@ public class SignCommand implements CommandExecutor {
     @Nullable
     public static Block getTargetBlockOfPlayer(Player player) {
         try {
+            @SuppressWarnings("JavaReflectionMemberAccess")
             Method method = Player.class.getMethod("getTargetBlockExact", int.class);
             return (Block) method.invoke(player, MAX_DISTANCE);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
