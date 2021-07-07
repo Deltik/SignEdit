@@ -22,14 +22,14 @@ package org.deltik.mc.signedit.subcommands;
 import org.bukkit.entity.Player;
 import org.deltik.mc.signedit.*;
 import org.deltik.mc.signedit.interactions.SignEditInteraction;
-import org.deltik.mc.signedit.listeners.SignEditListener;
+import org.deltik.mc.signedit.interactions.SignEditInteractionManager;
 
 import javax.inject.Inject;
 
 public class StatusSignSubcommand implements SignSubcommand {
     private final Player player;
     private final ChatComms comms;
-    private final SignEditListener listener;
+    private final SignEditInteractionManager interactionManager;
     private final SignTextClipboardManager clipboardManager;
     private final SignTextHistoryManager historyManager;
 
@@ -37,13 +37,13 @@ public class StatusSignSubcommand implements SignSubcommand {
     public StatusSignSubcommand(
             Player player,
             ChatComms comms,
-            SignEditListener listener,
+            SignEditInteractionManager interactionManager,
             SignTextClipboardManager clipboardManager,
             SignTextHistoryManager historyManager
     ) {
         this.player = player;
         this.comms = comms;
-        this.listener = listener;
+        this.interactionManager = interactionManager;
         this.clipboardManager = clipboardManager;
         this.historyManager = historyManager;
     }
@@ -57,10 +57,10 @@ public class StatusSignSubcommand implements SignSubcommand {
     }
 
     private void reportPendingAction() {
-        if (!listener.isInteractionPending(player)) {
+        if (!interactionManager.isInteractionPending(player)) {
             comms.tellPlayer(comms.t("pending_action_section", comms.t("no_pending_action")));
         } else {
-            SignEditInteraction interaction = listener.getPendingInteraction(player);
+            SignEditInteraction interaction = interactionManager.getPendingInteraction(player);
             comms.tellPlayer(comms.t("pending_action_section", comms.t(interaction.getName())));
             comms.tellPlayer(interaction.getActionHint(comms));
         }

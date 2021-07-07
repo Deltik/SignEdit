@@ -19,6 +19,7 @@
 
 package org.deltik.mc.signedit;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -31,6 +32,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.*;
+
+import static org.bukkit.Bukkit.getLogger;
 
 @Singleton
 public class Configuration {
@@ -84,6 +87,13 @@ public class Configuration {
 
     public Configuration(File f) {
         configFile = f;
+
+        try {
+            prepare();
+        } catch (IOException e) {
+            getLogger().severe(ExceptionUtils.getStackTrace(e));
+            throw new IllegalStateException("Unrecoverable error while setting up plugin configuration");
+        }
     }
 
     public void prepare() throws IOException {

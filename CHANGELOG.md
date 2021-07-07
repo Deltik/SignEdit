@@ -22,6 +22,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   The cause of this defect was an incorrect assumption that the sign lines array passed in the `SignChangeEvent` would be mutated in place by the Bukkit event handler and other listening plugins.
 * `/sign undo` and `/sign redo` missing from `/sign help` (#23)
 
+### Under the Hood
+
+* Event listeners split up between `CoreSignEditListener`, which is always used, and `BookUiSignEditListener`, which is only used when the editable book alternative sign editor GUI is enabled
+* The event listeners pertaining to the editable book alternative sign editor GUI are no longer registered if it is disabled.
+* `SignEditInteractionManager` extracted out of `SignEditListener`
+
 ## v1.12.8 (2021-06-21)
 
 > ## Major Bug Notice (#22)

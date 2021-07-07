@@ -32,7 +32,7 @@ import org.deltik.mc.signedit.ChatCommsModule;
 import org.deltik.mc.signedit.Configuration;
 import org.deltik.mc.signedit.exceptions.LineSelectionException;
 import org.deltik.mc.signedit.interactions.SignEditInteraction;
-import org.deltik.mc.signedit.listeners.SignEditListener;
+import org.deltik.mc.signedit.interactions.SignEditInteractionManager;
 import org.deltik.mc.signedit.subcommands.SignSubcommand;
 import org.deltik.mc.signedit.subcommands.SignSubcommandInjector;
 import org.jetbrains.annotations.Nullable;
@@ -48,19 +48,19 @@ import java.util.Map;
 public class SignCommand implements CommandExecutor {
 
     private static final int MAX_DISTANCE = 20;
-    private Configuration configuration;
-    private final SignEditListener listener;
+    private final Configuration configuration;
+    private final SignEditInteractionManager interactionManager;
     private final Provider<ChatCommsModule.ChatCommsComponent.Builder> commsBuilderProvider;
-    private Map<String, Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>>> commandBuilders;
+    private final Map<String, Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>>> commandBuilders;
 
     @Inject
     public SignCommand(
             Configuration configuration,
-            SignEditListener listener,
+            SignEditInteractionManager interactionManager,
             Provider<ChatCommsModule.ChatCommsComponent.Builder> commsBuilderProvider,
             Map<String, Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>>> commandBuilders
     ) {
-        this.listener = listener;
+        this.interactionManager = interactionManager;
         this.commsBuilderProvider = commsBuilderProvider;
         this.configuration = configuration;
         this.commandBuilders = commandBuilders;
@@ -127,7 +127,7 @@ public class SignCommand implements CommandExecutor {
         BlockState targetBlockState = null;
         if (targetBlock != null) targetBlockState = targetBlock.getState();
         if (shouldDoClickingMode(targetBlock)) {
-            listener.setPendingInteraction(player, interaction);
+            interactionManager.setPendingInteraction(player, interaction);
             comms.tellPlayer(comms.t("right_click_sign_to_apply_action"));
         } else if (targetBlockState instanceof Sign) {
             interaction.interact(player, (Sign) targetBlockState);

@@ -33,13 +33,12 @@ import org.bukkit.plugin.Plugin;
 import org.deltik.mc.signedit.ChatComms;
 import org.deltik.mc.signedit.SignText;
 import org.deltik.mc.signedit.SignTextHistoryManager;
-import org.deltik.mc.signedit.listeners.SignEditListener;
 
 import javax.inject.Inject;
 
 public class BookUiSignEditInteraction implements SignEditInteraction {
     private final Plugin plugin;
-    private final SignEditListener listener;
+    private final SignEditInteractionManager interactionManager;
     private final ChatComms comms;
     private final SignText signText;
     private final SignTextHistoryManager historyManager;
@@ -50,13 +49,13 @@ public class BookUiSignEditInteraction implements SignEditInteraction {
     @Inject
     public BookUiSignEditInteraction(
             Plugin plugin,
-            SignEditListener listener,
+            SignEditInteractionManager interactionManager,
             ChatComms comms,
             SignText signText,
             SignTextHistoryManager historyManager
     ) {
         this.plugin = plugin;
-        this.listener = listener;
+        this.interactionManager = interactionManager;
         this.comms = comms;
         this.signText = signText;
         this.historyManager = historyManager;
@@ -69,7 +68,7 @@ public class BookUiSignEditInteraction implements SignEditInteraction {
 
     @Override
     public void interact(Player player, Sign sign) {
-        listener.setPendingInteraction(player, this);
+        interactionManager.setPendingInteraction(player, this);
 
         if (originalItem == null) {
             signText.setTargetSign(sign);
@@ -102,8 +101,8 @@ public class BookUiSignEditInteraction implements SignEditInteraction {
         originalItemIndex = inventory.getHeldItemSlot();
         inventory.setItemInMainHand(book);
         comms.tellPlayer(comms.t("right_click_air_to_open_sign_editor"));
-        listener.removePendingInteraction(player);
-        listener.setPendingInteraction(player, this);
+        interactionManager.removePendingInteraction(player);
+        interactionManager.setPendingInteraction(player, this);
     }
 
     @Override
@@ -146,7 +145,7 @@ public class BookUiSignEditInteraction implements SignEditInteraction {
 
     private void cleanupInventoryClickEvent(InventoryClickEvent event) {
         if (originalItemIndex == event.getSlot()) {
-            listener.setPendingInteraction(player, this);
+            interactionManager.setPendingInteraction(player, this);
             event.setCancelled(true);
         }
     }

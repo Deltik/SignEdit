@@ -28,6 +28,7 @@ import org.deltik.mc.signedit.listeners.SignEditListener;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.Set;
 
 public class SignEditPlugin extends JavaPlugin {
     @Inject
@@ -36,7 +37,7 @@ public class SignEditPlugin extends JavaPlugin {
     UserComms userComms;
 
     @Inject
-    public SignEditListener listener;
+    public Set<SignEditListener> listeners;
 
     @Inject
     public SignCommand signCommand;
@@ -47,19 +48,15 @@ public class SignEditPlugin extends JavaPlugin {
     public void onEnable() {
         DaggerSignEditPluginComponent.builder().plugin(this).build().injectSignEditPlugin(this);
 
-        try {
-            config.prepare();
-        } catch (IOException e) {
-            getLogger().severe(ExceptionUtils.getStackTrace(e));
-            throw new IllegalStateException("Unrecoverable error while setting up plugin configuration");
-        }
-
         for (String alias : new String[]{"sign", "signedit", "editsign", "se"}) {
             PluginCommand pluginCommand = this.getCommand(alias);
             pluginCommand.setExecutor(signCommand);
             pluginCommand.setTabCompleter(signCommandTabCompleter);
         }
-        getServer().getPluginManager().registerEvents(listener, this);
+
+        for (SignEditListener listener : listeners) {
+            getServer().getPluginManager().registerEvents(listener, this);
+        }
 
         try {
             userComms.deploy();

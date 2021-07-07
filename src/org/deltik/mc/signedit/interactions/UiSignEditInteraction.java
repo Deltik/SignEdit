@@ -30,7 +30,6 @@ import org.deltik.mc.signedit.SignText;
 import org.deltik.mc.signedit.SignTextHistoryManager;
 import org.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
 import org.deltik.mc.signedit.exceptions.SignEditorInvocationException;
-import org.deltik.mc.signedit.listeners.SignEditListener;
 
 import javax.inject.Inject;
 import java.lang.reflect.Field;
@@ -42,7 +41,7 @@ import static org.deltik.mc.signedit.CraftBukkitReflector.getDeclaredMethodRecur
 import static org.deltik.mc.signedit.CraftBukkitReflector.getFirstFieldOfType;
 
 public class UiSignEditInteraction implements SignEditInteraction {
-    private final SignEditListener listener;
+    private final SignEditInteractionManager interactionManager;
     private final ChatComms comms;
     private final SignText signText;
     private final SignTextHistoryManager historyManager;
@@ -51,12 +50,12 @@ public class UiSignEditInteraction implements SignEditInteraction {
 
     @Inject
     public UiSignEditInteraction(
-            SignEditListener listener,
+            SignEditInteractionManager interactionManager,
             ChatComms comms,
             SignText signText,
             SignTextHistoryManager historyManager
     ) {
-        this.listener = listener;
+        this.interactionManager = interactionManager;
         this.comms = comms;
         this.signText = signText;
         this.historyManager = historyManager;
@@ -72,7 +71,7 @@ public class UiSignEditInteraction implements SignEditInteraction {
         if (event instanceof SignChangeEvent) {
             SignChangeEvent signChangeEvent = (SignChangeEvent) event;
             Player player = signChangeEvent.getPlayer();
-            if (listener.isInteractionPending(player)) {
+            if (interactionManager.isInteractionPending(player)) {
                 runEarlyEventTask(signChangeEvent);
             } else {
                 runLateEventTask(signChangeEvent);
@@ -114,7 +113,7 @@ public class UiSignEditInteraction implements SignEditInteraction {
         this.player = player;
 
         formatSignForEdit(player, sign);
-        listener.setPendingInteraction(player, this);
+        interactionManager.setPendingInteraction(player, this);
 
         try {
             openSignEditor(player, sign);

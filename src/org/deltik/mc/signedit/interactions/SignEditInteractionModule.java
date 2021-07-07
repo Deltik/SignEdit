@@ -29,6 +29,9 @@ import org.deltik.mc.signedit.integrations.SignEditValidatorModule;
         SignEditValidatorModule.class,
 })
 public abstract class SignEditInteractionModule {
+    public static final String UI_NATIVE = "NativeUi";
+    public static final String UI_EDITABLE_BOOK = "EditableBookUi";
+
     @Binds
     @IntoMap
     @StringKey("Set")
@@ -36,12 +39,12 @@ public abstract class SignEditInteractionModule {
 
     @Binds
     @IntoMap
-    @StringKey("EditableBookUi")
+    @StringKey(UI_EDITABLE_BOOK)
     abstract SignEditInteraction bindEditableBookUi(BookUiSignEditInteraction interaction);
 
     @Binds
     @IntoMap
-    @StringKey("NativeUi")
+    @StringKey(UI_NATIVE)
     abstract SignEditInteraction bindNativeUi(UiSignEditInteraction interaction);
 
     @Binds

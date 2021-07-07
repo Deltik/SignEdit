@@ -22,6 +22,7 @@ package org.deltik.mc.signedit.subcommands;
 import org.deltik.mc.signedit.Configuration;
 import org.deltik.mc.signedit.CraftBukkitReflector;
 import org.deltik.mc.signedit.interactions.SignEditInteraction;
+import org.deltik.mc.signedit.interactions.SignEditInteractionModule;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -51,18 +52,22 @@ public class UiSignSubcommand implements SignSubcommand {
 
     @Override
     public SignEditInteraction execute() {
+        return interactions.get(getImplementationName(config, reflector)).get();
+    }
+
+    public static String getImplementationName(Configuration config, CraftBukkitReflector reflector) {
         String value = config.getSignUi().toLowerCase();
 
         if ("editablebook".equals(value)) {
-            return interactions.get("EditableBookUi").get();
+            return SignEditInteractionModule.UI_EDITABLE_BOOK;
         } else if ("native".equals(value)) {
-            return interactions.get("NativeUi").get();
+            return SignEditInteractionModule.UI_NATIVE;
         }
 
         // Auto mode
         if (QUIRKY_BUKKIT_SERVER_VERSION.compareTo(reflector.BUKKIT_SERVER_VERSION) == 0) {
-            return interactions.get("EditableBookUi").get();
+            return SignEditInteractionModule.UI_EDITABLE_BOOK;
         }
-        return interactions.get("NativeUi").get();
+        return SignEditInteractionModule.UI_NATIVE;
     }
 }
