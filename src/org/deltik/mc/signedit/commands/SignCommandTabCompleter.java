@@ -87,7 +87,8 @@ public class SignCommandTabCompleter implements TabCompleter {
         }
 
         Block targetBlock = SignCommand.getTargetBlockOfPlayer(player);
-        BlockState targetBlockState = targetBlock.getState();
+        BlockState targetBlockState = null;
+        if (targetBlock != null) targetBlockState = targetBlock.getState();
         if (targetBlockState instanceof Sign) {
             Sign targetSign = (Sign) targetBlockState;
             SignText signText = new SignText();
