@@ -87,8 +87,17 @@ public class ArgParserTest {
         parse("garbage1 garbage2 garbage3");
 
         assertEquals("help", subcommand);
-        assertArrayEquals(new int[0], selectedLines);
+        assertArrayEquals(ArgParser.NO_LINES_SELECTED, selectedLines);
         assertEquals(Arrays.asList("garbage1", "garbage2", "garbage3"), remainder);
+    }
+
+    @Test
+    public void parseSignHelpWithPageNumber() {
+        parse("help 2");
+
+        assertEquals("help", subcommand);
+        assertArrayEquals(ArgParser.NO_LINES_SELECTED, selectedLines);
+        assertEquals(Collections.singletonList("2"), remainder);
     }
 
     @Test

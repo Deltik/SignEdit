@@ -46,7 +46,8 @@ import java.util.Map;
 
 @Singleton
 public class SignCommand implements CommandExecutor {
-
+    public static final String COMMAND_NAME = "sign";
+    public static final String SUBCOMMAND_NAME_HELP = "help";
     private static final int MAX_DISTANCE = 20;
     private final Configuration configuration;
     private final SignEditInteractionManager interactionManager;
@@ -74,22 +75,22 @@ public class SignCommand implements CommandExecutor {
         ChatComms comms = commsBuilderProvider.get().player(player).build().comms();
 
         ArgParser argParser = new ArgParser(args, configuration, commandBuilders);
+        String subcommandName = argParser.getSubcommand();
 
-        if (!permitted(player, argParser)) {
-            comms.informForbidden(command.getName(), argParser.getSubcommand());
+        if (!commandBuilders.containsKey(subcommandName)) {
+            subcommandName = SUBCOMMAND_NAME_HELP;
+        }
+
+        if (!permitted(player, subcommandName)) {
+            comms.informForbidden(command.getName(), subcommandName);
             return true;
         }
 
         Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>> subcommandProvider =
-                commandBuilders.get(argParser.getSubcommand());
-
-        if (subcommandProvider == null) {
-            comms.showHelpFor(command.getName());
-            return true;
-        }
+                commandBuilders.get(subcommandName);
 
         LineSelectionException selectedLinesError = argParser.getLinesSelectionError();
-        if (selectedLinesError != null) {
+        if (selectedLinesError != null && !subcommandName.equals(SUBCOMMAND_NAME_HELP)) {
             comms.reportException(selectedLinesError);
             return true;
         }
@@ -113,11 +114,11 @@ public class SignCommand implements CommandExecutor {
         return true;
     }
 
-    private boolean permitted(Player player, ArgParser args) {
+    public static boolean permitted(Player player, String subcommand) {
         // Legacy (< 1.4) permissions
-        return (player.hasPermission("SignEdit.use") ||
+        return (player.hasPermission("signedit.use") ||
                 // /sign <subcommand>
-                player.hasPermission("signedit.sign." + args.getSubcommand()));
+                player.hasPermission("signedit." + COMMAND_NAME + "." + subcommand));
     }
 
     private void autointeract(Player player, SignEditInteraction interaction, ChatComms comms) {

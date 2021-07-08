@@ -30,6 +30,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static org.deltik.mc.signedit.commands.SignCommand.SUBCOMMAND_NAME_HELP;
+
 public class ArgParser {
     private final Configuration config;
     private final Map<String, Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>>> subcommandMap;
@@ -71,39 +73,47 @@ public class ArgParser {
 
     private void parseArgs(String[] args) {
         List<String> argsArray = new LinkedList<>(Arrays.asList(args));
+        selectedLines = NO_LINES_SELECTED;
+        remainder = argsArray;
 
-        if (argsArray.size() <= 0) {
-            subcommand = "help";
-            selectedLines = NO_LINES_SELECTED;
-            remainder = argsArray;
+        if (argsArray.size() == 0) {
+            subcommand = SUBCOMMAND_NAME_HELP;
             return;
         }
 
-        if (subcommandMap.containsKey(argsArray.get(0).toLowerCase())) {
-            subcommand = argsArray.remove(0).toLowerCase();
+        String maybeSubcommandOrShorthandLines = remainder.remove(0);
+        String maybeSubcommand = maybeSubcommandOrShorthandLines.toLowerCase();
+        if (subcommandMap.containsKey(maybeSubcommand)) {
+            subcommand = maybeSubcommand;
         }
-        if (argsArray.size() <= 0) {
-            selectedLines = NO_LINES_SELECTED;
-            remainder = argsArray;
+        if (subcommand == null) {
+            try {
+                parseLineSelection(maybeSubcommandOrShorthandLines);
+                if (selectedLines.length > 0) {
+                    if (remainder.size() == 0) subcommand = "clear";
+                    else subcommand = "set";
+                }
+                return;
+            } catch (LineSelectionException e) {
+                remainder.add(0, maybeSubcommandOrShorthandLines);
+                selectedLines = NO_LINES_SELECTED;
+                selectedLinesError = e;
+            }
+        }
+        if (subcommand == null) {
+            subcommand = SUBCOMMAND_NAME_HELP;
+        }
+        if (remainder.size() == 0 || subcommand.equals(SUBCOMMAND_NAME_HELP)) {
             return;
         }
 
         try {
-            parseLineSelection(argsArray.get(0));
-            argsArray.remove(0);
+            parseLineSelection(remainder.get(0));
+            remainder.remove(0);
         } catch (LineSelectionException e) {
             selectedLines = NO_LINES_SELECTED;
             selectedLinesError = e;
         }
-
-        remainder = argsArray;
-
-        if (subcommand == null && selectedLines.length > 0) {
-            if (remainder.size() == 0) subcommand = "clear";
-            else subcommand = "set";
-        }
-
-        if (subcommand == null) subcommand = "help";
     }
 
     private void parseLineSelection(String rawLineGroups) {

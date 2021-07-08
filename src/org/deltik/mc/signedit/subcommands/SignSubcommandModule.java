@@ -27,6 +27,7 @@ import dagger.multibindings.StringKey;
 import org.deltik.mc.signedit.interactions.SignEditInteractionModule;
 
 @Module(subcomponents = {
+        SignSubcommandModule.HelpSignSubcommandComponent.class,
         SignSubcommandModule.SetSignSubcommandComponent.class,
         SignSubcommandModule.ClearSignSubcommandComponent.class,
         SignSubcommandModule.UiSignSubcommandComponent.class,
@@ -40,6 +41,19 @@ import org.deltik.mc.signedit.interactions.SignEditInteractionModule;
         SignSubcommandModule.VersionSignSubcommandComponent.class,
 })
 public abstract class SignSubcommandModule {
+    @Binds
+    @IntoMap
+    @StringKey("help")
+    abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindHelpSignSubcommand(HelpSignSubcommandComponent.Builder command);
+
+    @PerSubcommand
+    @Subcomponent(modules = {SignEditInteractionModule.class})
+    public interface HelpSignSubcommandComponent extends SignSubcommandInjector<HelpSignSubcommand> {
+        @Subcomponent.Builder
+        abstract class Builder extends SignSubcommandInjector.Builder<HelpSignSubcommand> {
+        }
+    }
+
     @Binds
     @IntoMap
     @StringKey("set")

@@ -10,28 +10,28 @@ commands:
     aliases: [signedit, editsign, se]
     description: Edit a targeted sign
     usage: |
-      See the online documentation for detailed usage help:
+      See the online documentation for additional help:
       https://git.io/SignEdit-README
 
-      /<command> ui
-        Invoke the native Minecraft sign editor on the targeted sign.
+      /<command> help [<page>]
+        Show usage syntax for every available /<command> subcommand.
+        Specify a <page> number to view a specific page.
 
-      /<command> set <lines> [<text>]
+      /<command> ui
+        Open the native Minecraft sign editor on the targeted sign.
+
+      /<command> [set] <lines> [<text>]
         Change each of the lines <lines> of the targeted sign to <text>.
         Formatting codes are parsed with `&` in place of `§`.
         If <text> is blank, erase the lines <lines>.
-
-      /<command> <lines> [<text>]
-        Alias of /<command> set <lines> [<text>]
+        "set" can be omitted.
 
       /<command> clear [<lines>]
-        Erase the lines <lines> of the targeted sign.
-
-      /<command> <lines>
-        Alias of /<command> clear <lines>
+        Erase the text on the targeted sign.
+        If <lines> is specified, only those lines are blanked out.
 
       /<command> cancel
-        Abort your pending right-click action.
+        Abort your pending sign edit action.
 
       /<command> status
         Show the pending action, what is in the copy buffer, and an overview of the undo/redo history stack.
@@ -57,11 +57,12 @@ commands:
         Show the version of this plugin.
 
 permissions:
-  SignEdit.use:
-    description: Legacy permission granting access to all commands in this plugin
+  signedit.use:
+    description: Legacy permission granting access to all /sign subcommands
   signedit.sign.*:
     description: Allow access to all /sign subcommands
     children:
+      signedit.sign.help: true
       signedit.sign.ui: true
       signedit.sign.set: true
       signedit.sign.clear: true
@@ -73,6 +74,8 @@ permissions:
       signedit.sign.undo: true
       signedit.sign.redo: true
       signedit.sign.version: true
+  signedit.sign.help:
+    description: Allow /sign help
   signedit.sign.ui:
     description: Allow /sign ui
   signedit.sign.set:

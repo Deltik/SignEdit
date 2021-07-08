@@ -57,11 +57,8 @@
 
 ## Installation
 
-1. Download the latest `.jar` file from [the Releases page](https://github.com/Deltik/SignEdit/releases) and upload it to your CraftBukkit/Spigot `plugins/` folder.
-2. Do one of the following:
-   - Restart your server.
-   - Run the `reload` command from the server console.
-   - Say `/reload` as an _op_ player.
+1. Download the latest `.jar` file from [the Releases page](https://github.com/Deltik/SignEdit/releases) and upload it to your CraftBukkit (Spigot, PaperMC, etc.) `plugins/` folder.
+2. Restart your CraftBukkit server.
 
 ## Usage
 
@@ -69,11 +66,13 @@
 
 | Command | Usage | [Version](#versioning) |
 | --- | --- | --- |
-| `/sign` | Show the usage of the `/sign` subcommands. | `>= 1.0` |
-| `/sign ui` | Invoke the native Minecraft sign editor on the targeted sign. | `>= 1.8` |
-| `/sign set <lines> [<text>]` | Change each of the [lines](#selecting-multiple-lines) `<lines>` of the targeted sign to `<text>`.  [Formatting codes](#formatting-codes) are parsed with `&` in place of `§`.  If `<text>` is blank, erase the lines `<lines>`. | `>= 1.10` |
-| `/sign clear [<lines>]` | Erase all text on the targeted sign.  If `<lines>` is specified, only those lines are blanked out. | `>= 1.13` |
-| `/sign cancel` | Abort your pending right-mouse click sign edit action. | `>= 1.9` |
+| `/? sign` | Show detailed help about the `/sign` command. | `>= 1.0` |
+| `/sign` | Show the first page of the usage syntax of the `/sign` subcommands. | `>= 1.0` |
+| `/sign help [<page>]` | Show the usage syntax of the `/sign` subcommands.  Specify a `<page>` number to view a specific page. | `>= 1.13` |
+| `/sign ui` | Open the native Minecraft sign editor on the targeted sign. | `>= 1.8` |
+| `/sign [set] <lines> [<text>]` | Change each of the [lines](#selecting-multiple-lines) `<lines>` of the targeted sign to `<text>`.  If `<text>` is blank, erase the lines `<lines>`.  `set` can be omitted. | `>= 1.10` |
+| `/sign clear [<lines>]` | Erase the text on the targeted sign.  If `<lines>` is specified, only those lines are blanked out. | `>= 1.13` |
+| `/sign cancel` | Abort your pending sign edit action. | `>= 1.9` |
 | `/sign status` | Show the pending action, what is in the copy buffer, and an overview of the undo/redo history stack. | `>= 1.10` |
 | `/sign copy [<lines>]` | Copy the targeted sign's text.  If `<lines>` is specified, only those lines are copied. | `>= 1.10` |
 | `/sign cut [<lines>]` | Copy the targeted sign's text and remove it from the sign.  If `<lines>` is specified, only those lines are cut. | `>= 1.10` |
@@ -88,8 +87,9 @@ These commands no longer apply to the latest version of this plugin:
 
 | Command | Usage | [Version](#versioning) |
 | --- | --- | --- |
+| `/sign [set] <line> [<text>]` | Change the line `<line>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. If `<text>` is blank, erase the line `<line>`. `set` can be omitted. | `>= 1.6, < 1.10` |
+| `/sign set <line> [<text>]` | Change the line `<line>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. If `<text>` is blank, erase the line `<line>`. | `>= 1.4, < 1.6` |
 | `/sign set <line> <text>` | Change the line `<line>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. | `>= 1.0, < 1.4` |
-| `/sign set <line> [<text>]` | Change the line `<line>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. If `<text>` is blank, erase the line `<line>`. | `>= 1.4, < 1.10` |
 | `/sign clear <lines>` | Erase the lines `<lines>` of the targeted sign. | `>= 1.10, < 1.13` |
 | `/sign clear <line>` | Erase the line `<line>` of the targeted sign. | `>= 1.4, < 1.10` |
 
@@ -235,7 +235,7 @@ In the documentation, version constraints are used to indicate to which versions
 
 All features of this plugin will be available if the player has the following permission:
 
-    SignEdit.use
+    signedit.use
 
 (`>= 1.8`) More refined permissions are available in this format:
 
@@ -346,7 +346,7 @@ Decide what events to send to other plugins for sign edit permission validation 
 * (`>= 1.10`) [Tab completion for `/sign` subcommands](#sign-tab)
 * (`>= 1.10`) Copy, cut, and paste sign lines with `/sign copy`, `/sign cut`, and `/sign paste`, respectively.
 * (`>= 1.10`) Undo and redo sign changes with `/sign undo` and `/sign redo`, respectively.
-* (`>= 1.12.2`) Players cannot edit signs that they do not have permission to edit.  Every attempted edit is validated through an [admin-configurable chain of events](#compatibilityedit-validation-standardextranone) and will not succeed if another plugin or policy cancels any of the events.
+* (`>= 1.13`) Other plugins can [validate](#compatibilityedit-validation-standardextranone) any attempted sign edits as if the player was filling out a new sign.  Permissions plugins can block the edit, and censorship plugins can modify the inputted text before it is saved.
 * (`>= 1.10.2`) Automatically uses the player's language, [if supported](#supported-locales).
 * (`>= 1.11`) Fully customizable plugin text [theming and localization/translations](#advanced-customization)
 
@@ -356,6 +356,7 @@ These features no longer apply to the latest version of this plugin:
 * (`< 1.10`) Edit the line `<line>` of the targeted sign to be `<text>` with `/sign set <line> [<text>]` or (`>= 1.6`) `/sign <line> [<text>]`.
 * (`>= 1.8, < 1.10`) Before editing a sign, this plugin checks if the player is allowed to edit the sign by pretending to blank out the sign and seeing if the corresponding [`SignChangeEvent`](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/event/block/SignChangeEvent.html) is cancelled.
 * (`>= 1.10, < 1.12.2`) Players cannot edit signs that they do not have permission to edit.  Every attempted edit is validated through a [`SignChangeEvent`](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/event/block/SignChangeEvent.html) and will not succeed if another plugin or policy cancels the `SignChangeEvent`.
+* (`~> 1.12.2`) Players cannot edit signs that they do not have permission to edit.  Every attempted edit is validated through an [admin-configurable chain of events](#compatibilityedit-validation-standardextranone) and will not succeed if another plugin or policy cancels any of the events.
 
 ### Supported Locales
 

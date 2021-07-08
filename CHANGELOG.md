@@ -9,10 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.13.0 (UNRELEASED)
 
+### Added
+
+* New locale strings:
+  * `usage_page_heading` – Styling for the heading of the redesigned `/sign help`
+  * `usage_page_info` – Contents of the heading of `/sign help`
+  * `usage_page_numbering` – Shows the page number of the `/sign help` page
+
 ### Changed
 
 * The `<lines>` argument of `/sign clear [<lines>]` is now optional.
   If `<lines>` is not provided, all lines on the targeted sign will be blanked out.
+* Reworked `/sign help` so that it will only display `/sign` subcommands to which the player has access. (#23)
+* Tab completion now will only suggest for `/sign` subcommands to which the player has access.
+* Removed locale strings:
+  * `usage_section` – This string is no longer used due to the rework of `/sign help`.
 
 ### Fixed
 
@@ -25,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Under the Hood
 
+* Added documentation of the arguments in the locale strings
 * Event listeners split up between `CoreSignEditListener`, which is always used, and `BookUiSignEditListener`, which is only used when the editable book alternative sign editor GUI is enabled
 * The event listeners pertaining to the editable book alternative sign editor GUI are no longer registered if it is disabled.
 * `SignEditInteractionManager` extracted out of `SignEditListener`

@@ -45,7 +45,7 @@ public class SignCommandTabCompleter implements TabCompleter {
     private final Map<String, Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>>> subcommandMap;
     private final Set<String> subcommandNames;
     private final Configuration config;
-    private final Set<String> subcommandsWithLineSelector = Stream.of(
+    protected static final Set<String> subcommandsWithLineSelector = Stream.of(
             "set",
             "clear",
             "copy",
@@ -65,15 +65,16 @@ public class SignCommandTabCompleter implements TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> completion = new ArrayList<>();
+        Player player = (Player) sender;
 
         if (args.length == 1) {
-            completion.addAll(completeSubcommand(args[0].toLowerCase()));
-            completion.addAll(completeLines(args.clone()));
+            completion.addAll(completeSubcommand(player, args[0].toLowerCase()));
+            completion.addAll(completeLines(player, args.clone()));
         } else if (args.length == 2) {
-            completion.addAll(completeLines(args.clone()));
+            completion.addAll(completeLines(player, args.clone()));
         }
 
-        completion.addAll(completeExistingLines((Player) sender, args));
+        completion.addAll(completeExistingLines(player, args));
 
         return completion;
     }
@@ -111,13 +112,12 @@ public class SignCommandTabCompleter implements TabCompleter {
     /**
      * Offer suggestions for the subcommand
      */
-    private List<String> completeSubcommand(String arg) {
+    private List<String> completeSubcommand(Player player, String arg) {
         Set<String> candidateSubcommands = subcommandNames;
         candidateSubcommands = candidateSubcommands
                 .stream()
-                .filter(
-                        name -> name.startsWith(arg)
-                )
+                .filter(name -> name.startsWith(arg))
+                .filter(name -> SignCommand.permitted(player, name))
                 .collect(Collectors.toSet());
         return new ArrayList<>(candidateSubcommands);
     }
@@ -127,9 +127,11 @@ public class SignCommandTabCompleter implements TabCompleter {
      * <p>
      * FIXME: This code is disgusting.
      */
-    private List<String> completeLines(String[] args) {
-        ArgParser argParser = new ArgParser(args, config, subcommandMap);
+    private List<String> completeLines(Player player, String[] args) {
         List<String> completion = new ArrayList<>();
+        if (!playerIsAllowedToUseLineSelectors(player)) return completion;
+
+        ArgParser argParser = new ArgParser(args, config, subcommandMap);
         int minLine = config.getMinLine();
         int maxLine = config.getMaxLine();
         Pattern lineSelector = Pattern.compile("^[" + minLine + "-" + maxLine + ",\\-]+$");
@@ -210,5 +212,11 @@ public class SignCommandTabCompleter implements TabCompleter {
             }
         }
         return completion;
+    }
+
+    private boolean playerIsAllowedToUseLineSelectors(Player player) {
+        return subcommandsWithLineSelector.stream().anyMatch(
+                name -> SignCommand.permitted(player, name)
+        );
     }
 }

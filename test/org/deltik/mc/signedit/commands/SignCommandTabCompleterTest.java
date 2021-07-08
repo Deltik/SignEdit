@@ -31,7 +31,6 @@ import org.deltik.mc.signedit.subcommands.SignSubcommandInjector;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.util.collections.Sets;
-import org.mockito.stubbing.Answer;
 
 import javax.inject.Provider;
 import java.util.HashMap;
@@ -48,8 +47,8 @@ public class SignCommandTabCompleterTest {
 
     private final SignCommandTabCompleter tabCompleter;
     private final Configuration config;
-    private final CommandSender commandSender;
-    private final Command command;
+    private CommandSender commandSender;
+    private Command command;
     private final String alias = "sign";
     private final Map<String, Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>>> subcommandMap = new HashMap<>();
 
@@ -79,8 +78,6 @@ public class SignCommandTabCompleterTest {
         subcommandMap.put("version", null);
         this.tabCompleter = new SignCommandTabCompleter(subcommandMap, config);
 
-        commandSender = mock(Player.class);
-        command = mock(Command.class);
     }
 
     @BeforeEach
@@ -89,6 +86,10 @@ public class SignCommandTabCompleterTest {
         Block block = mock(Block.class);
         when(block.getState()).thenReturn(sign);
         when(sign.getBlock()).thenReturn(block);
+
+        command = mock(Command.class);
+        commandSender = mock(Player.class);
+        when(commandSender.hasPermission(anyString())).thenReturn(true);
         when(((Player) commandSender).getTargetBlock(any(), anyInt())).thenReturn(block);
     }
 
@@ -99,7 +100,7 @@ public class SignCommandTabCompleterTest {
         when(sign.getBlock()).thenReturn(block);
         String[] signLinesCopy = signLines.clone();
         when(sign.getLines()).thenReturn(signLinesCopy);
-        when(sign.getLine(anyInt())).then((Answer) invocation -> signLinesCopy[(int) invocation.getArgument(0)]);
+        when(sign.getLine(anyInt())).then(invocation -> signLinesCopy[(int) invocation.getArgument(0)]);
         doAnswer(invocation ->
                 signLinesCopy[(int) invocation.getArgument(0)] = invocation.getArgument(1)
         ).when(sign).setLine(anyInt(), anyString());
@@ -190,6 +191,7 @@ public class SignCommandTabCompleterTest {
     @Test
     public void completeSignSubcommandWithoutLineSelectorSkipsLineSelectorHint() {
         Set<String> subcommandsWithoutLineSelector = Sets.newSet(
+                "help",
                 "ui",
                 "cancel",
                 "status",
@@ -353,5 +355,31 @@ public class SignCommandTabCompleterTest {
 
         result = tabComplete("4-2 ");
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void noCompletionWithNoPermissions() {
+        when(commandSender.hasPermission(anyString())).thenReturn(false);
+
+        List<String> result = tabComplete("");
+
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    public void noLineSelectorCompletionWithoutLineSelectorPermissions() {
+        when(commandSender.hasPermission("signedit.use")).thenReturn(false);
+        SignCommandTabCompleter.subcommandsWithLineSelector.forEach(
+                subcommandName -> when(commandSender.hasPermission(
+                        "signedit." + SignCommand.COMMAND_NAME + "." + subcommandName
+                )).thenReturn(false)
+        );
+
+        List<String> results = tabComplete("");
+
+        assertFalse(results.contains("1"));
+        assertFalse(results.contains("2"));
+        assertFalse(results.contains("3"));
+        assertFalse(results.contains("4"));
     }
 }
