@@ -265,6 +265,9 @@ All configuration is in the file `plugins/SignEdit/config.yml`.
 
 (`>= 1.10`) During plugin unloading, the configuration file is reloaded before being rewritten.
 
+(`>= 1.13`) Changes to the configuration file while the plugin is active in a running server are detected and applied at runtime.
+The server does not need to be restarted for configuration changes to take effect.
+
 ### `clicking: [auto|false|true]`
 
 (`>= 1.1`)
@@ -489,7 +492,7 @@ Support for Bukkit v1.8 and lower was dropped in plugin version `>= 1.3.1`.  Thi
 |`>= 1.8, < 1.10.2`|1.8.3|1.15.2|[Native sign editor defect in Minecraft 1.16.1](#minecraft-1161-sign-editor-gui)|
 |`>= 1.10.2, < 1.12`|1.12|1.15.2|[Localization features](#supported-locales) only available starting in Bukkit v1.12|
 |`>= 1.12, < 1.12.7`|1.13|1.16.5|Workaround for [native sign editor defect in Minecraft 1.16.1](#minecraft-1161-sign-editor-gui) uses Bukkit v1.13 materials|
-|`~> 1.12.7`|1.13|_No known incompatibility_|Plugin updated to tolerate [a Minecraft unstable API (`net.minecraft` code) obfuscation requirement for Minecraft 1.17+](https://web.archive.org/web/20210613005238/https://www.spigotmc.org/threads/spigot-bungeecord-1-17.510208/#post-4184317)|
+|`>= 1.12.7`|1.13|_No known incompatibility_|Plugin updated to tolerate [a Minecraft unstable API (`net.minecraft` code) obfuscation requirement for Minecraft 1.17+](https://web.archive.org/web/20210613005238/https://www.spigotmc.org/threads/spigot-bungeecord-1-17.510208/#post-4184317)|
 
 ### Backwards Compatibility with Omel's SignEdit v1.3
 

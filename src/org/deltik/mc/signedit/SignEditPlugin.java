@@ -21,12 +21,14 @@ package org.deltik.mc.signedit;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.deltik.mc.signedit.commands.SignCommand;
 import org.deltik.mc.signedit.commands.SignCommandTabCompleter;
 import org.deltik.mc.signedit.listeners.SignEditListener;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.io.IOException;
 import java.util.Set;
 
@@ -34,10 +36,12 @@ public class SignEditPlugin extends JavaPlugin {
     @Inject
     public Configuration config;
     @Inject
+    public ConfigurationWatcher configWatcher;
+    @Inject
     UserComms userComms;
 
     @Inject
-    public Set<SignEditListener> listeners;
+    public Provider<Set<SignEditListener>> listenersProvider;
 
     @Inject
     public SignCommand signCommand;
@@ -54,9 +58,7 @@ public class SignEditPlugin extends JavaPlugin {
             pluginCommand.setTabCompleter(signCommandTabCompleter);
         }
 
-        for (SignEditListener listener : listeners) {
-            getServer().getPluginManager().registerEvents(listener, this);
-        }
+        reregisterListeners();
 
         try {
             userComms.deploy();
@@ -64,15 +66,27 @@ public class SignEditPlugin extends JavaPlugin {
             getLogger().warning("Cannot enable user-defined locales due to error:");
             getLogger().warning(ExceptionUtils.getStackTrace(e));
         }
+
+        configWatcher.start();
     }
 
     @Override
     public void onDisable() {
         try {
-            config.reloadConfig();
+            configWatcher.end();
+            config.configHighstate();
         } catch (IOException e) {
             getLogger().severe(ExceptionUtils.getStackTrace(e));
             throw new IllegalStateException("Unrecoverable error while sanity checking plugin configuration");
+        }
+    }
+
+    public void reregisterListeners() {
+        HandlerList.unregisterAll(this);
+
+        Set<SignEditListener> listeners = listenersProvider.get();
+        for (SignEditListener listener : listeners) {
+            getServer().getPluginManager().registerEvents(listener, this);
         }
     }
 }

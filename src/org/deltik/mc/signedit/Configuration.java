@@ -37,7 +37,7 @@ import static org.bukkit.Bukkit.getLogger;
 
 @Singleton
 public class Configuration {
-    private File configFile;
+    private final File configFile;
     private FileConfiguration bukkitConfig;
     private String template;
     private static final String CONFIG_CLICKING = "clicking";
@@ -96,6 +96,10 @@ public class Configuration {
         }
     }
 
+    public File getConfigFile() {
+        return configFile;
+    }
+
     public void prepare() throws IOException {
         InputStream templateStream = getClass().getResourceAsStream("/config.yml.j2");
         ByteArrayOutputStream result = new ByteArrayOutputStream();
@@ -105,14 +109,18 @@ public class Configuration {
             result.write(buffer, 0, length);
         }
         template = result.toString("UTF-8");
-        reloadConfig();
+        configHighstate();
     }
 
-    public void reloadConfig() throws IOException {
+    public void reloadConfig() {
+        bukkitConfig = YamlConfiguration.loadConfiguration(configFile);
+    }
+
+    public void configHighstate() throws IOException {
         if (!configFile.exists()) {
             writeDefaultConfig();
         }
-        bukkitConfig = YamlConfiguration.loadConfiguration(configFile);
+        reloadConfig();
         writeSaneConfig();
     }
 

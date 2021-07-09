@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Changes to the configuration file (`plugins/SignEdit/config.yml`) are now detected and reloaded at runtime, so a CraftBukkit server restart is no longer needed to make the new settings take effect.
 * New locale strings:
   * `usage_page_heading` – Styling for the heading of the redesigned `/sign help`
   * `usage_page_info` – Contents of the heading of `/sign help`
