@@ -290,6 +290,14 @@ public class SignCommandTabCompleterTest {
     }
 
     @Test
+    public void signSubcommandsLineSelectorShorthandNoDuplicateLineSelectors() {
+        List<String> result;
+
+        result = tabComplete("0-5 ");
+        assertEquals(0, result.size());
+    }
+
+    @Test
     public void signSetCompleteExistingSignLines() {
         List<String> result;
 

@@ -70,7 +70,7 @@ public class SignCommandTabCompleter implements TabCompleter {
         if (args.length == 1) {
             completion.addAll(completeSubcommand(player, args[0].toLowerCase()));
             completion.addAll(completeLines(player, args.clone()));
-        } else if (args.length == 2) {
+        } else if (args.length == 2 && subcommandsWithLineSelector.contains(args[0].toLowerCase())) {
             completion.addAll(completeLines(player, args.clone()));
         }
 

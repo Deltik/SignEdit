@@ -94,10 +94,12 @@ public class ArgParser {
                     else subcommand = "set";
                 }
                 return;
+            } catch (NumberParseLineSelectionException e) {
+                remainder.add(0, maybeSubcommandOrShorthandLines);
             } catch (LineSelectionException e) {
                 remainder.add(0, maybeSubcommandOrShorthandLines);
-                selectedLines = NO_LINES_SELECTED;
-                selectedLinesError = e;
+                if (remainder.size() == 0) subcommand = "clear";
+                else subcommand = "set";
             }
         }
         if (subcommand == null) {
