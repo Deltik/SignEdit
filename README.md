@@ -5,7 +5,7 @@
 
 **SignEdit for Bukkit** is a [Bukkit plugin](https://www.spigotmc.org/resources/categories/bukkit.4/) that allows players to edit sign objects by looking at them or clicking on them and typing in a SignEdit command.
 
-![Screenshot of usage help in SignEdit for Bukkit v1.12.3](https://i.imgur.com/xqPELRa.png)
+![Screenshot of usage help in SignEdit for Bukkit v1.13.0](https://i.imgur.com/CoSsFoe.png)
 
 ## Table of Contents
 
