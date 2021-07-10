@@ -30,7 +30,6 @@ import org.deltik.mc.signedit.SignEditPlugin;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Provider;
 import java.io.InputStream;
 import java.util.*;
 
@@ -64,9 +63,8 @@ public class HelpSignSubcommandTest {
     }
 
     private ArgParser argParse(String[] rawArgs) {
-        Map<String, Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>>> subcommandMap = new HashMap<>();
-        subcommandMap.put("help", null);
-        return new ArgParser(rawArgs, config, subcommandMap);
+        Set<String> subcommandNames = SignSubcommandModule.provideSubcommandNames();
+        return new ArgParser(config, rawArgs, subcommandNames);
     }
 
     private HelpSignSubcommand help(String args) {

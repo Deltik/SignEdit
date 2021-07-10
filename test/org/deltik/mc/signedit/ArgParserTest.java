@@ -23,12 +23,13 @@ import org.deltik.mc.signedit.exceptions.NumberParseLineSelectionException;
 import org.deltik.mc.signedit.exceptions.OutOfBoundsLineSelectionException;
 import org.deltik.mc.signedit.exceptions.RangeOrderLineSelectionException;
 import org.deltik.mc.signedit.exceptions.RangeParseLineSelectionException;
-import org.deltik.mc.signedit.subcommands.SignSubcommand;
-import org.deltik.mc.signedit.subcommands.SignSubcommandInjector;
+import org.deltik.mc.signedit.subcommands.SignSubcommandModule;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Provider;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -49,23 +50,11 @@ public class ArgParserTest {
         when(config.getLineStartsAt()).thenReturn(lineStartsAt);
         when(config.getMinLine()).thenCallRealMethod();
         when(config.getMaxLine()).thenCallRealMethod();
-        Map<String, Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>>> subcommandMap = new HashMap<>();
-        subcommandMap.put("help", null);
-        subcommandMap.put("ui", null);
-        subcommandMap.put("set", null);
-        subcommandMap.put("clear", null);
-        subcommandMap.put("cancel", null);
-        subcommandMap.put("status", null);
-        subcommandMap.put("copy", null);
-        subcommandMap.put("cut", null);
-        subcommandMap.put("paste", null);
-        subcommandMap.put("undo", null);
-        subcommandMap.put("redo", null);
-        subcommandMap.put("version", null);
+        Set<String> subcommandNames = SignSubcommandModule.provideSubcommandNames();
 
         String[] argsSplit = args.split(" ");
         if (args.equals("")) argsSplit = new String[]{};
-        ArgParser argParser = new ArgParser(argsSplit, config, subcommandMap);
+        ArgParser argParser = new ArgParser(config, argsSplit, subcommandNames);
 
         subcommand = argParser.getSubcommand();
         selectedLines = argParser.getLinesSelection();

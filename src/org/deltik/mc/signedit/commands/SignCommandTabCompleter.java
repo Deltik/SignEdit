@@ -29,11 +29,9 @@ import org.bukkit.entity.Player;
 import org.deltik.mc.signedit.ArgParser;
 import org.deltik.mc.signedit.Configuration;
 import org.deltik.mc.signedit.SignText;
-import org.deltik.mc.signedit.subcommands.SignSubcommand;
-import org.deltik.mc.signedit.subcommands.SignSubcommandInjector;
+import org.deltik.mc.signedit.subcommands.SubcommandName;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -42,7 +40,6 @@ import java.util.stream.Stream;
 
 @Singleton
 public class SignCommandTabCompleter implements TabCompleter {
-    private final Map<String, Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>>> subcommandMap;
     private final Set<String> subcommandNames;
     private final Configuration config;
     protected static final Set<String> subcommandsWithLineSelector = Stream.of(
@@ -54,11 +51,10 @@ public class SignCommandTabCompleter implements TabCompleter {
 
     @Inject
     public SignCommandTabCompleter(
-            Map<String, Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>>> commandBuilders,
-            Configuration config
+            Configuration config,
+            @SubcommandName Set<String> subcommandNames
     ) {
-        subcommandMap = commandBuilders;
-        subcommandNames = commandBuilders.keySet();
+        this.subcommandNames = subcommandNames;
         this.config = config;
     }
 
@@ -82,7 +78,7 @@ public class SignCommandTabCompleter implements TabCompleter {
     private List<String> completeExistingLines(Player player, String[] args) {
         List<String> nothing = new ArrayList<>();
 
-        ArgParser argParser = new ArgParser(args, config, subcommandMap);
+        ArgParser argParser = new ArgParser(config, args, subcommandNames);
         if (!"set".equals(argParser.getSubcommand()) || argParser.getRemainder().size() <= 0) {
             return nothing;
         }
@@ -131,7 +127,7 @@ public class SignCommandTabCompleter implements TabCompleter {
         List<String> completion = new ArrayList<>();
         if (!playerIsAllowedToUseLineSelectors(player)) return completion;
 
-        ArgParser argParser = new ArgParser(args, config, subcommandMap);
+        ArgParser argParser = new ArgParser(config, args, subcommandNames);
         int minLine = config.getMinLine();
         int maxLine = config.getMaxLine();
         Pattern lineSelector = Pattern.compile("^[" + minLine + "-" + maxLine + ",\\-]+$");
@@ -143,7 +139,7 @@ public class SignCommandTabCompleter implements TabCompleter {
                 if (args[i].endsWith("-") || args[i].endsWith(",")) {
                     args[i] = args[i].substring(0, args[i].length() - 1);
                 }
-                argParser = new ArgParser(args, config, subcommandMap);
+                argParser = new ArgParser(config, args, subcommandNames);
                 doLineSelectorCompletion = true;
                 break;
             }

@@ -19,181 +19,128 @@
 
 package org.deltik.mc.signedit.subcommands;
 
-import dagger.Binds;
 import dagger.Module;
-import dagger.Subcomponent;
+import dagger.*;
 import dagger.multibindings.IntoMap;
 import dagger.multibindings.StringKey;
+import org.bukkit.entity.Player;
+import org.deltik.mc.signedit.ArgParser;
+import org.deltik.mc.signedit.ArgParserArgs;
+import org.deltik.mc.signedit.ChatComms;
 import org.deltik.mc.signedit.interactions.SignEditInteractionModule;
 
+import javax.inject.Provider;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 @Module(subcomponents = {
-        SignSubcommandModule.HelpSignSubcommandComponent.class,
-        SignSubcommandModule.SetSignSubcommandComponent.class,
-        SignSubcommandModule.ClearSignSubcommandComponent.class,
-        SignSubcommandModule.UiSignSubcommandComponent.class,
-        SignSubcommandModule.CancelSignSubcommandComponent.class,
-        SignSubcommandModule.StatusSignSubcommandComponent.class,
-        SignSubcommandModule.CopySignSubcommandComponent.class,
-        SignSubcommandModule.CutSignSubcommandComponent.class,
-        SignSubcommandModule.PasteSignSubcommandComponent.class,
-        SignSubcommandModule.UndoSignSubcommandComponent.class,
-        SignSubcommandModule.RedoSignSubcommandComponent.class,
-        SignSubcommandModule.VersionSignSubcommandComponent.class,
+        SignSubcommandModule.SignSubcommandComponent.class,
 })
 public abstract class SignSubcommandModule {
+    @PerSubcommand
+    @Subcomponent(modules = {SignEditInteractionModule.class})
+    public interface SignSubcommandComponent {
+
+        Map<String, Provider<SignSubcommand>> subcommandProviders();
+
+        ArgParser argParser();
+
+        @Subcomponent.Builder
+        abstract class Builder {
+            public abstract SignSubcommandComponent build();
+
+            @BindsInstance
+            public abstract SignSubcommandComponent.Builder player(Player player);
+
+            @BindsInstance
+            public abstract SignSubcommandComponent.Builder commandArgs(@ArgParserArgs String[] args);
+
+            @BindsInstance
+            public abstract SignSubcommandComponent.Builder comms(ChatComms comms);
+        }
+    }
+
+    /**
+     * FIXME: Find a way not to hard-code this Set<String>.
+     */
+    @Provides
+    @SubcommandName
+    public static Set<String> provideSubcommandNames() {
+        return Stream.of(
+                "help",
+                "set",
+                "clear",
+                "ui",
+                "cancel",
+                "status",
+                "copy",
+                "cut",
+                "paste",
+                "undo",
+                "redo",
+                "version"
+        ).collect(Collectors.toSet());
+    }
+
     @Binds
     @IntoMap
     @StringKey("help")
-    abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindHelpSignSubcommand(HelpSignSubcommandComponent.Builder command);
-
-    @PerSubcommand
-    @Subcomponent(modules = {SignEditInteractionModule.class})
-    public interface HelpSignSubcommandComponent extends SignSubcommandInjector<HelpSignSubcommand> {
-        @Subcomponent.Builder
-        abstract class Builder extends SignSubcommandInjector.Builder<HelpSignSubcommand> {
-        }
-    }
+    abstract SignSubcommand BindHelpSignSubcommand(HelpSignSubcommand command);
 
     @Binds
     @IntoMap
     @StringKey("set")
-    abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindSetSignSubcommand(SetSignSubcommandComponent.Builder command);
-
-    @PerSubcommand
-    @Subcomponent(modules = {SignEditInteractionModule.class})
-    public interface SetSignSubcommandComponent extends SignSubcommandInjector<SetSignSubcommand> {
-        @Subcomponent.Builder
-        abstract class Builder extends SignSubcommandInjector.Builder<SetSignSubcommand> {
-        }
-    }
+    abstract SignSubcommand BindSetSignSubcommand(SetSignSubcommand command);
 
     @Binds
     @IntoMap
     @StringKey("clear")
-    abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindClearSignSubcommand(ClearSignSubcommandComponent.Builder command);
-
-    @PerSubcommand
-    @Subcomponent(modules = {SignEditInteractionModule.class})
-    public interface ClearSignSubcommandComponent extends SignSubcommandInjector<ClearSignSubcommand> {
-        @Subcomponent.Builder
-        abstract class Builder extends SignSubcommandInjector.Builder<ClearSignSubcommand> {
-        }
-    }
+    abstract SignSubcommand BindClearSignSubcommand(ClearSignSubcommand command);
 
     @Binds
     @IntoMap
     @StringKey("ui")
-    abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindUiSignSubcommand(UiSignSubcommandComponent.Builder command);
-
-    @PerSubcommand
-    @Subcomponent(modules = {SignEditInteractionModule.class})
-    public interface UiSignSubcommandComponent extends SignSubcommandInjector<UiSignSubcommand> {
-        @Subcomponent.Builder
-        abstract class Builder extends SignSubcommandInjector.Builder<UiSignSubcommand> {
-        }
-    }
+    abstract SignSubcommand BindUiSignSubcommand(UiSignSubcommand command);
 
     @Binds
     @IntoMap
     @StringKey("cancel")
-    abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindCancelSignSubcommand(CancelSignSubcommandComponent.Builder command);
-
-    @PerSubcommand
-    @Subcomponent(modules = {SignEditInteractionModule.class})
-    public interface CancelSignSubcommandComponent extends SignSubcommandInjector<CancelSignSubcommand> {
-        @Subcomponent.Builder
-        abstract class Builder extends SignSubcommandInjector.Builder<CancelSignSubcommand> {
-        }
-    }
+    abstract SignSubcommand BindCancelSignSubcommand(CancelSignSubcommand command);
 
     @Binds
     @IntoMap
     @StringKey("status")
-    abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindStatusSignSubcommand(StatusSignSubcommandComponent.Builder command);
-
-    @PerSubcommand
-    @Subcomponent(modules = {SignEditInteractionModule.class})
-    public interface StatusSignSubcommandComponent extends SignSubcommandInjector<StatusSignSubcommand> {
-        @Subcomponent.Builder
-        abstract class Builder extends SignSubcommandInjector.Builder<StatusSignSubcommand> {
-        }
-    }
+    abstract SignSubcommand BindStatusSignSubcommand(StatusSignSubcommand command);
 
     @Binds
     @IntoMap
     @StringKey("copy")
-    abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindCopySignSubcommand(CopySignSubcommandComponent.Builder command);
-
-    @PerSubcommand
-    @Subcomponent(modules = {SignEditInteractionModule.class})
-    public interface CopySignSubcommandComponent extends SignSubcommandInjector<CopySignSubcommand> {
-        @Subcomponent.Builder
-        abstract class Builder extends SignSubcommandInjector.Builder<CopySignSubcommand> {
-        }
-    }
+    abstract SignSubcommand BindCopySignSubcommand(CopySignSubcommand command);
 
     @Binds
     @IntoMap
     @StringKey("cut")
-    abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindCutSignSubcommand(CutSignSubcommandComponent.Builder command);
-
-    @PerSubcommand
-    @Subcomponent(modules = {SignEditInteractionModule.class})
-    public interface CutSignSubcommandComponent extends SignSubcommandInjector<CutSignSubcommand> {
-        @Subcomponent.Builder
-        abstract class Builder extends SignSubcommandInjector.Builder<CutSignSubcommand> {
-        }
-    }
+    abstract SignSubcommand BindCutSignSubcommand(CutSignSubcommand command);
 
     @Binds
     @IntoMap
     @StringKey("paste")
-    abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindPasteSignSubcommand(PasteSignSubcommandComponent.Builder command);
-
-    @PerSubcommand
-    @Subcomponent(modules = {SignEditInteractionModule.class})
-    public interface PasteSignSubcommandComponent extends SignSubcommandInjector<PasteSignSubcommand> {
-        @Subcomponent.Builder
-        abstract class Builder extends SignSubcommandInjector.Builder<PasteSignSubcommand> {
-        }
-    }
+    abstract SignSubcommand BindPasteSignSubcommand(PasteSignSubcommand command);
 
     @Binds
     @IntoMap
     @StringKey("undo")
-    abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindUndoSignSubcommand(UndoSignSubcommandComponent.Builder command);
-
-    @PerSubcommand
-    @Subcomponent(modules = {SignEditInteractionModule.class})
-    public interface UndoSignSubcommandComponent extends SignSubcommandInjector<UndoSignSubcommand> {
-        @Subcomponent.Builder
-        abstract class Builder extends SignSubcommandInjector.Builder<UndoSignSubcommand> {
-        }
-    }
+    abstract SignSubcommand BindUndoSignSubcommand(UndoSignSubcommand command);
 
     @Binds
     @IntoMap
     @StringKey("redo")
-    abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindRedoSignSubcommand(RedoSignSubcommandComponent.Builder command);
-
-    @PerSubcommand
-    @Subcomponent(modules = {SignEditInteractionModule.class})
-    public interface RedoSignSubcommandComponent extends SignSubcommandInjector<RedoSignSubcommand> {
-        @Subcomponent.Builder
-        abstract class Builder extends SignSubcommandInjector.Builder<RedoSignSubcommand> {
-        }
-    }
+    abstract SignSubcommand BindRedoSignSubcommand(RedoSignSubcommand command);
 
     @Binds
     @IntoMap
     @StringKey("version")
-    abstract SignSubcommandInjector.Builder<? extends SignSubcommand> BindVersionSignSubcommand(VersionSignSubcommandComponent.Builder command);
-
-    @PerSubcommand
-    @Subcomponent(modules = {SignEditInteractionModule.class})
-    public interface VersionSignSubcommandComponent extends SignSubcommandInjector<VersionSignSubcommand> {
-        @Subcomponent.Builder
-        abstract class Builder extends SignSubcommandInjector.Builder<VersionSignSubcommand> {
-        }
-    }
+    abstract SignSubcommand BindVersionSignSubcommand(VersionSignSubcommand command);
 }

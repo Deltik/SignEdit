@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Under the Hood
 
 * Added documentation of the arguments in the locale strings
+* Simplified dependency injection for `SignSubcommand` subclasses
 * Event listeners split up between `CoreSignEditListener`, which is always used, and `BookUiSignEditListener`, which is only used when the editable book alternative sign editor GUI is enabled
 * The event listeners pertaining to the editable book alternative sign editor GUI are no longer registered if it is disabled.
 * `SignEditInteractionManager` extracted out of `SignEditListener`

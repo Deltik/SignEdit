@@ -20,21 +20,19 @@
 package org.deltik.mc.signedit;
 
 import org.deltik.mc.signedit.exceptions.*;
-import org.deltik.mc.signedit.subcommands.SignSubcommand;
-import org.deltik.mc.signedit.subcommands.SignSubcommandInjector;
+import org.deltik.mc.signedit.subcommands.SubcommandName;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import static org.deltik.mc.signedit.commands.SignCommand.SUBCOMMAND_NAME_HELP;
 
 public class ArgParser {
     private final Configuration config;
-    private final Map<String, Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>>> subcommandMap;
+    private final Set<String> subcommandNames;
 
     public static final int[] NO_LINES_SELECTED = new int[0];
     public static final int[] ALL_LINES_SELECTED = new int[]{0, 1, 2, 3};
@@ -46,12 +44,12 @@ public class ArgParser {
 
     @Inject
     public ArgParser(
-            String[] args,
             Configuration config,
-            Map<String, Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>>> subcommandMap
+            @ArgParserArgs String[] args,
+            @SubcommandName Set<String> subcommandNames
     ) {
         this.config = config;
-        this.subcommandMap = subcommandMap;
+        this.subcommandNames = subcommandNames;
         parseArgs(args);
     }
 
@@ -83,7 +81,7 @@ public class ArgParser {
 
         String maybeSubcommandOrShorthandLines = remainder.remove(0);
         String maybeSubcommand = maybeSubcommandOrShorthandLines.toLowerCase();
-        if (subcommandMap.containsKey(maybeSubcommand)) {
+        if (subcommandNames.contains(maybeSubcommand)) {
             subcommand = maybeSubcommand;
         }
         if (subcommand == null) {

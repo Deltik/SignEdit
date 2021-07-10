@@ -34,7 +34,7 @@ import org.deltik.mc.signedit.exceptions.LineSelectionException;
 import org.deltik.mc.signedit.interactions.SignEditInteraction;
 import org.deltik.mc.signedit.interactions.SignEditInteractionManager;
 import org.deltik.mc.signedit.subcommands.SignSubcommand;
-import org.deltik.mc.signedit.subcommands.SignSubcommandInjector;
+import org.deltik.mc.signedit.subcommands.SignSubcommandModule;
 import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
@@ -52,19 +52,19 @@ public class SignCommand implements CommandExecutor {
     private final Configuration configuration;
     private final SignEditInteractionManager interactionManager;
     private final Provider<ChatCommsModule.ChatCommsComponent.Builder> commsBuilderProvider;
-    private final Map<String, Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>>> commandBuilders;
+    private final SignSubcommandModule.SignSubcommandComponent.Builder signSubcommandComponentBuilder;
 
     @Inject
     public SignCommand(
             Configuration configuration,
             SignEditInteractionManager interactionManager,
             Provider<ChatCommsModule.ChatCommsComponent.Builder> commsBuilderProvider,
-            Map<String, Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>>> commandBuilders
+            SignSubcommandModule.SignSubcommandComponent.Builder signSubcommandComponent
     ) {
         this.interactionManager = interactionManager;
         this.commsBuilderProvider = commsBuilderProvider;
         this.configuration = configuration;
-        this.commandBuilders = commandBuilders;
+        this.signSubcommandComponentBuilder = signSubcommandComponent;
     }
 
     @Override
@@ -74,10 +74,17 @@ public class SignCommand implements CommandExecutor {
 
         ChatComms comms = commsBuilderProvider.get().player(player).build().comms();
 
-        ArgParser argParser = new ArgParser(args, configuration, commandBuilders);
+        SignSubcommandModule.SignSubcommandComponent signSubcommandComponent = signSubcommandComponentBuilder
+                .player(player)
+                .commandArgs(args)
+                .comms(comms)
+                .build();
+
+        Map<String, Provider<SignSubcommand>> signSubcommandMap = signSubcommandComponent.subcommandProviders();
+        ArgParser argParser = signSubcommandComponent.argParser();
         String subcommandName = argParser.getSubcommand();
 
-        if (!commandBuilders.containsKey(subcommandName)) {
+        if (!signSubcommandMap.containsKey(subcommandName)) {
             subcommandName = SUBCOMMAND_NAME_HELP;
         }
 
@@ -86,8 +93,7 @@ public class SignCommand implements CommandExecutor {
             return true;
         }
 
-        Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>> subcommandProvider =
-                commandBuilders.get(subcommandName);
+        Provider<? extends SignSubcommand> signSubcommandProvider = signSubcommandMap.get(subcommandName);
 
         LineSelectionException selectedLinesError = argParser.getLinesSelectionError();
         if (selectedLinesError != null && !subcommandName.equals(SUBCOMMAND_NAME_HELP)) {
@@ -95,17 +101,10 @@ public class SignCommand implements CommandExecutor {
             return true;
         }
 
-        SignSubcommandInjector.Builder<? extends SignSubcommand> builder = subcommandProvider.get();
-
-        SignSubcommand subcommand = builder
-                .player(player)
-                .argParser(argParser)
-                .comms(comms)
-                .build()
-                .command();
+        SignSubcommand signSubcommand = signSubcommandProvider.get();
 
         try {
-            SignEditInteraction interaction = subcommand.execute();
+            SignEditInteraction interaction = signSubcommand.execute();
             autointeract(player, interaction, comms);
         } catch (Exception e) {
             comms.reportException(e);

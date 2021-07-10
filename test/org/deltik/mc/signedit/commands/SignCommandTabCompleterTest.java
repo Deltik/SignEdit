@@ -26,16 +26,12 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.deltik.mc.signedit.Configuration;
-import org.deltik.mc.signedit.subcommands.SignSubcommand;
-import org.deltik.mc.signedit.subcommands.SignSubcommandInjector;
+import org.deltik.mc.signedit.subcommands.SignSubcommandModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.util.collections.Sets;
 
-import javax.inject.Provider;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -50,7 +46,7 @@ public class SignCommandTabCompleterTest {
     private CommandSender commandSender;
     private Command command;
     private final String alias = "sign";
-    private final Map<String, Provider<SignSubcommandInjector.Builder<? extends SignSubcommand>>> subcommandMap = new HashMap<>();
+    private final Set<String> subcommandNames = SignSubcommandModule.provideSubcommandNames();
 
     private final String[] fancySignLines = new String[]{
             "§x§2§2§4§4§A§ADot",
@@ -64,20 +60,7 @@ public class SignCommandTabCompleterTest {
         when(config.getLineStartsAt()).thenReturn(lineStartsAt);
         when(config.getMinLine()).thenCallRealMethod();
         when(config.getMaxLine()).thenCallRealMethod();
-        subcommandMap.put("help", null);
-        subcommandMap.put("ui", null);
-        subcommandMap.put("set", null);
-        subcommandMap.put("clear", null);
-        subcommandMap.put("cancel", null);
-        subcommandMap.put("status", null);
-        subcommandMap.put("copy", null);
-        subcommandMap.put("cut", null);
-        subcommandMap.put("paste", null);
-        subcommandMap.put("undo", null);
-        subcommandMap.put("redo", null);
-        subcommandMap.put("version", null);
-        this.tabCompleter = new SignCommandTabCompleter(subcommandMap, config);
-
+        this.tabCompleter = new SignCommandTabCompleter(config, subcommandNames);
     }
 
     @BeforeEach
@@ -118,7 +101,7 @@ public class SignCommandTabCompleterTest {
     public void signSubcommandsAll() {
         List<String> result = tabComplete("");
 
-        for (String subcommand : subcommandMap.keySet()) {
+        for (String subcommand : subcommandNames) {
             assertTrue(result.contains(subcommand), subcommand + " is not in empty tab completion");
         }
 
@@ -128,7 +111,7 @@ public class SignCommandTabCompleterTest {
                     "Line " + line + " not offered for empty tab completion");
         }
 
-        assertEquals(subcommandMap.size() + (config.getMaxLine() - config.getMinLine() + 1), result.size());
+        assertEquals(subcommandNames.size() + (config.getMaxLine() - config.getMinLine() + 1), result.size());
     }
 
     @Test
