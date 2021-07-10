@@ -1,7 +1,10 @@
 # SignEdit for Bukkit
 
-[![GitHub releases](https://img.shields.io/github/release/Deltik/SignEdit.svg)](https://github.com/Deltik/SignEdit/releases)
-[![CircleCI](https://img.shields.io/circleci/project/github/Deltik/SignEdit.svg)](https://circleci.com/gh/Deltik/SignEdit)
+[![GitHub releases](https://img.shields.io/github/v/release/Deltik/SignEdit)](https://github.com/Deltik/SignEdit/releases)
+[![Total downloads](https://img.shields.io/github/downloads/Deltik/SignEdit/total)](https://github.com/Deltik/SignEdit/releases)
+[![Latest version downloads](https://img.shields.io/github/downloads/Deltik/SignEdit/latest/total)](https://github.com/Deltik/SignEdit/releases)
+[![Spigot rating](https://img.shields.io/spiget/rating/47604)](https://www.spigotmc.org/resources/signedit-for-bukkit.47604/rate)
+[![CircleCI](https://img.shields.io/circleci/project/github/Deltik/SignEdit)](https://circleci.com/gh/Deltik/SignEdit)
 
 **SignEdit for Bukkit** is a [Bukkit plugin](https://www.spigotmc.org/resources/categories/bukkit.4/) that allows players to edit sign objects by looking at them or clicking on them and typing in a SignEdit command.
 
