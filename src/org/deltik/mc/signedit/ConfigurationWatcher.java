@@ -89,8 +89,7 @@ public class ConfigurationWatcher extends Thread {
                 // noinspection BusyWait
                 Thread.sleep(50);
             } catch (InterruptedException e) {
-                end();
-                break;
+                return;
             }
             for (WatchEvent<?> watchEvent : watchKey.pollEvents()) {
                 Object context = watchEvent.context();
@@ -99,6 +98,7 @@ public class ConfigurationWatcher extends Thread {
                 Path pathContext = (Path) context;
                 if (!pathContext.equals(this.file.toPath().getFileName())) continue;
 
+                if (isHalted()) return;
                 getLogger().info("SignEdit detected a configuration file change. Reloading configuration...");
                 this.config.reloadConfig();
                 plugin.reregisterListeners();
