@@ -372,10 +372,11 @@ These features no longer apply to the latest version of this plugin:
 | `en` | English | Intermediate | [Omel](https://www.spigotmc.org/members/omel.85850/) | `>= 1.0, < 1.4` |
 | `de` | German | Native | [bleeding182](https://github.com/bleeding182) | `>= 1.10.2` |
 | `nl` | Dutch | Native | [SBDeveloper](https://github.com/stijnb1234), \_\_Dutch\_\_ | `>= 1.11.1` |
-| `zh` | Simplified Chinese | Intermediate | [Aobi](https://github.com/AobiYT) | `>= 1.11.4` |
+| `zh` | Simplified Chinese | Intermediate | [eason329](https://github.com/eason329) | `>= 1.11.4` |
 | `zh` | Simplified Chinese | Machine Translation | [Deltik](https://git.io/Deltik) | `>= 1.10.2, < 1.11.4` |
-| `zh-CN` | Simplified Chinese | Intermediate | [Aobi](https://github.com/AobiYT) | `>= 1.11.4` |
-| `zh-TW` | Traditional Chinese | Intermediate | [Aobi](https://github.com/AobiYT) | `>= 1.11.4` |
+| `zh-CN` | Simplified Chinese | Intermediate | [eason329](https://github.com/eason329) | `>= 1.11.4` |
+| `zh-HK` | Hong Kong Cantonese | Native | [eason329](https://github.com/eason329) | `not released` |
+| `zh-TW` | Traditional Chinese | Intermediate | [eason329](https://github.com/eason329) | `>= 1.11.4` |
 
 ### Visual Examples
 
