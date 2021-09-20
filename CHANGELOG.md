@@ -7,6 +7,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.13.2 (2021-09-20)
+
+### Added
+
+* Native translation for the Hong Kong Cantonese (`zh-HK`) locale
+
+  Credit to eason329 (#24)
+
+### Fixed
+
+* Translation improvements for the Simplified Chinese (`zh`) and Traditional Chinese (`zh-TW`) locales
+
+  Credit to eason329 (#24)
+
 ## v1.13.1 (2021-07-11)
 
 ### Fixed

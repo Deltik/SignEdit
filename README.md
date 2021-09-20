@@ -375,7 +375,7 @@ These features no longer apply to the latest version of this plugin:
 | `zh` | Simplified Chinese | Intermediate | [eason329](https://github.com/eason329) | `>= 1.11.4` |
 | `zh` | Simplified Chinese | Machine Translation | [Deltik](https://git.io/Deltik) | `>= 1.10.2, < 1.11.4` |
 | `zh-CN` | Simplified Chinese | Intermediate | [eason329](https://github.com/eason329) | `>= 1.11.4` |
-| `zh-HK` | Hong Kong Cantonese | Native | [eason329](https://github.com/eason329) | `not released` |
+| `zh-HK` | Hong Kong Cantonese | Native | [eason329](https://github.com/eason329) | `>= 1.13.2` |
 | `zh-TW` | Traditional Chinese | Intermediate | [eason329](https://github.com/eason329) | `>= 1.11.4` |
 
 ### Visual Examples
