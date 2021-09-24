@@ -7,6 +7,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.13.3 (2021-09-24)
+
+### Changed
+
+* A player's pending sign interaction will be cancelled if they place a block. (#25)
+
+### Fixed
+
+* `java.lang.NullPointerException` logged in console if `/sign ui` is attempted on a sign placed after the command was pending (#25)
+
 ## v1.13.2 (2021-09-20)
 
 ### Added
