@@ -137,34 +137,6 @@ public class ChatComms {
         tellPlayer(t("you_cannot_use", "/" + command + " " + subcommand));
     }
 
-    public void showHelpFor(String cmdString) {
-        if (cmdString.equals("sign")) {
-            tellPlayer(t("usage_section"));
-            showSubcommandSyntax(cmdString, "[set]", "<lines>", "[<text>]");
-            showSubcommandSyntax(cmdString, "clear", "[<lines>]");
-            showSubcommandSyntax(cmdString, "ui");
-            showSubcommandSyntax(cmdString, "{status,cancel}");
-            showSubcommandSyntax(cmdString, "{copy,cut}", "[<lines>]");
-            showSubcommandSyntax(cmdString, "paste");
-            showSubcommandSyntax(cmdString, "{undo,redo}");
-            showSubcommandSyntax(cmdString, "version");
-            tellPlayer(t("online_documentation", t("online_documentation_url")));
-        }
-    }
-
-    public void showSubcommandSyntax(String command) {
-        showSubcommandSyntax(command, "");
-    }
-
-    public void showSubcommandSyntax(String command, String subcommand) {
-        showSubcommandSyntax(command, subcommand, "");
-    }
-
-    public void showSubcommandSyntax(String command, String subcommand, String... parameters) {
-        String parametersJoined = String.join(" ", parameters);
-        tellPlayer(t("print_subcommand_usage", command, subcommand, parametersJoined));
-    }
-
     public void compareSignText(SignText signText) {
         boolean textModifiedByOtherPlugin = !SignText.linesMatch(signText.getStagedLines(), signText.getAfterLines());
         if (!signText.signChanged()) {
