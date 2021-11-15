@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.13.4 (UNRELEASED)
 
+### Changed
+
+* A player's pending sign interaction will only be cancelled if they perform a sign edit (`SignChangeEvent`) outside of this plugin rather than when they place a block.
+
+  This reverts the change from SignEdit for Bukkit `= 1.13.3`.
+  This new approach should be less prone to bugs.
+
 ### Under the Hood
 
 * All mentions of `deltik.org` have been changed to `deltik.net`.

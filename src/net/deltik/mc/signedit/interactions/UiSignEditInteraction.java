@@ -22,10 +22,13 @@ package net.deltik.mc.signedit.interactions;
 import net.deltik.mc.signedit.ChatComms;
 import net.deltik.mc.signedit.SignText;
 import net.deltik.mc.signedit.SignTextHistoryManager;
+import net.deltik.mc.signedit.commands.SignCommand;
 import net.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
 import net.deltik.mc.signedit.exceptions.SignEditorInvocationException;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -45,6 +48,7 @@ public class UiSignEditInteraction implements SignEditInteraction {
     private final ChatComms comms;
     private final SignText signText;
     private final SignTextHistoryManager historyManager;
+    private final SignCommand signCommand;
 
     protected Player player;
 
@@ -53,12 +57,14 @@ public class UiSignEditInteraction implements SignEditInteraction {
             SignEditInteractionManager interactionManager,
             ChatComms comms,
             SignText signText,
-            SignTextHistoryManager historyManager
+            SignTextHistoryManager historyManager,
+            SignCommand signCommand
     ) {
         this.interactionManager = interactionManager;
         this.comms = comms;
         this.signText = signText;
         this.historyManager = historyManager;
+        this.signCommand = signCommand;
     }
 
     @Override
@@ -72,6 +78,16 @@ public class UiSignEditInteraction implements SignEditInteraction {
             SignChangeEvent signChangeEvent = (SignChangeEvent) event;
             Player player = signChangeEvent.getPlayer();
             if (interactionManager.isInteractionPending(player)) {
+                if (signText.getTargetSign() == null) {
+                    signCommand.onCommand(player, new Command(SignCommand.COMMAND_NAME) {
+                        @Override
+                        public boolean execute(CommandSender sender, String commandLabel, String[] args) {
+                            return false;
+                        }
+                    }, "", new String[]{"cancel"});
+                    return;
+                }
+
                 runEarlyEventTask(signChangeEvent);
             } else {
                 runLateEventTask(signChangeEvent);

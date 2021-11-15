@@ -23,17 +23,13 @@ import net.deltik.mc.signedit.ChatComms;
 import net.deltik.mc.signedit.ChatCommsModule;
 import net.deltik.mc.signedit.SignTextClipboardManager;
 import net.deltik.mc.signedit.SignTextHistoryManager;
-import net.deltik.mc.signedit.commands.SignCommand;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
 import net.deltik.mc.signedit.interactions.SignEditInteractionManager;
 import org.bukkit.block.Sign;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -46,21 +42,18 @@ public class CoreSignEditListener extends SignEditListener {
     private final SignTextHistoryManager historyManager;
     private final SignEditInteractionManager interactionManager;
     private final Provider<ChatCommsModule.ChatCommsComponent.Builder> commsBuilderProvider;
-    private SignCommand signCommand;
 
     @Inject
     public CoreSignEditListener(
             SignTextClipboardManager clipboardManager,
             SignTextHistoryManager historyManager,
             SignEditInteractionManager interactionManager,
-            Provider<ChatCommsModule.ChatCommsComponent.Builder> commsBuilderProvider,
-            SignCommand signCommand
+            Provider<ChatCommsModule.ChatCommsComponent.Builder> commsBuilderProvider
     ) {
         this.clipboardManager = clipboardManager;
         this.historyManager = historyManager;
         this.interactionManager = interactionManager;
         this.commsBuilderProvider = commsBuilderProvider;
-        this.signCommand = signCommand;
     }
 
     @EventHandler
@@ -79,19 +72,6 @@ public class CoreSignEditListener extends SignEditListener {
                 ChatComms comms = commsBuilderProvider.get().player(player).build().comms();
                 comms.reportException(e);
             }
-        }
-    }
-
-    @EventHandler
-    public void onBlockPlace(BlockPlaceEvent event) {
-        Player player = event.getPlayer();
-        if (interactionManager.isInteractionPending(player)) {
-            signCommand.onCommand(player, new Command(SignCommand.COMMAND_NAME) {
-                @Override
-                public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-                    return false;
-                }
-            }, "", new String[]{"cancel"});
         }
     }
 
