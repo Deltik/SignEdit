@@ -28,7 +28,7 @@ apply plugin: 'java'
 apply plugin: 'java-library'
 apply plugin: 'application'
 
-mainClassName = 'org.deltik.mc.signedit.SignEditPlugin'
+mainClassName = 'net.deltik.mc.signedit.SignEditPlugin'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -46,7 +46,7 @@ configurations {
 
 dependencies {
     implementation group: 'org.bukkit', name: 'bukkit', version: bukkit_version
-    implementation 'com.intellij:annotations:+@jar' // Workaround for org.bukkit.bukkit version 1.13.2-R0.1-SNAPSHOT regression
+    implementation 'com.intellij:annotations:12.0@jar' // Workaround for org.bukkit.bukkit version 1.13.2-R0.1-SNAPSHOT regression
 
     implementation group: 'com.google.dagger', name: 'dagger', version: '2.36'
     extraLibs group: 'com.google.dagger', name: 'dagger', version: '2.36'

@@ -1,4 +1,4 @@
--keep public class org.deltik.mc.signedit.** {
+-keep public class net.deltik.mc.signedit.** {
     public protected *;
 }
 

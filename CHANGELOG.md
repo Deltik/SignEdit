@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Under the Hood
 
 * All mentions of `deltik.org` have been changed to `deltik.net`.
+* The plugin package was renamed from `org.deltik.mc.signedit` to `net.deltik.mc.signedit`.
+* Most code inspection warnings have been fixed.
 
 ## v1.13.3 (2021-09-24)
 
