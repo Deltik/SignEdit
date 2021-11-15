@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * The plugin package was renamed from `org.deltik.mc.signedit` to `net.deltik.mc.signedit`.
 * Most code inspection warnings have been fixed.
 * Gradle has been updated from version 7.0.2 to version 7.3.
+* Version numbers are now generated automatically from Git tags.
 
 ## v1.13.3 (2021-09-24)
 

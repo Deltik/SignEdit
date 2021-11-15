@@ -1,5 +1,25 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'com.guardsquare', name: 'proguard-gradle', version: '7.1.0-beta5'
+    }
+}
+
+plugins {
+    id 'com.palantir.git-version' version '0.12.3'
+}
+
 def name = 'SignEdit'
-version '1.13.4-SNAPSHOT'
+
+def verDetails = versionDetails()
+def versionWithoutLeadingV = gitVersion().replaceFirst(/^v/, "")
+if (verDetails.isCleanTag) {
+    version versionWithoutLeadingV
+} else {
+    version versionWithoutLeadingV + '-SNAPSHOT'
+}
 
 /*
  * Copyright (C) 2017-2021 Deltik <https://www.deltik.net/>
@@ -95,15 +115,6 @@ processResources {
         from 'src/resources'
         expand(expandProperties)
         duplicatesStrategy(DuplicatesStrategy.INCLUDE)
-    }
-}
-
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'com.guardsquare', name: 'proguard-gradle', version: '7.1.0-beta5'
     }
 }
 
