@@ -90,11 +90,11 @@ These commands no longer apply to the latest version of this plugin:
 
 | Command | Usage | [Version](#versioning) |
 | --- | --- | --- |
-| `/sign [set] <line> [<text>]` | Change the line `<line>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. If `<text>` is blank, erase the line `<line>`. `set` can be omitted. | `>= 1.6, < 1.10` |
-| `/sign set <line> [<text>]` | Change the line `<line>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. If `<text>` is blank, erase the line `<line>`. | `>= 1.4, < 1.6` |
-| `/sign set <line> <text>` | Change the line `<line>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. | `>= 1.0, < 1.4` |
-| `/sign clear <lines>` | Erase the lines `<lines>` of the targeted sign. | `>= 1.10, < 1.13` |
-| `/sign clear <line>` | Erase the line `<line>` of the targeted sign. | `>= 1.4, < 1.10` |
+| ~~`/sign [set] <line> [<text>]`~~ | ~~Change the line `<line>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. If `<text>` is blank, erase the line `<line>`. `set` can be omitted.~~ | ~~`>= 1.6, < 1.10`~~ |
+| ~~`/sign set <line> [<text>]`~~ | ~~Change the line `<line>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. If `<text>` is blank, erase the line `<line>`.~~ | ~~`>= 1.4, < 1.6`~~ |
+| ~~`/sign set <line> <text>`~~ | ~~Change the line `<line>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes.~~ | ~~`>= 1.0, < 1.4`~~ |
+| ~~`/sign clear <lines>`~~ | ~~Erase the lines `<lines>` of the targeted sign.~~ | ~~`>= 1.10, < 1.13`~~ |
+| ~~`/sign clear <line>`~~ | ~~Erase the line `<line>` of the targeted sign.~~ | ~~`>= 1.4, < 1.10`~~ |
 
 ### Aliases
 
@@ -103,9 +103,9 @@ These commands no longer apply to the latest version of this plugin:
 | `/signedit` | `/sign` | `>= 1.4` |
 | `/editsign` | `/sign` | `>= 1.4` |
 | `/se` | `/sign` | `>= 1.4` |
-| `/sign <line> [<text>]` | `/sign set <line> [<text>]` | `>= 1.6, < 1.10` |
+| ~~`/sign <line> [<text>]`~~ | ~~`/sign set <line> [<text>]`~~ | ~~`>= 1.6, < 1.10`~~ |
 | `/sign <lines> [<text>]` | `/sign set <lines> [<text>]` | `>= 1.10` |
-| `/sign <line>` | `/sign clear <line>` | `>= 1.6, < 1.10` |
+| ~~`/sign <line>`~~ | ~~`/sign clear <line>`~~ | ~~`>= 1.6, < 1.10`~~ |
 | `/sign <lines>` | `/sign clear <lines>` | `>= 1.10` |
 
 ## Syntax
@@ -133,11 +133,11 @@ All of these forms can also be escaped by prepending the ampersands with a backs
 
 The hex digits are case-insensitive, but the Minecraft server may internally convert them to uppercase.
 
-(`>= 1.0, < 1.10`)
+~~(`>= 1.0, < 1.10`)~~
 
-All ampersands (`&`) are replaced with section signs (`§`) for [Minecraft formatting codes](https://minecraft.gamepedia.com/Formatting_codes).
+~~All ampersands (`&`) are replaced with section signs (`§`) for [Minecraft formatting codes](https://minecraft.gamepedia.com/Formatting_codes).~~
 
-It is not possible to type a literal ampersand in versions `>= 1.0, < 1.10`.
+~~It is not possible to type a literal ampersand in versions `>= 1.0, < 1.10`.~~
 
 #### Examples
 
@@ -277,7 +277,7 @@ The server does not need to be restarted for configuration changes to take effec
 
 (`>= 1.7`) **auto** (default): Behave like `clicking: true` when you are not looking at a sign and behave like `clicking: false` when you are looking at a sign.
 
-**false** (default `< 1.7`): Edit signs by looking at them and then typing a `/sign` command, which will then instantly edit the sign you are looking at.
+**false** (~~default `< 1.7`~~): Edit signs by looking at them and then typing a `/sign` command, which will then instantly edit the sign you are looking at.
 
 **true**: Edit signs by typing a `/sign` command and then right-mouse clicking a sign.
 
@@ -306,7 +306,7 @@ The value of `locale` is an IETF BCP 47 [language tag](#language-tags).
 (`> 1.10.2`) It is the locale used to display text to the player when the player's locale cannot be determined.
 If the value is not supported, English will be used as the fallback locale.
 
-(`= 1.10.2`) This option has no effect if [`force-locale`](#force-locale-falsetrue) is false (due to an implementation bug).
+~~(`= 1.10.2`) This option has no effect if [`force-locale`](#force-locale-falsetrue) is false (due to an implementation bug).~~
 
 **en** (default): Set the default/fallback locale to `en` (English).
 
@@ -359,21 +359,21 @@ Decide what events to send to other plugins for sign edit permission validation 
 ### Features from Older Versions
 These features no longer apply to the latest version of this plugin:
 
-* (`< 1.10`) Edit the line `<line>` of the targeted sign to be `<text>` with `/sign set <line> [<text>]` or (`>= 1.6`) `/sign <line> [<text>]`.
-* (`>= 1.8, < 1.10`) Before editing a sign, this plugin checks if the player is allowed to edit the sign by pretending to blank out the sign and seeing if the corresponding [`SignChangeEvent`](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/event/block/SignChangeEvent.html) is cancelled.
-* (`>= 1.10, < 1.12.2`) Players cannot edit signs that they do not have permission to edit.  Every attempted edit is validated through a [`SignChangeEvent`](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/event/block/SignChangeEvent.html) and will not succeed if another plugin or policy cancels the `SignChangeEvent`.
-* (`~> 1.12.2`) Players cannot edit signs that they do not have permission to edit.  Every attempted edit is validated through an [admin-configurable chain of events](#compatibilityedit-validation-standardextranone) and will not succeed if another plugin or policy cancels any of the events.
+* ~~(`< 1.10`) Edit the line `<line>` of the targeted sign to be `<text>` with `/sign set <line> [<text>]` or (`>= 1.6`) `/sign <line> [<text>]`.~~
+* ~~(`>= 1.8, < 1.10`) Before editing a sign, this plugin checks if the player is allowed to edit the sign by pretending to blank out the sign and seeing if the corresponding [`SignChangeEvent`](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/event/block/SignChangeEvent.html) is cancelled.~~
+* ~~(`>= 1.10, < 1.12.2`) Players cannot edit signs that they do not have permission to edit.  Every attempted edit is validated through a [`SignChangeEvent`](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/event/block/SignChangeEvent.html) and will not succeed if another plugin or policy cancels the `SignChangeEvent`.~~
+* ~~(`~> 1.12.2`) Players cannot edit signs that they do not have permission to edit.  Every attempted edit is validated through an [admin-configurable chain of events](#compatibilityedit-validation-standardextranone) and will not succeed if another plugin or policy cancels any of the events.~~
 
 ### Supported Locales
 
 | Language Tag | Language | Proficiency | Maintainer(s) | [Version](#versioning) |
 | --- | --- | --- | --- | --- |
 | `en` | English | Native | [Deltik](https://git.io/Deltik) | `>= 1.4` |
-| `en` | English | Intermediate | [Omel](https://www.spigotmc.org/members/omel.85850/) | `>= 1.0, < 1.4` |
+| ~~`en`~~ | ~~English~~ | ~~Intermediate~~ | ~~[Omel](https://www.spigotmc.org/members/omel.85850/)~~ | ~~`>= 1.0, < 1.4`~~ |
 | `de` | German | Native | [bleeding182](https://github.com/bleeding182) | `>= 1.10.2` |
 | `nl` | Dutch | Native | [SBDeveloper](https://github.com/stijnb1234), \_\_Dutch\_\_ | `>= 1.11.1` |
 | `zh` | Simplified Chinese | Intermediate | [eason329](https://github.com/eason329) | `>= 1.11.4` |
-| `zh` | Simplified Chinese | Machine Translation | [Deltik](https://git.io/Deltik) | `>= 1.10.2, < 1.11.4` |
+| ~~`zh`~~ | ~~Simplified Chinese~~ | ~~Machine Translation~~ | ~~[Deltik](https://git.io/Deltik)~~ | ~~`>= 1.10.2, < 1.11.4`~~ |
 | `zh-CN` | Simplified Chinese | Intermediate | [eason329](https://github.com/eason329) | `>= 1.11.4` |
 | `zh-HK` | Hong Kong Cantonese | Native | [eason329](https://github.com/eason329) | `>= 1.13.2` |
 | `zh-TW` | Traditional Chinese | Intermediate | [eason329](https://github.com/eason329) | `>= 1.11.4` |
@@ -510,15 +510,15 @@ SignEdit for Bukkit versions `~> 1.5` are backwards-compatible with Omel's SignE
   To force `clicking` mode on at all times, set `clicking: true` in `plugins/SignEdit/config.yml`.
 
   To force `clicking` mode off at all times, set `clicking: false`.
-* (`~> 1.4.0`) Sign line numbers range from 1 to 4, whereas they ranged from 0 to 3 in older versions.
+* ~~(`~> 1.4.0`) Sign line numbers range from 1 to 4, whereas they ranged from 0 to 3 in older versions.~~
 
-  Upgrade to SignEdit for Bukkit version `~> 1.5` to have the possibility of restoring the original line number range.
+  ~~Upgrade to SignEdit for Bukkit version `~> 1.5` to have the possibility of restoring the original line number range.~~
 
 ### Compatibility with Permissions Plugins
 
 Since `>= 1.8`, other plugins can receive a [`SignChangeEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/SignChangeEvent.html) from SignEdit for Bukkit and cancel the event to deny the player from editing a sign through this plugin.
 
-In `>= 1.8, < 1.10`, this plugin emitted `SignChangeEvent`s with blank lines.  This is incompatible with plugins that validate the contents of sign changes (e.g. censorship or "bad word" plugins).  In `>= 1.10`, the new sign contents are sent with the `SignChangeEvent`, which allows other plugins to validate the text of the sign change.
+~~In `>= 1.8, < 1.10`, this plugin emitted `SignChangeEvent`s with blank lines.  This is incompatible with plugins that validate the contents of sign changes (e.g. censorship or "bad word" plugins).~~  In `>= 1.10`, the new sign contents are sent with the `SignChangeEvent`, which allows other plugins to validate the text of the sign change.
 
 Some permissions plugins that check if a player can break or place a block do not also check if the player can edit signs.  It is typically undesirable for a player to be able to edit a sign that they cannot place or break.  To improve compatibility with these plugins, SignEdit for Bukkit `>= 1.12.2` offers [a configuration option](#compatibilityedit-validation-standardextranone) to send a [`BlockBreakEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/BlockBreakEvent.html) and a [`BlockPlaceEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/BlockPlaceEvent.html) before the `SignChangeEvent` as if the player broke, replaced, and rewrote the targeted sign.  The extra events will not reflect the actual condition of the sign block; it will not be broken and replaced―only changed.
 
