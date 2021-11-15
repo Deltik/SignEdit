@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   This reverts the change from SignEdit for Bukkit `= 1.13.3`.
   This new approach should be less prone to bugs.
 
+### Fixed
+
+* When the plugin is configured with `compatibility.edit-validation: Extra`, `/sign ui` should not skip the extra checks. (#26)
+
 ### Under the Hood
 
 * All mentions of `deltik.org` have been changed to `deltik.net`.

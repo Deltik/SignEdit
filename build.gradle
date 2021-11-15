@@ -46,7 +46,7 @@ configurations {
 
 dependencies {
     implementation group: 'org.bukkit', name: 'bukkit', version: bukkit_version
-    implementation 'com.intellij:annotations:12.0@jar' // Workaround for org.bukkit.bukkit version 1.13.2-R0.1-SNAPSHOT regression
+    implementation 'com.intellij:annotations:12.0@jar'
 
     implementation group: 'com.google.dagger', name: 'dagger', version: '2.36'
     extraLibs group: 'com.google.dagger', name: 'dagger', version: '2.36'

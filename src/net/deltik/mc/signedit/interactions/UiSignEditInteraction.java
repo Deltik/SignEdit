@@ -94,19 +94,15 @@ public class UiSignEditInteraction implements SignEditInteraction {
             }
             return;
         }
+
+        assert signText.getTargetSign() != null;
         if (player != null) {
             formatSignForSave(player, signText.getTargetSign());
         }
     }
 
     protected void runEarlyEventTask(SignChangeEvent event) {
-        String[] lines = event.getLines();
-        Sign originalSign = signText.getTargetSign();
-        for (int i = 0; i < lines.length; i++) {
-            originalSign.setLine(i, signText.getLine(i));
-            signText.setLine(i, lines[i]);
-            event.setLine(i, signText.getLine(i));
-        }
+        signText.importPendingSignChangeEvent(event);
     }
 
     protected void runLateEventTask(SignChangeEvent event) {

@@ -19,7 +19,6 @@
 
 package net.deltik.mc.signedit.integrations;
 
-import net.deltik.mc.signedit.SignText;
 import net.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
@@ -42,19 +41,25 @@ public class StandardSignEditValidator implements SignEditValidator {
     }
 
     @Override
-    public void validate(Sign target, SignText signText) {
+    public void validate(Sign proposedSign) {
         SignChangeEvent signChangeEvent = new SignChangeEvent(
-                target.getBlock(),
+                proposedSign.getBlock(),
                 player,
-                target.getLines()
+                proposedSign.getLines()
         );
         pluginManager.callEvent(signChangeEvent);
+        validate(signChangeEvent);
+    }
+
+    @Override
+    public void validate(SignChangeEvent signChangeEvent) {
+        Sign proposedSign = (Sign) signChangeEvent.getBlock().getState();
         if (signChangeEvent.isCancelled()) {
             throw new ForbiddenSignEditException();
         }
         String[] newLines = signChangeEvent.getLines();
         for (int i = 0; i < newLines.length; i++) {
-            target.setLine(i, newLines[i]);
+            proposedSign.setLine(i, newLines[i]);
         }
     }
 }

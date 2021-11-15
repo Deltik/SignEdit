@@ -19,7 +19,6 @@
 
 package net.deltik.mc.signedit.integrations;
 
-import net.deltik.mc.signedit.SignText;
 import org.bukkit.block.Sign;
 
 import javax.inject.Inject;
@@ -30,6 +29,6 @@ public class NoopSignEditValidator implements SignEditValidator {
     }
 
     @Override
-    public void validate(Sign target, SignText signText) {
+    public void validate(Sign proposedSign) {
     }
 }

@@ -20,12 +20,17 @@
 package net.deltik.mc.signedit;
 
 import net.deltik.mc.signedit.exceptions.BlockStateNotPlacedException;
+import net.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
 import net.deltik.mc.signedit.integrations.NoopSignEditValidator;
 import net.deltik.mc.signedit.integrations.SignEditValidator;
+import net.deltik.mc.signedit.interactions.SignEditInteraction;
 import net.deltik.mc.signedit.subcommands.PerSubcommand;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.SignChangeEvent;
+import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -43,6 +48,7 @@ public class SignText {
     private String[] beforeLines = new String[4];
     private String[] stagedLines = new String[4];
     private String[] afterLines = new String[4];
+    @Nullable
     private Sign targetSign;
 
     public SignText() {
@@ -54,16 +60,18 @@ public class SignText {
         this.validator = validator;
     }
 
+    @Nullable
     public Sign getTargetSign() {
         return targetSign;
     }
 
-    public void setTargetSign(Sign targetSign) {
+    public void setTargetSign(@Nullable Sign targetSign) {
         this.targetSign = targetSign;
     }
 
     public void applySign() {
         reloadTargetSign();
+        assert getTargetSign() != null;
         beforeLines = getTargetSign().getLines().clone();
         for (int i = 0; i < changedLines.length; i++) {
             String line = getLine(i);
@@ -74,7 +82,7 @@ public class SignText {
 
         stagedLines = getTargetSign().getLines().clone();
 
-        validator.validate(getTargetSign(), this);
+        validator.validate(getTargetSign());
         getTargetSign().update();
 
         afterLines = getTargetSign().getLines().clone();
@@ -83,7 +91,7 @@ public class SignText {
     private void reloadTargetSign() {
         BlockState newBlockState;
         try {
-            newBlockState = targetSign.getBlock().getState();
+            newBlockState = targetSign != null ? targetSign.getBlock().getState() : null;
         } catch (IllegalStateException ignored) {
             newBlockState = null;
         }
@@ -110,10 +118,39 @@ public class SignText {
         return !linesMatch(beforeLines, afterLines);
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     protected static boolean linesMatch(String[] beforeLines, String[] afterLines) {
         return Arrays.equals(beforeLines, afterLines);
     }
 
+    /**
+     * Import sign lines from a {@link SignChangeEvent} that we should mutate because we received an update from a
+     * {@link SignEditInteraction}. This is where we run extra validations from {@code /sign ui}.
+     *
+     * @param event An event from an {@link EventHandler} of any {@link EventPriority} except
+     *              {@link EventPriority#MONITOR}
+     */
+    public void importPendingSignChangeEvent(SignChangeEvent event) {
+        setTargetSign((Sign) event.getBlock().getState());
+        assert targetSign != null;
+        String[] lines = event.getLines();
+        for (int i = 0; i < lines.length; i++) {
+            targetSign.setLine(i, this.getLine(i));
+            this.setLine(i, lines[i]);
+            event.setLine(i, this.getLine(i));
+        }
+        try {
+            validator.validate(event);
+        } catch (ForbiddenSignEditException ignored) {
+            event.setCancelled(true);
+        }
+    }
+
+    /**
+     * Import sign lines from a {@link SignChangeEvent} for reporting/logging purposes only.
+     *
+     * @param event An event from an {@link EventHandler} of {@link EventPriority#MONITOR}
+     */
     public void importAuthoritativeSignChangeEvent(SignChangeEvent event) {
         targetSign = (Sign) event.getBlock().getState();
         beforeLines = targetSign.getLines().clone();
@@ -122,6 +159,7 @@ public class SignText {
     }
 
     public void importSign() {
+        assert targetSign != null;
         changedLines = targetSign.getLines().clone();
     }
 
@@ -131,7 +169,7 @@ public class SignText {
 
     public void setLine(int lineNumber, String line) {
         if (line == null) {
-            setLineLiteral(lineNumber, line);
+            setLineLiteral(lineNumber, null);
             return;
         }
         line = line.replaceAll("(?<!\\\\)&[Xx]" + REGEX_6_AMP_HEX, "&#$1$2$3$4$5$6");

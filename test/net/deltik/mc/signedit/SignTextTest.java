@@ -21,13 +21,18 @@ package net.deltik.mc.signedit;
 
 import net.deltik.mc.signedit.exceptions.BlockStateNotPlacedException;
 import net.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
+import net.deltik.mc.signedit.integrations.BreakReplaceSignEditValidator;
 import net.deltik.mc.signedit.integrations.NoopSignEditValidator;
 import net.deltik.mc.signedit.integrations.StandardSignEditValidator;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.PluginManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -283,6 +288,41 @@ public class SignTextTest {
 
         signText.setTargetSign(sign);
         assertThrows(ForbiddenSignEditException.class, () -> signText.applySign());
+    }
+
+    @Test
+    public void signUiSignChangeEventCancelledWithBreakReplaceSignEditValidator() {
+        Sign sign = createSign();
+        Player player = mock(Player.class);
+        PluginManager pluginManager = mock(PluginManager.class);
+        signText = new SignText(new BreakReplaceSignEditValidator(player, pluginManager));
+        doAnswer((Answer<Void>) invocation -> {
+            ((BlockBreakEvent) invocation.getArgument(0)).setCancelled(true);
+            return null;
+        }).when(pluginManager).callEvent(any(BlockBreakEvent.class));
+        SignChangeEvent signChangeEvent = new SignChangeEvent(
+                sign.getBlock(), player, new String[]{"N", "I", "C", "K"}
+        );
+
+        signText.importPendingSignChangeEvent(signChangeEvent);
+        assertTrue(signChangeEvent.isCancelled());
+    }
+
+    @Test
+    public void signUiSignChangeEventNotCancelledWithBreakReplaceSignEditValidator() {
+        Sign sign = createSign();
+        Player player = mock(Player.class);
+        PlayerInventory inventory = mock(PlayerInventory.class);
+        when(player.getInventory()).thenReturn(inventory);
+        when(inventory.getItemInMainHand()).thenReturn(mock(ItemStack.class));
+        PluginManager pluginManager = mock(PluginManager.class);
+        signText = new SignText(new BreakReplaceSignEditValidator(player, pluginManager));
+        SignChangeEvent signChangeEvent = new SignChangeEvent(
+                sign.getBlock(), player, new String[]{"N", "I", "C", "K"}
+        );
+
+        signText.importPendingSignChangeEvent(signChangeEvent);
+        assertFalse(signChangeEvent.isCancelled());
     }
 
     @Test
@@ -618,8 +658,11 @@ public class SignTextTest {
     private Sign createSign() {
         Sign sign = mock(Sign.class);
         Block block = mock(Block.class);
+        BlockData blockData = mock(org.bukkit.block.data.type.Sign.class);
         when(block.getState()).thenReturn(sign);
         when(sign.getBlock()).thenReturn(block);
+        when(sign.getBlockData()).thenReturn(blockData);
+        when(block.getRelative(any())).thenReturn(mock(Block.class));
         String[] signLines = defaultSignLines.clone();
         when(sign.getLines()).thenReturn(signLines);
         when(sign.getLine(anyInt())).then(

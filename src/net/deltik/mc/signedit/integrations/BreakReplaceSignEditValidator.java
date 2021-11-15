@@ -19,7 +19,6 @@
 
 package net.deltik.mc.signedit.integrations;
 
-import net.deltik.mc.signedit.SignText;
 import net.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -29,6 +28,7 @@ import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.plugin.PluginManager;
 
@@ -41,10 +41,17 @@ public class BreakReplaceSignEditValidator extends StandardSignEditValidator {
     }
 
     @Override
-    public void validate(Sign sign, SignText newSignText) {
+    public void validate(Sign proposedSign) {
+        validateBlockBreak(proposedSign);
+        validateBlockPlace(proposedSign);
+        super.validate(proposedSign);
+    }
+
+    @Override
+    public void validate(SignChangeEvent signChangeEvent) {
+        Sign sign = (Sign) signChangeEvent.getBlock().getState();
         validateBlockBreak(sign);
         validateBlockPlace(sign);
-        super.validate(sign, newSignText);
     }
 
     private void validateBlockBreak(Sign sign) {

@@ -19,9 +19,26 @@
 
 package net.deltik.mc.signedit.integrations;
 
-import net.deltik.mc.signedit.SignText;
 import org.bukkit.block.Sign;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.SignChangeEvent;
 
 public interface SignEditValidator {
-    void validate(Sign sign, SignText newSignText);
+    /**
+     * Ensure that the changed sign passes checks before saving
+     *
+     * @param proposedSign A changed sign that has not had {@link Sign#update()} called yet
+     */
+    void validate(Sign proposedSign);
+
+    /**
+     * Import sign changes from a {@link SignChangeEvent} and ensure that they pass checks before saving
+     *
+     * @param signChangeEvent A sign change event in the validation phase (i.e. not passed in by an {@link EventHandler}
+     *                        with {@link EventPriority#MONITOR})
+     */
+    default void validate(SignChangeEvent signChangeEvent) {
+        validate((Sign) signChangeEvent.getBlock().getState());
+    }
 }
