@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v1.13.4 (UNRELEASED)
+## v1.13.4 (2021-11-16)
 
 ### Added
 
@@ -115,7 +115,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 >
 > ### Upgrade Paths
 >
-> * v1.12.x → v1.13.0
+> * v1.12.x → v1.13.4
 >
 > ### Description
 >
@@ -123,11 +123,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 >
 > This bug bypasses sign content/text restrictions imposed by other plugins for anyone using `/sign` subcommands that change the text of a sign.
 >
-> All users who run affected versions and have enabled sign edit permission validation (this is the default behavior) should upgrade to v1.13.0 immediately to prevent exploitation of this bug.
+> All users who run affected versions and have enabled sign edit permission validation (this is the default behavior) should upgrade to v1.13.4 immediately to prevent exploitation of this bug.
 >
 > ### Workaround
 >
-> If you are unable to upgrade to v1.13.0, you should downgrade to v1.12.1 or disable SignEdit for Bukkit.
+> If you are unable to upgrade to v1.13.4, you should downgrade to v1.12.1 or disable SignEdit for Bukkit.
 
 ### Fixed
 
@@ -149,7 +149,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 >
 > ### Upgrade Paths
 >
-> * v1.12.x → v1.13.0
+> * v1.12.x → v1.13.4
 >
 > ### Description
 >
@@ -157,11 +157,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 >
 > This bug bypasses sign content/text restrictions imposed by other plugins for anyone using `/sign` subcommands that change the text of a sign.
 >
-> All users who run affected versions and have enabled sign edit permission validation (this is the default behavior) should upgrade to v1.13.0 immediately to prevent exploitation of this bug.
+> All users who run affected versions and have enabled sign edit permission validation (this is the default behavior) should upgrade to v1.13.4 immediately to prevent exploitation of this bug.
 >
 > ### Workaround
 >
-> If you are unable to upgrade to v1.13.0, you should downgrade to v1.12.1 or disable SignEdit for Bukkit.
+> If you are unable to upgrade to v1.13.4, you should downgrade to v1.12.1 or disable SignEdit for Bukkit.
 
 ### Fixed
 
@@ -191,7 +191,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 >
 > ### Upgrade Paths
 >
-> * v1.12.x → v1.13.0
+> * v1.12.x → v1.13.4
 >
 > ### Description
 >
@@ -199,11 +199,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 >
 > This bug bypasses sign content/text restrictions imposed by other plugins for anyone using `/sign` subcommands that change the text of a sign.
 >
-> All users who run affected versions and have enabled sign edit permission validation (this is the default behavior) should upgrade to v1.13.0 immediately to prevent exploitation of this bug.
+> All users who run affected versions and have enabled sign edit permission validation (this is the default behavior) should upgrade to v1.13.4 immediately to prevent exploitation of this bug.
 >
 > ### Workaround
 >
-> If you are unable to upgrade to v1.13.0, you should downgrade to v1.12.1 or disable SignEdit for Bukkit.
+> If you are unable to upgrade to v1.13.4, you should downgrade to v1.12.1 or disable SignEdit for Bukkit.
 
 ### Fixed
 
@@ -225,7 +225,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 >
 > ### Upgrade Paths
 >
-> * v1.12.x → v1.13.0
+> * v1.12.x → v1.13.4
 >
 > ### Description
 >
@@ -233,11 +233,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 >
 > This bug bypasses sign content/text restrictions imposed by other plugins for anyone using `/sign` subcommands that change the text of a sign.
 >
-> All users who run affected versions and have enabled sign edit permission validation (this is the default behavior) should upgrade to v1.13.0 immediately to prevent exploitation of this bug.
+> All users who run affected versions and have enabled sign edit permission validation (this is the default behavior) should upgrade to v1.13.4 immediately to prevent exploitation of this bug.
 >
 > ### Workaround
 >
-> If you are unable to upgrade to v1.13.0, you should downgrade to v1.12.1 or disable SignEdit for Bukkit.
+> If you are unable to upgrade to v1.13.4, you should downgrade to v1.12.1 or disable SignEdit for Bukkit.
 
 ### Changed
 
@@ -263,7 +263,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 >
 > ### Upgrade Paths
 >
-> * v1.12.x → v1.13.0
+> * v1.12.x → v1.13.4
 >
 > ### Description
 >
@@ -271,11 +271,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 >
 > This bug bypasses sign content/text restrictions imposed by other plugins for anyone using `/sign` subcommands that change the text of a sign.
 >
-> All users who run affected versions and have enabled sign edit permission validation (this is the default behavior) should upgrade to v1.13.0 immediately to prevent exploitation of this bug.
+> All users who run affected versions and have enabled sign edit permission validation (this is the default behavior) should upgrade to v1.13.4 immediately to prevent exploitation of this bug.
 >
 > ### Workaround
 >
-> If you are unable to upgrade to v1.13.0, you should downgrade to v1.12.1 or disable SignEdit for Bukkit.
+> If you are unable to upgrade to v1.13.4, you should downgrade to v1.12.1 or disable SignEdit for Bukkit.
 
 ### Added
 
@@ -315,7 +315,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 >
 > ### Upgrade Paths
 >
-> * v1.12.x → v1.13.0
+> * v1.12.x → v1.13.4
 >
 > ### Description
 >
@@ -323,11 +323,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > 
 > This bug bypasses sign content/text restrictions imposed by other plugins for anyone using `/sign` subcommands that change the text of a sign.
 > 
-> All users who run affected versions and have enabled sign edit permission validation (this is the default behavior) should upgrade to v1.13.0 immediately to prevent exploitation of this bug.
+> All users who run affected versions and have enabled sign edit permission validation (this is the default behavior) should upgrade to v1.13.4 immediately to prevent exploitation of this bug.
 >
 > ### Workaround
 >
-> If you are unable to upgrade to v1.13.0, you should downgrade to v1.12.1 or disable SignEdit for Bukkit.
+> If you are unable to upgrade to v1.13.4, you should downgrade to v1.12.1 or disable SignEdit for Bukkit.
 
 ### Added
 
@@ -375,7 +375,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 >
 > ### Upgrade Paths
 >
-> * v1.12.x → v1.13.0
+> * v1.12.x → v1.13.4
 >
 > ### Description
 >
@@ -383,11 +383,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 >
 > This bug bypasses sign content/text restrictions imposed by other plugins for anyone using `/sign` subcommands that change the text of a sign.
 >
-> All users who run affected versions and have enabled sign edit permission validation (this is the default behavior) should upgrade to v1.13.0 immediately to prevent exploitation of this bug.
+> All users who run affected versions and have enabled sign edit permission validation (this is the default behavior) should upgrade to v1.13.4 immediately to prevent exploitation of this bug.
 >
 > ### Workaround
 >
-> If you are unable to upgrade to v1.13.0, you should downgrade to v1.12.1 or disable SignEdit for Bukkit.
+> If you are unable to upgrade to v1.13.4, you should downgrade to v1.12.1 or disable SignEdit for Bukkit.
 > 
 > ## Major Bug Notice (#17)
 >
