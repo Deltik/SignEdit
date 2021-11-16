@@ -39,11 +39,11 @@ import java.util.regex.Pattern;
 
 public class HelpSignSubcommand implements SignSubcommand {
     public static final int MAX_LINES = 10;
+    private final String signCommandUsage;
     private final ChatComms comms;
     private final ArgParser args;
     private final Player player;
-    private final PluginDescriptionFile about;
-    private final Pattern WORD_PATTERN = Pattern.compile("([0-9a-zA-Z]+)");
+    private static final Pattern WORD_PATTERN = Pattern.compile("([0-9a-zA-Z]+)");
 
     @Inject
     public HelpSignSubcommand(Plugin self, ChatComms comms, ArgParser args, Player player) {
@@ -51,7 +51,11 @@ public class HelpSignSubcommand implements SignSubcommand {
     }
 
     public HelpSignSubcommand(PluginDescriptionFile about, ChatComms comms, ArgParser args, Player player) {
-        this.about = about;
+        this((String) about.getCommands().get(SignCommand.COMMAND_NAME).get("usage"), comms, args, player);
+    }
+
+    public HelpSignSubcommand(String signCommandUsage, ChatComms comms, ArgParser args, Player player) {
+        this.signCommandUsage = signCommandUsage;
         this.comms = comms;
         this.args = args;
         this.player = player;
@@ -149,7 +153,6 @@ public class HelpSignSubcommand implements SignSubcommand {
     protected List<String[]> getAllowedCommands() {
         List<String[]> allowedCommands = new ArrayList<>();
 
-        String signCommandUsage = (String) about.getCommands().get(SignCommand.COMMAND_NAME).get("usage");
         BufferedReader reader = new BufferedReader(new StringReader(signCommandUsage));
         try {
             String line;

@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.13.4 (UNRELEASED)
 
+### Added
+
+* `/sign help` now tab-completes page numbers when there is more than one help page.
+
 ### Changed
 
 * A player's pending sign interaction will only be cancelled if they perform a sign edit (`SignChangeEvent`) outside of this plugin rather than when they place a block.

@@ -19,7 +19,10 @@
 
 package net.deltik.mc.signedit.commands;
 
+import net.deltik.mc.signedit.ArgParser;
+import net.deltik.mc.signedit.ChatComms;
 import net.deltik.mc.signedit.Configuration;
+import net.deltik.mc.signedit.subcommands.HelpSignSubcommand;
 import net.deltik.mc.signedit.subcommands.SignSubcommandModule;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -33,6 +36,8 @@ import org.mockito.internal.util.collections.Sets;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -60,7 +65,9 @@ public class SignCommandTabCompleterTest {
         when(config.getLineStartsAt()).thenReturn(lineStartsAt);
         when(config.getMinLine()).thenCallRealMethod();
         when(config.getMaxLine()).thenCallRealMethod();
-        this.tabCompleter = new SignCommandTabCompleter(config, subcommandNames);
+        when(config.getLocale()).thenCallRealMethod();
+
+        this.tabCompleter = spy(new SignCommandTabCompleter(config, subcommandNames, null));
     }
 
     @BeforeEach
@@ -174,7 +181,6 @@ public class SignCommandTabCompleterTest {
     @Test
     public void completeSignSubcommandWithoutLineSelectorSkipsLineSelectorHint() {
         Set<String> subcommandsWithoutLineSelector = Sets.newSet(
-                "help",
                 "ui",
                 "cancel",
                 "status",
@@ -186,7 +192,7 @@ public class SignCommandTabCompleterTest {
         for (String subcommand : subcommandsWithoutLineSelector) {
             List<String> result = tabComplete(subcommand + " ");
 
-            assertEquals(0, result.size());
+            assertEquals(0, result.size(), "Subcommand " + subcommand + " failed test");
         }
     }
 
@@ -372,5 +378,48 @@ public class SignCommandTabCompleterTest {
         assertFalse(results.contains("2"));
         assertFalse(results.contains("3"));
         assertFalse(results.contains("4"));
+    }
+
+    @Test
+    public void completeSignHelpPages() {
+        int commandCount = 100;
+        String usage = IntStream
+                .range(0, commandCount)
+                .mapToObj(i -> "/<command> subCommand" + i)
+                .collect(Collectors.joining("\n"));
+        doAnswer(invocation -> new HelpSignSubcommand(
+                usage,
+                invocation.getArgument(2),
+                invocation.getArgument(1),
+                invocation.getArgument(0)
+        )).when(tabCompleter).getSignSubcommand(any(Player.class), any(ArgParser.class), any(ChatComms.class));
+
+        List<String> results = tabComplete("help ");
+        int pagesCount = (commandCount - 1) / (HelpSignSubcommand.MAX_LINES - 2) + 1;
+        for (int i = 1; i <= pagesCount; i++) {
+            assertTrue(results.contains(String.valueOf(i)));
+        }
+        assertFalse(
+                results.contains(String.valueOf(pagesCount + 1)),
+                "There should not be more than " + pagesCount + " pages."
+        );
+    }
+
+    @Test
+    public void noSignHelpPagesCompletionWithOnePage() {
+        int commandCount = 2;
+        String usage = IntStream
+                .range(0, commandCount)
+                .mapToObj(i -> "/<command> subCommand" + i)
+                .collect(Collectors.joining("\n"));
+        doAnswer(invocation -> new HelpSignSubcommand(
+                usage,
+                invocation.getArgument(2),
+                invocation.getArgument(1),
+                invocation.getArgument(0)
+        )).when(tabCompleter).getSignSubcommand(any(Player.class), any(ArgParser.class), any(ChatComms.class));
+
+        List<String> results = tabComplete("help ");
+        assertEquals(0, results.size());
     }
 }

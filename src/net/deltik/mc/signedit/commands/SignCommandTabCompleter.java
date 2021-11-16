@@ -20,8 +20,11 @@
 package net.deltik.mc.signedit.commands;
 
 import net.deltik.mc.signedit.ArgParser;
+import net.deltik.mc.signedit.ChatComms;
 import net.deltik.mc.signedit.Configuration;
 import net.deltik.mc.signedit.SignText;
+import net.deltik.mc.signedit.subcommands.SignSubcommand;
+import net.deltik.mc.signedit.subcommands.SignSubcommandModule;
 import net.deltik.mc.signedit.subcommands.SubcommandName;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -36,12 +39,14 @@ import javax.inject.Singleton;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Singleton
 public class SignCommandTabCompleter implements TabCompleter {
     private final Set<String> subcommandNames;
     private final Configuration config;
+    private final SignSubcommandModule.SignSubcommandComponent.Builder signSubcommandComponentBuilder;
     protected static final Set<String> subcommandsWithLineSelector = Stream.of(
             "set",
             "clear",
@@ -52,10 +57,12 @@ public class SignCommandTabCompleter implements TabCompleter {
     @Inject
     public SignCommandTabCompleter(
             Configuration config,
-            @SubcommandName Set<String> subcommandNames
+            @SubcommandName Set<String> subcommandNames,
+            SignSubcommandModule.SignSubcommandComponent.Builder signSubcommandComponentBuilder
     ) {
         this.subcommandNames = subcommandNames;
         this.config = config;
+        this.signSubcommandComponentBuilder = signSubcommandComponentBuilder;
     }
 
     @Override
@@ -63,25 +70,86 @@ public class SignCommandTabCompleter implements TabCompleter {
         List<String> completion = new ArrayList<>();
         Player player = (Player) sender;
 
+        String rawSubcommand = null;
+        if (args.length >= 1) {
+            rawSubcommand = args[0].toLowerCase();
+        }
+
         if (args.length == 1) {
-            completion.addAll(completeSubcommand(player, args[0].toLowerCase()));
+            completion.addAll(completeSubcommand(player, rawSubcommand));
             completion.addAll(completeLines(player, args.clone()));
-        } else if (args.length == 2 && subcommandsWithLineSelector.contains(args[0].toLowerCase())) {
+        } else if (args.length == 2 && subcommandsWithLineSelector.contains(rawSubcommand)) {
             completion.addAll(completeLines(player, args.clone()));
         }
 
-        completion.addAll(completeExistingLines(player, args));
+        ArgParser argParser = new ArgParser(config, args, subcommandNames);
+        if (argParser.getRemainder().size() > 0) {
+            String subcommandName = argParser.getSubcommand();
+            if ("set".equals(subcommandName)) {
+                completion.addAll(completeExistingLines(player, argParser));
+            } else if ("help".equalsIgnoreCase(rawSubcommand)) {
+                completion.addAll(completeHelpPage(player, argParser));
+            }
+        }
 
         return completion;
     }
 
-    private List<String> completeExistingLines(Player player, String[] args) {
+    private Collection<String> completeHelpPage(Player player, ArgParser argParser) {
         List<String> nothing = new ArrayList<>();
+        final int[] pageCount = {0};
 
-        ArgParser argParser = new ArgParser(config, args, subcommandNames);
-        if (!"set".equals(argParser.getSubcommand()) || argParser.getRemainder().size() <= 0) {
-            return nothing;
+        class MockComms extends ChatComms {
+            public MockComms(Player player, Configuration config) {
+                super(player, config);
+            }
+
+            @Override
+            public void tellPlayer(String message) {
+            }
+
+            @Override
+            public String t(String key, Object... messageArguments) {
+                if (key.equals("usage_page_numbering")) {
+                    pageCount[0] = (int) messageArguments[1];
+                }
+                return super.t(key, messageArguments);
+            }
         }
+        MockComms mockComms = new MockComms(player, config);
+
+        SignSubcommand signSubcommand = getSignSubcommand(player, argParser, mockComms);
+        signSubcommand.execute();
+
+        List<String> remainder = argParser.getRemainder();
+        String startMatch = "";
+        if (remainder.size() > 1) return nothing;
+        else if (remainder.size() == 1) {
+            startMatch = remainder.get(0);
+        }
+
+        String finalStartMatch = startMatch;
+
+        return IntStream
+                .rangeClosed(1, pageCount[0])
+                .mapToObj(i -> ((Integer) i).toString())
+                .filter(item -> item.startsWith(finalStartMatch))
+                .collect(Collectors.toSet());
+    }
+
+    protected SignSubcommand getSignSubcommand(Player player, ArgParser argParser, ChatComms chatComms) {
+        String subcommandName = argParser.getSubcommand();
+        SignSubcommandModule.SignSubcommandComponent component = signSubcommandComponentBuilder
+                .player(player)
+                .commandArgs(new String[]{subcommandName})
+                .comms(chatComms)
+                .build();
+
+        return component.subcommandProviders().get(subcommandName).get();
+    }
+
+    private List<String> completeExistingLines(Player player, ArgParser argParser) {
+        List<String> nothing = new ArrayList<>();
 
         Block targetBlock = SignCommand.getTargetBlockOfPlayer(player);
         BlockState targetBlockState = null;
