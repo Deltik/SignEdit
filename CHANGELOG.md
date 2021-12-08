@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * **No more dependency on CraftBukkit** – `/sign ui` previously tried various reflection workarounds to invoke the sign editor and always assumed that the server was running CraftBukkit without too many changes.  SignEdit for Bukkit `>= 1.12.7, < 1.13.4` settled on a minimally intrusive unstable API call that worked for CraftBukkit 1.8 through CraftBukkit 1.17.1, but CraftBukkit stopped mapping method names starting in CraftBukkit 1.18, which broke `/sign ui`.
   * **`/sign ui` won't break in future versions of Bukkit** – As SignEdit for Bukkit `= 1.13.5` now prefers to use the stable Bukkit API, `/sign ui` will keep working on future major versions of Bukkit.
 * The plugin will now build on Java 17.  CI will continue to build on Java 1.8 for compatibility with Bukkit 1.13 servers.
+* Gradle will now use Java 1.8 to build the plugin.
+  Redistributors or future versions of this plugin intending to build on newer versions of Java can change the Java toolchain language version in the `build.gradle` file to override this behavior.
 
 ## v1.13.4 (2021-11-16)
 
