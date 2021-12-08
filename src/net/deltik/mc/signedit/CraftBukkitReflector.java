@@ -25,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.inject.Inject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 public class CraftBukkitReflector {
     public String BUKKIT_SERVER_VERSION;
@@ -49,6 +50,36 @@ public class CraftBukkitReflector {
             Class<?> superClass = whateverClass.getSuperclass();
             if (superClass != null) {
                 return getDeclaredMethodRecursive(superClass, name, parameterTypes);
+            }
+            throw e;
+        }
+    }
+
+    /**
+     * Find the first method that accepts the provided parameters
+     * <p>
+     * Performs a breadth-first search up the class ancestry until there are no more parents
+     *
+     * @param whateverClass The class to check for a matching method
+     * @param parameterTypes The parameter types that the method accepts
+     * @return The first matching method
+     * @throws NoSuchMethodException if no methods match
+     */
+    public static Method findMethodByParameterTypes(Class<?> whateverClass, Class<?>... parameterTypes)
+            throws NoSuchMethodException {
+        try {
+            for (Method maybeMethod : whateverClass.getMethods()) {
+                Class<?>[] candidateParameterTypes = maybeMethod.getParameterTypes();
+                if (Arrays.equals(parameterTypes, candidateParameterTypes)) {
+                    maybeMethod.setAccessible(true);
+                    return maybeMethod;
+                }
+            }
+            throw new NoSuchMethodException();
+        } catch (NoSuchMethodException e) {
+            Class<?> superClass = whateverClass.getSuperclass();
+            if (superClass != null) {
+                return findMethodByParameterTypes(superClass, parameterTypes);
             }
             throw e;
         }

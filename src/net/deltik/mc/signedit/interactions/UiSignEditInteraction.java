@@ -40,8 +40,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.stream.IntStream;
 
-import static net.deltik.mc.signedit.CraftBukkitReflector.getDeclaredMethodRecursive;
-import static net.deltik.mc.signedit.CraftBukkitReflector.getFirstFieldOfType;
+import static net.deltik.mc.signedit.CraftBukkitReflector.*;
 
 public class UiSignEditInteraction implements SignEditInteraction {
     private final SignEditInteractionManager interactionManager;
@@ -139,7 +138,7 @@ public class UiSignEditInteraction implements SignEditInteraction {
      * Try using the Bukkit 1.18+ stable API to open the sign editor and fall back to a reflection alternative
      *
      * @param player The player that wants to open the sign editor
-     * @param sign The sign that should load into the player's sign editor
+     * @param sign   The sign that should load into the player's sign editor
      * @throws Exception if anything goes wrong while trying to open the sign editor
      */
     private void openSignEditor(Player player, Sign sign) throws Exception {
@@ -161,7 +160,7 @@ public class UiSignEditInteraction implements SignEditInteraction {
      * This method tries to call that unstable API method.
      *
      * @param player The player that wants to open the sign editor
-     * @param sign The sign that should load into the player's sign editor
+     * @param sign   The sign that should load into the player's sign editor
      * @throws Exception if anything goes wrong while trying to open the sign editor
      */
     private void openSignEditorWithReflection(Player player, Sign sign) throws Exception {
@@ -170,8 +169,8 @@ public class UiSignEditInteraction implements SignEditInteraction {
 
         makeTileEntitySignEditable(tileEntitySign);
 
-        Method openSignMethod = getDeclaredMethodRecursive(
-                entityPlayer.getClass(), "openSign", tileEntitySign.getClass()
+        Method openSignMethod = findMethodByParameterTypes(
+                entityPlayer.getClass(), tileEntitySign.getClass()
         );
         openSignMethod.invoke(entityPlayer, tileEntitySign);
     }
