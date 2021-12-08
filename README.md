@@ -285,6 +285,8 @@ The server does not need to be restarted for configuration changes to take effec
 
 (`>= 1.10.2`)
 
+_On Bukkit 1.11.2 or older, this option has no effect, and the plugin behaves as if the option were set to `true`._
+
 **false** (default): Does not change the behavior of the `locale` configuration option.
 
 **true**: Force every player to use the locale specified in the `locale` configuration option, regardless of the players' actual locales.
@@ -303,8 +305,7 @@ The server does not need to be restarted for configuration changes to take effec
 
 The value of `locale` is an IETF BCP 47 [language tag](#language-tags).
 
-(`> 1.10.2`) It is the locale used to display text to the player when the player's locale cannot be determined.
-If the value is not supported, English will be used as the fallback locale.
+(`> 1.10.2`) It is the locale used to display text to the player when the player's locale cannot be determined.  If the value is not supported or Bukkit is older than version 1.12, English will be used as the fallback locale.
 
 ~~(`= 1.10.2`) This option has no effect if [`force-locale`](#force-locale-falsetrue) is false (due to an implementation bug).~~
 
@@ -320,7 +321,7 @@ Choose which visual sign editor to show for all players that run `/sign ui`.
 
 **Auto** (default): Shows the native Minecraft sign editor GUI, except for on a Minecraft 1.16.1 server, which shows the book and quill alternative sign editor GUI instead.
 
-**EditableBook**: Shows the book and quill alternative sign editor GUI regardless of Minecraft server version
+**EditableBook**: Shows the book and quill alternative sign editor GUI regardless of Minecraft server version.  Requires Bukkit 1.13 or newer.
 
 **Native**: Shows the native Minecraft sign editor GUI regardless of Minecraft server version
 
@@ -332,7 +333,7 @@ Decide what events to send to other plugins for sign edit permission validation 
 
 **Standard** (default): Only emit [`SignChangeEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/SignChangeEvent.html).  This option is the most compliant with the Bukkit API.
 
-**Extra**: Emit [`BlockBreakEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/BlockBreakEvent.html), [`BlockPlaceEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/BlockPlaceEvent.html), and [`SignChangeEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/SignChangeEvent.html) (in that order).  The edited sign block will not actually be broken and replaced.  This option improves compatibility with permissions plugins that don't handle `SignChangeEvent` correctly, but it may conflict with plugins that expect block breaking or block placement behavior.
+**Extra**: Emit [`BlockBreakEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/BlockBreakEvent.html), [`BlockPlaceEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/BlockPlaceEvent.html), and [`SignChangeEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/SignChangeEvent.html) (in that order).  The edited sign block will not actually be broken and replaced.  This option improves compatibility with permissions plugins that don't handle `SignChangeEvent` correctly, but it may conflict with plugins that expect block breaking or block placement behavior.  Requires Bukkit 1.13 or newer.
 
 **None** (not recommended): Bypass all permission validation by not sending any events.  All players with access to `/sign` modification commands will be able to edit all signs on the server.  This option matches the behavior of this plugin version `< 1.8`.
 
@@ -497,7 +498,8 @@ Support for Bukkit 1.8 and lower was dropped in plugin version `>= 1.3.1`.  This
 | `>= 1.10.2, < 1.12`           | 1.12                      | 1.15.2                     | [Localization features](#supported-locales) only available starting in Bukkit 1.12                                                                                                                                                                 |
 | `>= 1.12, < 1.12.7`           | 1.13                      | 1.16.5                     | Workaround for [native sign editor defect in Minecraft 1.16.1](#minecraft-1161-sign-editor-gui) uses Bukkit 1.13 materials                                                                                                                         |
 | `>= 1.12.7, < 1.13.4`         | 1.13                      | 1.17.1                     | Plugin updated to tolerate [a CraftBukkit unstable API (`net.minecraft` code) obfuscation requirement for Minecraft 1.17](https://web.archive.org/web/20210613005238/https://www.spigotmc.org/threads/spigot-bungeecord-1-17.510208/#post-4184317) |
-| `>= 1.13.5`                   | 1.13                      | _No known incompatibility_ | Plugin updated again to tolerate even more obfuscation of the CraftBukkit unstable API; no more dependency on CraftBukkit if running on Bukkit 1.18 or newer                                                                                       |
+| `= 1.13.5`                    | 1.13                      | _No known incompatibility_ | Plugin updated again to tolerate even more obfuscation of the CraftBukkit unstable API; no more dependency on CraftBukkit if running on Bukkit 1.18 or newer                                                                                       |
+| `>= 1.13.6`                   | 1.8.3                     | _No known incompatibility_ | Better error handling lets the plugin run with a limited feature set on old versions of Bukkit                                                                                                                                                     |
 
 ### Backwards Compatibility with Omel's SignEdit v1.3
 

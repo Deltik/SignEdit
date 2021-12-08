@@ -7,7 +7,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v1.13.6 (UNRELEASED)
+## v1.13.6 (2021-12-08)
+
+### Added
+
+* Limited support for Bukkit 1.8.3 through 1.12.2 in addition to the existing full support for Bukkit 1.13 through 1.18
 
 ### Fixed
 
