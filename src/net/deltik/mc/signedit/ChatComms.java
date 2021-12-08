@@ -32,9 +32,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -197,8 +194,8 @@ public class ChatComms {
             tellPlayer(t("number_parse_line_selection_exception", e.getMessage()));
         } else if (e instanceof OutOfBoundsLineSelectionException) {
             tellPlayer(t(
-                    "out_of_bounds_line_selection_exception",
-                    config.getMinLine(), config.getMaxLine(), Integer.valueOf(e.getMessage())
+                            "out_of_bounds_line_selection_exception",
+                            config.getMinLine(), config.getMaxLine(), Integer.valueOf(e.getMessage())
                     )
             );
         } else if (e instanceof RangeOrderLineSelectionException) {
@@ -278,35 +275,24 @@ public class ChatComms {
                     throw new IllegalArgumentException("unknown format: " + var3);
                 }
 
-                final String var20 = this.toResourceName0(var6, "properties");
+                final String var20 = var6.contains("://") ? null : this.toResourceName(var6, "properties");
                 if (var20 == null) {
-                    return (ResourceBundle) var7;
+                    return null;
                 }
 
-                final ClassLoader var9 = var4;
-                final boolean var10 = var5;
-                InputStream var11;
+                InputStream var11 = null;
 
-                try {
-                    var11 = AccessController.doPrivileged((PrivilegedExceptionAction<InputStream>) () -> {
-                        InputStream var12 = null;
-                        if (var10) {
-                            URL var21 = var9.getResource(var20);
-                            if (var21 != null) {
-                                URLConnection var31 = var21.openConnection();
-                                if (var31 != null) {
-                                    var31.setUseCaches(false);
-                                    var12 = var31.getInputStream();
-                                }
-                            }
-                        } else {
-                            var12 = var9.getResourceAsStream(var20);
+                if (var5) {
+                    URL var21 = var4.getResource(var20);
+                    if (var21 != null) {
+                        URLConnection var31 = var21.openConnection();
+                        if (var31 != null) {
+                            var31.setUseCaches(false);
+                            var11 = var31.getInputStream();
                         }
-
-                        return var12;
-                    });
-                } catch (PrivilegedActionException var18) {
-                    throw (IOException) var18.getException();
+                    }
+                } else {
+                    var11 = var4.getResourceAsStream(var20);
                 }
 
                 if (var11 != null) {
@@ -319,10 +305,6 @@ public class ChatComms {
             }
 
             return (ResourceBundle) var7;
-        }
-
-        private String toResourceName0(String var1, String var2) {
-            return var1.contains("://") ? null : this.toResourceName(var1, var2);
         }
     }
 }
