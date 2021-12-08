@@ -60,8 +60,8 @@
 
 ## Installation
 
-1. Download the latest `.jar` file from [the Releases page](https://github.com/Deltik/SignEdit/releases) and upload it to your CraftBukkit (Spigot, PaperMC, etc.) `plugins/` folder.
-2. Restart your CraftBukkit server.
+1. Download the latest `.jar` file from [the Releases page](https://github.com/Deltik/SignEdit/releases) and upload it to your Bukkit server (Spigot, PaperMC, etc.) `plugins/` folder.
+2. Restart your Bukkit server.
 
 ## Usage
 
@@ -481,22 +481,23 @@ If you have translated the plugin to your language, please help the development 
 
 ## Compatibility
 
-This plugin is a fork of [Omel's SignEdit](https://www.spigotmc.org/resources/signedit.25485/) v1.3.  Omel's SignEdit v1.3 and older are not compatible with Bukkit v1.12 and newer because a deprecated API method was removed ([see related issue in MyPet](https://github.com/xXKeyleXx/MyPet/issues/1033)).
+This plugin is a fork of [Omel's SignEdit](https://www.spigotmc.org/resources/signedit.25485/) v1.3.  Omel's SignEdit v1.3 and older are not compatible with Bukkit 1.12 and newer because a deprecated API method was removed ([see related issue in MyPet](https://github.com/xXKeyleXx/MyPet/issues/1033)).
 
-Since this plugin does not use deprecated methods, it is expected to be compatible with Bukkit v1.8.3 and newer.
+Since this plugin does not use deprecated methods, it is expected to be compatible with Bukkit 1.8.3 and newer.
 
-Support for Bukkit v1.8 and lower was dropped in plugin version `>= 1.3.1`.  This is because plugin version `>= 1.3.1` compiles with a method signature introduced in Bukkit commit [e1f54099](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/commits/e1f54099c8d6ba708c2895803464a0b89cacd3b9#src/main/java/org/bukkit/entity/LivingEntity.java), which landed in [Bukkit v1.8.3](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/commits/ca4fd8554d297f3922d36328efd4612b05f9d8aa#pom.xml).
+Support for Bukkit 1.8 and lower was dropped in plugin version `>= 1.3.1`.  This is because plugin version `>= 1.3.1` compiles with a method signature introduced in Bukkit commit [e1f54099](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/commits/e1f54099c8d6ba708c2895803464a0b89cacd3b9#src/main/java/org/bukkit/entity/LivingEntity.java), which landed in [Bukkit 1.8.3](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/commits/ca4fd8554d297f3922d36328efd4612b05f9d8aa#pom.xml).
 
 ### Version Compatibility Table
 
-|Plugin [Version](#versioning)|Minimum Minecraft Version|Maximum Minecraft Version|Cause of Compatibility Change|
-|---|---|---|---|
-|`<= 1.3`|1.2.2|1.11.2|Deprecated API removed in Bukkit v1.12|
-|`>= 1.3.1, < 1.8`|1.8.3|_No known incompatibility_|[Switched to the non-deprecated Bukkit v1.8.3 API method](https://github.com/Deltik/SignEdit/commit/f1ca24893b3a0099da846f1dbd4b7770c2821c4a)|
-|`>= 1.8, < 1.10.2`|1.8.3|1.15.2|[Native sign editor defect in Minecraft 1.16.1](#minecraft-1161-sign-editor-gui)|
-|`>= 1.10.2, < 1.12`|1.12|1.15.2|[Localization features](#supported-locales) only available starting in Bukkit v1.12|
-|`>= 1.12, < 1.12.7`|1.13|1.16.5|Workaround for [native sign editor defect in Minecraft 1.16.1](#minecraft-1161-sign-editor-gui) uses Bukkit v1.13 materials|
-|`>= 1.12.7`|1.13|_No known incompatibility_|Plugin updated to tolerate [a Minecraft unstable API (`net.minecraft` code) obfuscation requirement for Minecraft 1.17+](https://web.archive.org/web/20210613005238/https://www.spigotmc.org/threads/spigot-bungeecord-1-17.510208/#post-4184317)|
+| Plugin [Version](#versioning) | Minimum Minecraft Version | Maximum Minecraft Version  | Cause of Compatibility Change                                                                                                                                                                                                                      |
+|-------------------------------|---------------------------|----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `<= 1.3`                      | 1.2.2                     | 1.11.2                     | Deprecated API removed in Bukkit 1.12                                                                                                                                                                                                              |
+| `>= 1.3.1, < 1.8`             | 1.8.3                     | _No known incompatibility_ | [Switched to the non-deprecated Bukkit 1.8.3 API method](https://github.com/Deltik/SignEdit/commit/f1ca24893b3a0099da846f1dbd4b7770c2821c4a)                                                                                                       |
+| `>= 1.8, < 1.10.2`            | 1.8.3                     | 1.15.2                     | [Native sign editor defect in Minecraft 1.16.1](#minecraft-1161-sign-editor-gui)                                                                                                                                                                   |
+| `>= 1.10.2, < 1.12`           | 1.12                      | 1.15.2                     | [Localization features](#supported-locales) only available starting in Bukkit 1.12                                                                                                                                                                 |
+| `>= 1.12, < 1.12.7`           | 1.13                      | 1.16.5                     | Workaround for [native sign editor defect in Minecraft 1.16.1](#minecraft-1161-sign-editor-gui) uses Bukkit 1.13 materials                                                                                                                         |
+| `>= 1.12.7, < 1.13.4`         | 1.13                      | 1.17.1                     | Plugin updated to tolerate [a CraftBukkit unstable API (`net.minecraft` code) obfuscation requirement for Minecraft 1.17](https://web.archive.org/web/20210613005238/https://www.spigotmc.org/threads/spigot-bungeecord-1-17.510208/#post-4184317) |
+| `>= 1.13.5`                   | 1.13                      | _No known incompatibility_ | Plugin updated again to tolerate even more obfuscation of the CraftBukkit unstable API; no more dependency on CraftBukkit if running on Bukkit 1.18 or newer                                                                                       |
 
 ### Backwards Compatibility with Omel's SignEdit v1.3
 
@@ -525,7 +526,7 @@ Some permissions plugins that check if a player can break or place a block do no
 ### Minecraft 1.16.1 Sign Editor GUI
 
 In Minecraft 1.16.1, invoking the native sign editor GUI with `/sign ui` (`>= 1.8, < 1.12`) will open a blank sign editor without the existing sign contents.
-This is [a regression (bug) in the Minecraft client](https://web.archive.org/web/20200901000000/https://bugs.mojang.com/browse/MC-192263?focusedCommentId=755369&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-755369); there is no way to get the native sign editor to open correctly from the Bukkit v1.16.1 server.
+This is [a regression (bug) in the Minecraft client](https://web.archive.org/web/20200901000000/https://bugs.mojang.com/browse/MC-192263?focusedCommentId=755369&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-755369); there is no way to get the native sign editor to open correctly from the Bukkit 1.16.1 server.
 
 Despite [Mojang's refusal to fix the bug](https://web.archive.org/web/20200714051840/https://bugs.mojang.com/browse/MC-192263?focusedCommentId=759126&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-759126), [it was fixed in Minecraft 1.16.2](https://minecraft.gamepedia.com/Java_Edition_20w30a).
 
