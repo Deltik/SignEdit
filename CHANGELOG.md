@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * The plugin will now build on Java 17.  CI will continue to build on Java 1.8 for compatibility with Bukkit 1.13 servers.
 * Gradle will now use Java 1.8 to build the plugin.
   Redistributors or future versions of this plugin intending to build on newer versions of Java can change the Java toolchain language version in the `build.gradle` file to override this behavior.
+* CI now uses a newer Java 17 image for build-time dependencies.
+  The resulting build artifact will remain compatible with Java 1.8.
 
 ## v1.13.4 (2021-11-16)
 
