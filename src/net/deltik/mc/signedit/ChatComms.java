@@ -83,7 +83,7 @@ public class ChatComms {
         if (config.getForceLocale()) return config.getLocale();
         try {
             return new Locale.Builder().setLanguageTag(player.getLocale().replace('_', '-')).build();
-        } catch (IllformedLocaleException | NullPointerException e) {
+        } catch (IllformedLocaleException | NullPointerException | NoSuchMethodError e) {
             return config.getLocale();
         }
     }
