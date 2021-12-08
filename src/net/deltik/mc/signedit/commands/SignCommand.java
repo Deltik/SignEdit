@@ -106,7 +106,7 @@ public class SignCommand implements CommandExecutor {
         try {
             SignEditInteraction interaction = signSubcommand.execute();
             autointeract(player, interaction, comms);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             comms.reportException(e);
         }
 

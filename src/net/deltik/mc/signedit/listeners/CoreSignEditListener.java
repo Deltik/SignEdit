@@ -68,7 +68,7 @@ public class CoreSignEditListener extends SignEditListener {
             try {
                 SignEditInteraction interaction = interactionManager.removePendingInteraction(player);
                 interaction.interact(player, sign);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 ChatComms comms = commsBuilderProvider.get().player(player).build().comms();
                 comms.reportException(e);
             }

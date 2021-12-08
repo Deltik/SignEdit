@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.13.6 (UNRELEASED)
 
+### Fixed
+
+* Unhandled Java `Error`s are now caught and more gracefully logged.
+
 ### Changed
 
 * If Bukkit is too old (versions 1.8.3 through 1.11.2), fall back to [the configured default locale](https://github.com/Deltik/SignEdit/blob/v1.13.6/README.md#locale-en) instead of erroring out and preventing the plugin from being used.

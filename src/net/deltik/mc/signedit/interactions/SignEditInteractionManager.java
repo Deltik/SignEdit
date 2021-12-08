@@ -45,7 +45,7 @@ public class SignEditInteractionManager {
     public void endInteraction(Player player, Event event) {
         try {
             removePendingInteraction(player).cleanup(event);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             ChatComms comms = commsBuilderProvider.get().player(player).build().comms();
             comms.reportException(e);
         }

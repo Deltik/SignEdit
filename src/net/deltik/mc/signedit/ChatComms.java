@@ -185,7 +185,7 @@ public class ChatComms {
         }
     }
 
-    public void reportException(Exception e) {
+    public void reportException(Throwable e) {
         if (e instanceof ForbiddenSignEditException) {
             tellPlayer(t("forbidden_sign_edit"));
         } else if (e instanceof MissingLineSelectionException) {
