@@ -135,7 +135,36 @@ public class UiSignEditInteraction implements SignEditInteraction {
         }
     }
 
+    /**
+     * Try using the Bukkit 1.18+ stable API to open the sign editor and fall back to a reflection alternative
+     *
+     * @param player The player that wants to open the sign editor
+     * @param sign The sign that should load into the player's sign editor
+     * @throws Exception if anything goes wrong while trying to open the sign editor
+     */
     private void openSignEditor(Player player, Sign sign) throws Exception {
+        try {
+            @SuppressWarnings("JavaReflectionMemberAccess")
+            Method method = Player.class.getMethod("openSign", Sign.class);
+            method.invoke(player, sign);
+        } catch (NoSuchMethodException ignored) {
+            openSignEditorWithReflection(player, sign);
+        }
+    }
+
+    /**
+     * Take a reflection-based guess to open the sign editor for common CraftBukkit implementations prior to Bukkit 1.18
+     * <p>
+     * Prior to Bukkit 1.18, there was no stable API to open the sign editor.
+     * Instead, there was a method called <code>EntityHuman#openSign</code> available since CraftBukkit 1.8, which took
+     * a <code>TileEntitySign</code> as its argument.
+     * This method tries to call that unstable API method.
+     *
+     * @param player The player that wants to open the sign editor
+     * @param sign The sign that should load into the player's sign editor
+     * @throws Exception if anything goes wrong while trying to open the sign editor
+     */
+    private void openSignEditorWithReflection(Player player, Sign sign) throws Exception {
         Object tileEntitySign = toRawTileEntity(sign);
         Object entityPlayer = toRawEntity(player);
 

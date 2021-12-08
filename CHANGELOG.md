@@ -7,6 +7,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.13.5 (UNRELEASED)
+
+### Fixed
+
+* `/sign ui` compatibility with Bukkit 1.18
+
+### Under the Hood
+
+* Now that Bukkit 1.18 has introduced a stable API for opening the sign editor ([`org.bukkit.entity.Player#openSign(org.bukkit.block.Sign)`](https://web.archive.org/web/20211208030659/https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/entity/Player.html#openSign(org.bukkit.block.Sign))), we reap the following benefits:
+  * **No more dependency on CraftBukkit** – `/sign ui` previously tried various reflection workarounds to invoke the sign editor and always assumed that the server was running CraftBukkit without too many changes.  SignEdit for Bukkit `>= 1.12.7, < 1.13.4` settled on a minimally intrusive unstable API call that worked for CraftBukkit 1.8 through CraftBukkit 1.17.1, but CraftBukkit stopped mapping method names starting in CraftBukkit 1.18, which broke `/sign ui`.
+  * **`/sign ui` won't break in future versions of Bukkit** – As SignEdit for Bukkit `= 1.13.5` now prefers to use the stable Bukkit API, `/sign ui` will keep working on future major versions of Bukkit.
+
 ## v1.13.4 (2021-11-16)
 
 ### Added
