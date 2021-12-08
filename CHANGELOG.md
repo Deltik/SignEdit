@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * If Bukkit is too old (versions 1.8.3 through 1.11.2), fall back to [the configured default locale](https://github.com/Deltik/SignEdit/blob/v1.13.6/README.md#locale-en) instead of erroring out and preventing the plugin from being used.
+* If a Java `Error` or any other unhandled `Exception` is encountered while validating a `/sign ui` edit, the sign edit is now cancelled.  Previously, the edit would not be cancelled.
 
 ## v1.13.5 (2021-12-08)
 

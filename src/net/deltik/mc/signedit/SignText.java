@@ -143,6 +143,9 @@ public class SignText {
             validator.validate(event);
         } catch (ForbiddenSignEditException ignored) {
             event.setCancelled(true);
+        } catch (Throwable exception) {
+            event.setCancelled(true);
+            throw exception;
         }
     }
 
