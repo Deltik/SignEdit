@@ -23,13 +23,16 @@ import net.deltik.mc.signedit.ChatComms;
 import net.deltik.mc.signedit.ChatCommsModule;
 import net.deltik.mc.signedit.SignTextClipboardManager;
 import net.deltik.mc.signedit.SignTextHistoryManager;
+import net.deltik.mc.signedit.exceptions.BlockStateNotPlacedException;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
 import net.deltik.mc.signedit.interactions.SignEditInteractionManager;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -56,12 +59,30 @@ public class CoreSignEditListener extends SignEditListener {
         this.commsBuilderProvider = commsBuilderProvider;
     }
 
+    /**
+     * Extract the {@link Sign} from the provided {@link BlockEvent}
+     *
+     * @param blockEvent A {@link BlockEvent} that is has yet been confirmed to return a {@link Sign} with a
+     *                   call to {@link BlockEvent#getBlock()}
+     * @return The {@link Sign} from the provided {@link BlockEvent}
+     * @throws BlockStateNotPlacedException if the {@link BlockEvent} does not provide a placed {@link Sign} block
+     */
+    public static Sign getPlacedSignFromBlockEvent(BlockEvent blockEvent) {
+        BlockState maybeSign = blockEvent.getBlock().getState();
+        if (!(maybeSign instanceof Sign && maybeSign.isPlaced())) {
+            throw new BlockStateNotPlacedException();
+        }
+
+        return (Sign) maybeSign;
+    }
+
     @EventHandler
     public void onRightClickSign(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-        if (!(event.getClickedBlock().getState() instanceof Sign)) return;
+        BlockState maybeSign = event.getClickedBlock().getState();
+        if (!(maybeSign instanceof Sign)) return;
 
-        Sign sign = (Sign) event.getClickedBlock().getState();
+        Sign sign = (Sign) maybeSign;
         Player player = event.getPlayer();
 
         if (interactionManager.isInteractionPending(player)) {

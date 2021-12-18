@@ -20,6 +20,7 @@
 package net.deltik.mc.signedit.integrations;
 
 import net.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
+import net.deltik.mc.signedit.listeners.CoreSignEditListener;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
@@ -49,7 +50,7 @@ public class BreakReplaceSignEditValidator extends StandardSignEditValidator {
 
     @Override
     public void validate(SignChangeEvent signChangeEvent) {
-        Sign sign = (Sign) signChangeEvent.getBlock().getState();
+        Sign sign = CoreSignEditListener.getPlacedSignFromBlockEvent(signChangeEvent);
         validateBlockBreak(sign);
         validateBlockPlace(sign);
     }

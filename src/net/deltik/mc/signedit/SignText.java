@@ -24,6 +24,7 @@ import net.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
 import net.deltik.mc.signedit.integrations.NoopSignEditValidator;
 import net.deltik.mc.signedit.integrations.SignEditValidator;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
+import net.deltik.mc.signedit.listeners.CoreSignEditListener;
 import net.deltik.mc.signedit.subcommands.PerSubcommand;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
@@ -131,8 +132,7 @@ public class SignText {
      *              {@link EventPriority#MONITOR}
      */
     public void importPendingSignChangeEvent(SignChangeEvent event) {
-        setTargetSign((Sign) event.getBlock().getState());
-        assert targetSign != null;
+        targetSign = CoreSignEditListener.getPlacedSignFromBlockEvent(event);
         String[] lines = event.getLines();
         for (int i = 0; i < lines.length; i++) {
             targetSign.setLine(i, this.getLine(i));
@@ -155,7 +155,7 @@ public class SignText {
      * @param event An event from an {@link EventHandler} of {@link EventPriority#MONITOR}
      */
     public void importAuthoritativeSignChangeEvent(SignChangeEvent event) {
-        targetSign = (Sign) event.getBlock().getState();
+        targetSign = CoreSignEditListener.getPlacedSignFromBlockEvent(event);
         beforeLines = targetSign.getLines().clone();
         stagedLines = changedLines;
         afterLines = event.getLines();

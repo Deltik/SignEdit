@@ -154,23 +154,23 @@ public class SignCommandTabCompleter implements TabCompleter {
         Block targetBlock = SignCommand.getTargetBlockOfPlayer(player);
         BlockState targetBlockState = null;
         if (targetBlock != null) targetBlockState = targetBlock.getState();
-        if (targetBlockState instanceof Sign) {
-            Sign targetSign = (Sign) targetBlockState;
-            SignText signText = new SignText();
-            signText.setTargetSign(targetSign);
-            signText.importSign();
-            List<String> qualifyingLines = new ArrayList<>();
-            for (int selectedLine : argParser.getLinesSelection()) {
-                qualifyingLines.add(signText.getLineParsed(selectedLine));
-            }
-            return qualifyingLines.stream()
-                    .filter(
-                            line -> line.startsWith(String.join(" ", argParser.getRemainder()))
-                    )
-                    .collect(Collectors.toList());
+        if (!(targetBlockState instanceof Sign)) {
+            return nothing;
         }
 
-        return nothing;
+        Sign targetSign = (Sign) targetBlockState;
+        SignText signText = new SignText();
+        signText.setTargetSign(targetSign);
+        signText.importSign();
+        List<String> qualifyingLines = new ArrayList<>();
+        for (int selectedLine : argParser.getLinesSelection()) {
+            qualifyingLines.add(signText.getLineParsed(selectedLine));
+        }
+        return qualifyingLines.stream()
+                .filter(
+                        line -> line.startsWith(String.join(" ", argParser.getRemainder()))
+                )
+                .collect(Collectors.toList());
     }
 
     /**

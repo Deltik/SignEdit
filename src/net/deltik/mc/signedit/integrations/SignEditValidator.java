@@ -38,7 +38,5 @@ public interface SignEditValidator {
      * @param signChangeEvent A sign change event in the validation phase (i.e. not passed in by an {@link EventHandler}
      *                        with {@link EventPriority#MONITOR})
      */
-    default void validate(SignChangeEvent signChangeEvent) {
-        validate((Sign) signChangeEvent.getBlock().getState());
-    }
+    void validate(SignChangeEvent signChangeEvent);
 }
