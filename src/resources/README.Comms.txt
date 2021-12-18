@@ -15,5 +15,5 @@ you can edit your copy or copies in ./overrides/ to set your own colors and
 translations.
 
 This file and everything in ./originals/ is managed by ${pluginName}. Any
-changes will be overwritten when the the plugin is reloaded, so only make your
+changes will be overwritten when the plugin is reloaded, so only make your
 changes in the ./overrides/ folder.
