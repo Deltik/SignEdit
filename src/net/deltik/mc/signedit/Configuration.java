@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2021 Deltik <https://www.deltik.net/>
+ * Copyright (C) 2017-2022 Deltik <https://www.deltik.net/>
  *
  * This file is part of SignEdit for Bukkit.
  *
@@ -152,6 +152,7 @@ public class Configuration {
 
         File configFileParent = configFile.getCanonicalFile().getParentFile();
         if (configFileParent != null) {
+            // noinspection ResultOfMethodCallIgnored
             configFileParent.mkdirs();
         }
         Files.write(configFile.toPath(), output.getBytes());

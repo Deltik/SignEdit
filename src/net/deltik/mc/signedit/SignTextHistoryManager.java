@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2021 Deltik <https://www.deltik.net/>
+ * Copyright (C) 2017-2022 Deltik <https://www.deltik.net/>
  *
  * This file is part of SignEdit for Bukkit.
  *
@@ -29,8 +29,8 @@ import java.util.Map;
 
 @Singleton
 public class SignTextHistoryManager {
-    private Map<Player, SignTextHistory> playerHistoryMap = new HashMap<>();
-    private Provider<SignTextHistory> historyProvider;
+    private final Map<Player, SignTextHistory> playerHistoryMap = new HashMap<>();
+    private final Provider<SignTextHistory> historyProvider;
 
     @Inject
     public SignTextHistoryManager(Provider<SignTextHistory> historyProvider) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2021 Deltik <https://www.deltik.net/>
+ * Copyright (C) 2017-2022 Deltik <https://www.deltik.net/>
  *
  * This file is part of SignEdit for Bukkit.
  *
@@ -26,7 +26,7 @@ import java.util.LinkedList;
 
 public class SignTextHistory {
     private final Configuration config;
-    private LinkedList<SignText> history = new LinkedList<>();
+    private final LinkedList<SignText> history = new LinkedList<>();
     int tailPosition = 0;
 
     @Inject

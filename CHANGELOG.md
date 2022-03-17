@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Credit to [@phpwutz](https://github.com/phpwutz)
 * A minor typo in the file that gets deployed to `./plugins/SignEdit/locales/README.txt`
 
+### Under the Hood
+
+* Updated copyright year 2022
+
 ## v1.13.7 (2021-12-18)
 
 ### Fixed

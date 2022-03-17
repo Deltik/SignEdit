@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2021 Deltik <https://www.deltik.net/>
+ * Copyright (C) 2017-2022 Deltik <https://www.deltik.net/>
  *
  * This file is part of SignEdit for Bukkit.
  *
@@ -28,7 +28,7 @@ import java.util.Map;
 
 @Singleton
 public class SignTextClipboardManager {
-    private Map<Player, SignText> playerSignTextMap = new HashMap<>();
+    private final Map<Player, SignText> playerSignTextMap = new HashMap<>();
 
     @Inject
     public SignTextClipboardManager() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2021 Deltik <https://www.deltik.net/>
+ * Copyright (C) 2017-2022 Deltik <https://www.deltik.net/>
  *
  * This file is part of SignEdit for Bukkit.
  *
@@ -28,7 +28,7 @@ import org.bukkit.entity.Player;
 import javax.inject.Inject;
 
 public class SetSignEditInteraction implements SignEditInteraction {
-    private SignText signText;
+    private final SignText signText;
     private final ChatComms comms;
     private final SignTextHistoryManager historyManager;
 

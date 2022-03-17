@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2021 Deltik <https://www.deltik.net/>
+ * Copyright (C) 2017-2022 Deltik <https://www.deltik.net/>
  *
  * This file is part of SignEdit for Bukkit.
  *
@@ -40,9 +40,9 @@ import java.util.regex.Pattern;
 import static org.bukkit.Bukkit.getLogger;
 
 public class UserComms {
-    private String targetDirectory;
-    private File overridesDir;
-    private File originalsDir;
+    private final String targetDirectory;
+    private final File overridesDir;
+    private final File originalsDir;
     private String originalsSource;
 
     @Inject
@@ -93,6 +93,7 @@ public class UserComms {
     /**
      * Publish Comms ResourceBundles into the file system
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public void deploy() throws IOException {
         overridesDir.mkdirs();
         originalsDir.mkdirs();
@@ -100,11 +101,13 @@ public class UserComms {
 
         for (String resourceName : getResourceNamesFromSelf()) {
             InputStream readStream = getClass().getResourceAsStream(resourceName);
+            assert readStream != null;
             Path originalCopyPath = Paths.get(originalsDir.getAbsolutePath(), resourceName);
             Files.copy(readStream, originalCopyPath, StandardCopyOption.REPLACE_EXISTING);
         }
 
         InputStream documentationStream = getClass().getResourceAsStream("/README.Comms.txt");
+        assert documentationStream != null;
         Path documentationFilePath = Paths.get(targetDirectory, "locales", "README.txt");
         Files.copy(documentationStream, documentationFilePath, StandardCopyOption.REPLACE_EXISTING);
     }
