@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+* The German (`de`) locale pluralized 0 incorrectly in the `history_have` string.
+
+  Credit to [@phpwutz](https://github.com/phpwutz)
 * A minor typo in the file that gets deployed to `./plugins/SignEdit/locales/README.txt`
 
 ## v1.13.7 (2021-12-18)
