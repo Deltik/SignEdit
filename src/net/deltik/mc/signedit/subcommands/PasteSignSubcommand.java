@@ -28,7 +28,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.Map;
 
-public class PasteSignSubcommand implements SignSubcommand {
+public class PasteSignSubcommand extends SignSubcommand {
     private final Map<String, Provider<SignEditInteraction>> interactions;
     private final Player player;
     private final SignTextClipboardManager clipboardManager;

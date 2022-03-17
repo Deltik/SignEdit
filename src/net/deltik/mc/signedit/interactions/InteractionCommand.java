@@ -17,26 +17,8 @@
  * along with SignEdit for Bukkit.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.deltik.mc.signedit.subcommands;
+package net.deltik.mc.signedit.interactions;
 
-import dagger.BindsInstance;
-import net.deltik.mc.signedit.ArgParser;
-import net.deltik.mc.signedit.ChatComms;
-import org.bukkit.entity.Player;
-
-public interface SignSubcommandInjector<T extends SignSubcommand> {
-    T command();
-
-    abstract class Builder<T extends SignSubcommand> {
-        public abstract SignSubcommandInjector<T> build();
-
-        @BindsInstance
-        public abstract Builder<T> player(Player player);
-
-        @BindsInstance
-        public abstract Builder<T> argParser(ArgParser args);
-
-        @BindsInstance
-        public abstract Builder<T> comms(ChatComms comms);
-    }
+public interface InteractionCommand {
+    SignEditInteraction execute();
 }

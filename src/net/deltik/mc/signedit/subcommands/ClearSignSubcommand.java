@@ -27,7 +27,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.Map;
 
-public class ClearSignSubcommand implements SignSubcommand {
+public class ClearSignSubcommand extends SignSubcommand {
     private final Map<String, Provider<SignEditInteraction>> interactions;
     private final ArgParser argParser;
     private final SignText signText;

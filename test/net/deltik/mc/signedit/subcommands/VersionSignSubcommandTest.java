@@ -22,6 +22,7 @@ package net.deltik.mc.signedit.subcommands;
 import net.deltik.mc.signedit.ChatComms;
 import net.deltik.mc.signedit.Configuration;
 import net.deltik.mc.signedit.SignEditPlugin;
+import net.deltik.mc.signedit.interactions.InteractionCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -45,7 +46,7 @@ public class VersionSignSubcommandTest {
         Plugin plugin = mock(SignEditPlugin.class);
         when(plugin.getDescription()).thenReturn(pluginDescriptionFile);
         when(pluginDescriptionFile.getVersion()).thenReturn(expected);
-        SignSubcommand subcommand = new VersionSignSubcommand(plugin, comms);
+        InteractionCommand subcommand = new VersionSignSubcommand(plugin, comms);
         subcommand.execute();
 
         verify(player).sendMessage(contains(expected));

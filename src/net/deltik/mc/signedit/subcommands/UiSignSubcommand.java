@@ -28,7 +28,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.Map;
 
-public class UiSignSubcommand implements SignSubcommand {
+public class UiSignSubcommand extends SignSubcommand {
     /**
      * Bug reported for Minecraft 1.16.1: https://bugs.mojang.com/browse/MC-192263
      * Bug resolved in Minecraft 1.16.2: https://minecraft.gamepedia.com/Java_Edition_20w30a

@@ -25,7 +25,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.Map;
 
-public class CutSignSubcommand implements SignSubcommand {
+public class CutSignSubcommand extends SignSubcommand {
     private final Map<String, Provider<SignEditInteraction>> interactions;
 
     @Inject

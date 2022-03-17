@@ -24,10 +24,10 @@ import net.deltik.mc.signedit.ChatComms;
 import net.deltik.mc.signedit.ChatCommsModule;
 import net.deltik.mc.signedit.Configuration;
 import net.deltik.mc.signedit.exceptions.LineSelectionException;
+import net.deltik.mc.signedit.interactions.InteractionCommand;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
 import net.deltik.mc.signedit.interactions.SignEditInteractionManager;
-import net.deltik.mc.signedit.subcommands.SignSubcommand;
-import net.deltik.mc.signedit.subcommands.SignSubcommandModule;
+import net.deltik.mc.signedit.subcommands.SignSubcommandComponent;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
@@ -52,14 +52,14 @@ public class SignCommand implements CommandExecutor {
     private final Configuration configuration;
     private final SignEditInteractionManager interactionManager;
     private final Provider<ChatCommsModule.ChatCommsComponent.Builder> commsBuilderProvider;
-    private final SignSubcommandModule.SignSubcommandComponent.Builder signSubcommandComponentBuilder;
+    private final SignSubcommandComponent.Builder signSubcommandComponentBuilder;
 
     @Inject
     public SignCommand(
             Configuration configuration,
             SignEditInteractionManager interactionManager,
             Provider<ChatCommsModule.ChatCommsComponent.Builder> commsBuilderProvider,
-            SignSubcommandModule.SignSubcommandComponent.Builder signSubcommandComponent
+            SignSubcommandComponent.Builder signSubcommandComponent
     ) {
         this.interactionManager = interactionManager;
         this.commsBuilderProvider = commsBuilderProvider;
@@ -74,13 +74,13 @@ public class SignCommand implements CommandExecutor {
 
         ChatComms comms = commsBuilderProvider.get().player(player).build().comms();
 
-        SignSubcommandModule.SignSubcommandComponent signSubcommandComponent = signSubcommandComponentBuilder
+        SignSubcommandComponent signSubcommandComponent = signSubcommandComponentBuilder
                 .player(player)
                 .commandArgs(args)
                 .comms(comms)
                 .build();
 
-        Map<String, Provider<SignSubcommand>> signSubcommandMap = signSubcommandComponent.subcommandProviders();
+        Map<String, Provider<InteractionCommand>> signSubcommandMap = signSubcommandComponent.subcommandProviders();
         ArgParser argParser = signSubcommandComponent.argParser();
         String subcommandName = argParser.getSubcommand();
 
@@ -93,7 +93,7 @@ public class SignCommand implements CommandExecutor {
             return true;
         }
 
-        Provider<? extends SignSubcommand> signSubcommandProvider = signSubcommandMap.get(subcommandName);
+        Provider<? extends InteractionCommand> signSubcommandProvider = signSubcommandMap.get(subcommandName);
 
         LineSelectionException selectedLinesError = argParser.getLinesSelectionError();
         if (selectedLinesError != null && !subcommandName.equals(SUBCOMMAND_NAME_HELP)) {
@@ -101,7 +101,7 @@ public class SignCommand implements CommandExecutor {
             return true;
         }
 
-        SignSubcommand signSubcommand = signSubcommandProvider.get();
+        InteractionCommand signSubcommand = signSubcommandProvider.get();
 
         try {
             SignEditInteraction interaction = signSubcommand.execute();

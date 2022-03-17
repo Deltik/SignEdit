@@ -26,7 +26,7 @@ import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 
-public class CancelSignSubcommand implements SignSubcommand {
+public class CancelSignSubcommand extends SignSubcommand {
     private final SignEditInteractionManager interactionManager;
     private final Player player;
     private final ChatComms comms;

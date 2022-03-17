@@ -23,6 +23,8 @@ import net.deltik.mc.signedit.ArgParser;
 import net.deltik.mc.signedit.ChatComms;
 import net.deltik.mc.signedit.Configuration;
 import net.deltik.mc.signedit.SignEditPlugin;
+import net.deltik.mc.signedit.commands.SignCommandModule;
+import net.deltik.mc.signedit.interactions.InteractionCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.InvalidDescriptionException;
 import org.bukkit.plugin.Plugin;
@@ -63,7 +65,7 @@ public class HelpSignSubcommandTest {
     }
 
     private ArgParser argParse(String[] rawArgs) {
-        Set<String> subcommandNames = SignSubcommandModule.provideSubcommandNames();
+        Set<String> subcommandNames = SignCommandModule.provideSubcommandNames();
         return new ArgParser(config, rawArgs, subcommandNames);
     }
 
@@ -79,7 +81,7 @@ public class HelpSignSubcommandTest {
     public void signHelpHeading() {
         String expected = "-----";
 
-        SignSubcommand subcommand = help("");
+        InteractionCommand subcommand = help("");
         subcommand.execute();
 
         verify(player).sendMessage(contains(expected));

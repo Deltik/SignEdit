@@ -25,7 +25,7 @@ import org.bukkit.plugin.Plugin;
 
 import javax.inject.Inject;
 
-public class VersionSignSubcommand implements SignSubcommand {
+public class VersionSignSubcommand extends SignSubcommand {
     private final Plugin plugin;
     private final ChatComms comms;
 

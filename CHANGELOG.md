@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Under the Hood
 
 * Updated copyright year 2022
+* Restructured `SignSubcommand` inheritance to make more sense
 
 ## v1.13.7 (2021-12-18)
 

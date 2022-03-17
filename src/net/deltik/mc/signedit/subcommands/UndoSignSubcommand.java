@@ -28,7 +28,7 @@ import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 
-public class UndoSignSubcommand implements SignSubcommand {
+public class UndoSignSubcommand extends SignSubcommand {
     private final Player player;
     private final ChatComms comms;
     private final SignTextHistoryManager historyManager;

@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class HelpSignSubcommand implements SignSubcommand {
+public class HelpSignSubcommand extends SignSubcommand {
     public static final int MAX_LINES = 10;
     private final String signCommandUsage;
     private final ChatComms comms;

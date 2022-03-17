@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2021 Deltik <https://www.deltik.net/>
+ * Copyright (C) 2017-2022 Deltik <https://www.deltik.net/>
  *
  * This file is part of SignEdit for Bukkit.
  *
@@ -19,8 +19,7 @@
 
 package net.deltik.mc.signedit.subcommands;
 
-import net.deltik.mc.signedit.interactions.SignEditInteraction;
+import net.deltik.mc.signedit.interactions.InteractionCommand;
 
-public interface SignSubcommand {
-    SignEditInteraction execute();
+public abstract class SignSubcommand extends Subcommand implements InteractionCommand {
 }

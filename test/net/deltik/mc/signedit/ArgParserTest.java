@@ -19,11 +19,11 @@
 
 package net.deltik.mc.signedit;
 
+import net.deltik.mc.signedit.commands.SignCommandModule;
 import net.deltik.mc.signedit.exceptions.NumberParseLineSelectionException;
 import net.deltik.mc.signedit.exceptions.OutOfBoundsLineSelectionException;
 import net.deltik.mc.signedit.exceptions.RangeOrderLineSelectionException;
 import net.deltik.mc.signedit.exceptions.RangeParseLineSelectionException;
-import net.deltik.mc.signedit.subcommands.SignSubcommandModule;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -50,7 +50,7 @@ public class ArgParserTest {
         when(config.getLineStartsAt()).thenReturn(lineStartsAt);
         when(config.getMinLine()).thenCallRealMethod();
         when(config.getMaxLine()).thenCallRealMethod();
-        Set<String> subcommandNames = SignSubcommandModule.provideSubcommandNames();
+        Set<String> subcommandNames = SignCommandModule.provideSubcommandNames();
 
         String[] argsSplit = args.split(" ");
         if (args.equals("")) argsSplit = new String[]{};

@@ -23,8 +23,8 @@ import net.deltik.mc.signedit.ArgParser;
 import net.deltik.mc.signedit.ChatComms;
 import net.deltik.mc.signedit.Configuration;
 import net.deltik.mc.signedit.SignText;
-import net.deltik.mc.signedit.subcommands.SignSubcommand;
-import net.deltik.mc.signedit.subcommands.SignSubcommandModule;
+import net.deltik.mc.signedit.interactions.InteractionCommand;
+import net.deltik.mc.signedit.subcommands.SignSubcommandComponent;
 import net.deltik.mc.signedit.subcommands.SubcommandName;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -46,7 +46,7 @@ import java.util.stream.Stream;
 public class SignCommandTabCompleter implements TabCompleter {
     private final Set<String> subcommandNames;
     private final Configuration config;
-    private final SignSubcommandModule.SignSubcommandComponent.Builder signSubcommandComponentBuilder;
+    private final SignSubcommandComponent.Builder signSubcommandComponentBuilder;
     protected static final Set<String> subcommandsWithLineSelector = Stream.of(
             "set",
             "clear",
@@ -58,7 +58,7 @@ public class SignCommandTabCompleter implements TabCompleter {
     public SignCommandTabCompleter(
             Configuration config,
             @SubcommandName Set<String> subcommandNames,
-            SignSubcommandModule.SignSubcommandComponent.Builder signSubcommandComponentBuilder
+            SignSubcommandComponent.Builder signSubcommandComponentBuilder
     ) {
         this.subcommandNames = subcommandNames;
         this.config = config;
@@ -118,7 +118,7 @@ public class SignCommandTabCompleter implements TabCompleter {
         }
         MockComms mockComms = new MockComms(player, config);
 
-        SignSubcommand signSubcommand = getSignSubcommand(player, argParser, mockComms);
+        InteractionCommand signSubcommand = getSignSubcommand(player, argParser, mockComms);
         signSubcommand.execute();
 
         List<String> remainder = argParser.getRemainder();
@@ -137,9 +137,9 @@ public class SignCommandTabCompleter implements TabCompleter {
                 .collect(Collectors.toSet());
     }
 
-    protected SignSubcommand getSignSubcommand(Player player, ArgParser argParser, ChatComms chatComms) {
+    protected InteractionCommand getSignSubcommand(Player player, ArgParser argParser, ChatComms chatComms) {
         String subcommandName = argParser.getSubcommand();
-        SignSubcommandModule.SignSubcommandComponent component = signSubcommandComponentBuilder
+        SignSubcommandComponent component = signSubcommandComponentBuilder
                 .player(player)
                 .commandArgs(new String[]{subcommandName})
                 .comms(chatComms)

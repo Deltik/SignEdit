@@ -19,24 +19,5 @@
 
 package net.deltik.mc.signedit.subcommands;
 
-import net.deltik.mc.signedit.interactions.SignEditInteraction;
-
-import javax.inject.Inject;
-import javax.inject.Provider;
-import java.util.Map;
-
-public class CopySignSubcommand extends SignSubcommand {
-    private final Map<String, Provider<SignEditInteraction>> interactions;
-
-    @Inject
-    public CopySignSubcommand(
-            Map<String, Provider<SignEditInteraction>> interactions
-    ) {
-        this.interactions = interactions;
-    }
-
-    @Override
-    public SignEditInteraction execute() {
-        return interactions.get("Copy").get();
-    }
+public abstract class Subcommand {
 }

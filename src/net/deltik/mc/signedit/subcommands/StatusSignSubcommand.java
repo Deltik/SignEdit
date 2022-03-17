@@ -26,7 +26,7 @@ import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 
-public class StatusSignSubcommand implements SignSubcommand {
+public class StatusSignSubcommand extends SignSubcommand {
     private final Player player;
     private final ChatComms comms;
     private final SignEditInteractionManager interactionManager;

@@ -23,7 +23,6 @@ import net.deltik.mc.signedit.ArgParser;
 import net.deltik.mc.signedit.ChatComms;
 import net.deltik.mc.signedit.Configuration;
 import net.deltik.mc.signedit.subcommands.HelpSignSubcommand;
-import net.deltik.mc.signedit.subcommands.SignSubcommandModule;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
@@ -51,7 +50,7 @@ public class SignCommandTabCompleterTest {
     private CommandSender commandSender;
     private Command command;
     private final String alias = "sign";
-    private final Set<String> subcommandNames = SignSubcommandModule.provideSubcommandNames();
+    private final Set<String> subcommandNames = SignCommandModule.provideSubcommandNames();
 
     private final String[] fancySignLines = new String[]{
             "§x§2§2§4§4§A§ADot",

@@ -19,32 +19,37 @@
 
 package net.deltik.mc.signedit.subcommands;
 
+import dagger.BindsInstance;
+import dagger.Subcomponent;
+import net.deltik.mc.signedit.ArgParser;
+import net.deltik.mc.signedit.ArgParserArgs;
 import net.deltik.mc.signedit.ChatComms;
-import net.deltik.mc.signedit.SignText;
-import net.deltik.mc.signedit.SignTextHistory;
-import net.deltik.mc.signedit.SignTextHistoryManager;
-import net.deltik.mc.signedit.interactions.SignEditInteraction;
+import net.deltik.mc.signedit.interactions.InteractionCommand;
+import net.deltik.mc.signedit.interactions.SignEditInteractionModule;
 import org.bukkit.entity.Player;
 
-import javax.inject.Inject;
+import javax.inject.Provider;
+import java.util.Map;
 
-public class RedoSignSubcommand extends SignSubcommand {
-    private final Player player;
-    private final ChatComms comms;
-    private final SignTextHistoryManager historyManager;
+@PerSubcommand
+@Subcomponent(modules = {SignEditInteractionModule.class})
+public interface SignSubcommandComponent {
 
-    @Inject
-    public RedoSignSubcommand(Player player, ChatComms comms, SignTextHistoryManager historyManager) {
-        this.player = player;
-        this.comms = comms;
-        this.historyManager = historyManager;
-    }
+    Map<String, Provider<InteractionCommand>> subcommandProviders();
 
-    @Override
-    public SignEditInteraction execute() {
-        SignTextHistory history = historyManager.getHistory(player);
-        SignText redoneSignText = history.redo();
-        comms.compareSignText(redoneSignText);
-        return null;
+    ArgParser argParser();
+
+    @Subcomponent.Builder
+    abstract class Builder {
+        public abstract SignSubcommandComponent build();
+
+        @BindsInstance
+        public abstract Builder player(Player player);
+
+        @BindsInstance
+        public abstract Builder commandArgs(@ArgParserArgs String[] args);
+
+        @BindsInstance
+        public abstract Builder comms(ChatComms comms);
     }
 }
