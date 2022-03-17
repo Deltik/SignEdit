@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Updated copyright year 2022
 * Restructured `SignSubcommand` inheritance to make more sense
+* Gradle has been updated from version 7.3.1 to version 7.4.1.
 
 ## v1.13.7 (2021-12-18)
 
