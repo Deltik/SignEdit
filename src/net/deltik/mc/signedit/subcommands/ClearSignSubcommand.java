@@ -20,6 +20,7 @@
 package net.deltik.mc.signedit.subcommands;
 
 import net.deltik.mc.signedit.ArgParser;
+import net.deltik.mc.signedit.LineSelectorParser;
 import net.deltik.mc.signedit.SignText;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
 
@@ -47,7 +48,7 @@ public class ClearSignSubcommand extends SignSubcommand {
     public SignEditInteraction execute() {
         int[] selectedLines = argParser.getLinesSelection();
         if (selectedLines.length <= 0) {
-            selectedLines = ArgParser.ALL_LINES_SELECTED;
+            selectedLines = LineSelectorParser.ALL_LINES_SELECTED;
         }
 
         for (int selectedLine : selectedLines) {

@@ -20,7 +20,8 @@
 package net.deltik.mc.signedit;
 
 import net.deltik.mc.signedit.commands.SignCommand;
-import net.deltik.mc.signedit.exceptions.*;
+import net.deltik.mc.signedit.exceptions.LineSelectionException;
+import net.deltik.mc.signedit.exceptions.NumberParseLineSelectionException;
 import net.deltik.mc.signedit.subcommands.SubcommandName;
 
 import javax.inject.Inject;
@@ -29,12 +30,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import static net.deltik.mc.signedit.LineSelectorParser.NO_LINES_SELECTED;
+
+@Deprecated
 public class ArgParser {
     private final Configuration config;
     private final Set<String> subcommandNames;
-
-    public static final int[] NO_LINES_SELECTED = new int[0];
-    public static final int[] ALL_LINES_SELECTED = new int[]{0, 1, 2, 3};
 
     String subcommand;
     int[] selectedLines = NO_LINES_SELECTED;
@@ -115,50 +116,7 @@ public class ArgParser {
     }
 
     private void parseLineSelection(String rawLineGroups) {
-        byte selectedLinesMask = 0;
-        String[] lineRanges = rawLineGroups.split(",", -1);
-        for (String lineRange : lineRanges) {
-            if (lineRange.startsWith("-")) {
-                parseLineNumberFromString(lineRange);
-            }
-            String[] lineRangeSplit = lineRange.split("-");
-            if (lineRangeSplit.length == 2) {
-                int lowerBound = parseLineNumberFromString(lineRangeSplit[0]);
-                int upperBound = parseLineNumberFromString(lineRangeSplit[1]);
-                if (lowerBound > upperBound) {
-                    throw new RangeOrderLineSelectionException(rawLineGroups, lineRangeSplit[0], lineRangeSplit[1]);
-                }
-                for (int i = lowerBound; i <= upperBound; i++) {
-                    selectedLinesMask |= 1 << i;
-                }
-            } else if (lineRangeSplit.length == 1) {
-                int lineNumber = parseLineNumberFromString(lineRange);
-                selectedLinesMask |= 1 << lineNumber;
-            } else if (lineRangeSplit.length > 2) {
-                throw new RangeParseLineSelectionException(rawLineGroups, lineRange);
-            }
-        }
-
-        this.selectedLines = new int[Integer.bitCount(selectedLinesMask)];
-        int selectedLinesPosition = 0;
-        for (int i = 0; i <= (config.getMaxLine() - config.getMinLine()); i++) {
-            if ((selectedLinesMask >>> i & 1) == 0x1) {
-                this.selectedLines[selectedLinesPosition++] = i;
-            }
-        }
-    }
-
-    private int parseLineNumberFromString(String rawLineNumber) {
-        int unadjustedLineNumber;
-        try {
-            unadjustedLineNumber = Integer.parseInt(rawLineNumber);
-        } catch (NumberFormatException e) {
-            throw new NumberParseLineSelectionException(rawLineNumber);
-        }
-        if (unadjustedLineNumber > config.getMaxLine() ||
-                unadjustedLineNumber < config.getMinLine()) {
-            throw new OutOfBoundsLineSelectionException(rawLineNumber);
-        }
-        return unadjustedLineNumber - config.getMinLine();
+        LineSelectorParser lineSelectorParser = new LineSelectorParser(config);
+        this.selectedLines = lineSelectorParser.toSelectedLines(rawLineGroups);
     }
 }

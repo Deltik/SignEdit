@@ -76,7 +76,7 @@ public class ArgParserTest {
         parse("garbage1 garbage2 garbage3");
 
         assertEquals("help", subcommand);
-        assertArrayEquals(ArgParser.NO_LINES_SELECTED, selectedLines);
+        assertArrayEquals(LineSelectorParser.NO_LINES_SELECTED, selectedLines);
         assertEquals(Arrays.asList("garbage1", "garbage2", "garbage3"), remainder);
     }
 
@@ -85,7 +85,7 @@ public class ArgParserTest {
         parse("help 2");
 
         assertEquals("help", subcommand);
-        assertArrayEquals(ArgParser.NO_LINES_SELECTED, selectedLines);
+        assertArrayEquals(LineSelectorParser.NO_LINES_SELECTED, selectedLines);
         assertEquals(Collections.singletonList("2"), remainder);
     }
 

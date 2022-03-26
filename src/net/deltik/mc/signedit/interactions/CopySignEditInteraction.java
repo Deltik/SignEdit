@@ -26,6 +26,9 @@ import org.bukkit.entity.Player;
 import javax.inject.Inject;
 import java.util.Arrays;
 
+import static net.deltik.mc.signedit.LineSelectorParser.ALL_LINES_SELECTED;
+import static net.deltik.mc.signedit.LineSelectorParser.NO_LINES_SELECTED;
+
 public class CopySignEditInteraction implements SignEditInteraction {
     private final ArgParser argParser;
     private final SignText signText;
@@ -48,8 +51,8 @@ public class CopySignEditInteraction implements SignEditInteraction {
     @Override
     public void interact(Player player, Sign sign) {
         int[] selectedLines = argParser.getLinesSelection();
-        if (Arrays.equals(selectedLines, ArgParser.NO_LINES_SELECTED)) {
-            selectedLines = ArgParser.ALL_LINES_SELECTED;
+        if (Arrays.equals(selectedLines, NO_LINES_SELECTED)) {
+            selectedLines = ALL_LINES_SELECTED;
         }
         for (int selectedLine : selectedLines) {
             signText.setLineLiteral(selectedLine, sign.getLine(selectedLine));

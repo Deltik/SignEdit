@@ -35,7 +35,10 @@ import org.bukkit.entity.Player;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -204,7 +207,7 @@ public class SignCommandTabCompleter implements TabCompleter {
     /**
      * Offer suggestions for the line number selector
      * <p>
-     * FIXME: This code is disgusting.
+     * FIXME: This code is still ugly, but not as bad as before...
      */
     private List<String> completeLines(Player player, String[] args) {
         List<String> completion = new ArrayList<>();
@@ -214,8 +217,7 @@ public class SignCommandTabCompleter implements TabCompleter {
         int minLine = config.getMinLine();
         int maxLine = config.getMaxLine();
         Pattern lineSelector = Pattern.compile("^[" + minLine + "-" + maxLine + ",\\-]+$");
-        String lineSelectorArg = null;
-        boolean doLineSelectorCompletion = false;
+        String lineSelectorArg = "";
         for (int i = 0; i < Math.min(args.length, 2); i++) {
             if (lineSelector.matcher(args[i]).matches()) {
                 lineSelectorArg = args[i];
@@ -223,7 +225,6 @@ public class SignCommandTabCompleter implements TabCompleter {
                     args[i] = args[i].substring(0, args[i].length() - 1);
                 }
                 argParser = new ArgParser(config, args, subcommandNames);
-                doLineSelectorCompletion = true;
                 break;
             }
         }
@@ -239,57 +240,8 @@ public class SignCommandTabCompleter implements TabCompleter {
                 args.length == 2 && args[0].isEmpty() && args[1].isEmpty()) {
             return completion;
         }
-        if (doLineSelectorCompletion) {
-            int[] linesSelectedSoFar = argParser.getLinesSelection();
-            if (linesSelectedSoFar == ArgParser.ALL_LINES_SELECTED
-                    || linesSelectedSoFar == ArgParser.NO_LINES_SELECTED) {
-                return completion;
-            }
-            List<Integer> availableLines = Arrays.stream(ArgParser.ALL_LINES_SELECTED)
-                    .boxed()
-                    .collect(Collectors.toList());
-            Set<Integer> selectedLines = new HashSet<>();
-            for (int selectedLine : linesSelectedSoFar) {
-                selectedLines.add(selectedLine);
-            }
-            availableLines.removeAll(selectedLines);
-            String[] lineGroup = lineSelectorArg.split(",");
-            String lineGroupLast = lineGroup[lineGroup.length - 1];
-            if (lineSelectorArg.endsWith("-")) {
-                try {
-                    int lastLineGroupLowerBound = Integer.parseInt(
-                            lineGroupLast.substring(0, lineGroupLast.length() - 1)
-                    );
-                    for (++lastLineGroupLowerBound; lastLineGroupLowerBound <= maxLine; lastLineGroupLowerBound++) {
-                        if (selectedLines.contains(lastLineGroupLowerBound - minLine)) break;
-                        completion.add(lineSelectorArg + lastLineGroupLowerBound);
-                    }
-                } catch (NumberFormatException e) {
-                    return completion;
-                }
-            } else if (lineSelectorArg.endsWith(",")) {
-                String finalLineSelectorArg = lineSelectorArg;
-                completion.addAll(availableLines.stream().map(
-                        line -> finalLineSelectorArg + (line + minLine)
-                ).collect(Collectors.toList()));
-            } else if (availableLines.size() > 0) {
-                completion.add(lineSelectorArg + ",");
-                if (!lineGroupLast.contains("-")) {
-                    try {
-                        int lastLineGroupLowerBound = Integer.parseInt(lineGroupLast);
-                        if (!selectedLines.contains(lastLineGroupLowerBound - minLine + 1)
-                                && lastLineGroupLowerBound < maxLine) {
-                            completion.add(lineSelectorArg + "-");
-                        }
-                    } catch (NumberFormatException ignored) {
-                    }
-                }
-            }
-        } else {
-            for (int line = minLine; line <= maxLine; line++) {
-                completion.add(String.valueOf(line));
-            }
-        }
+        LineSelectorParser lineSelectorParser = new LineSelectorParser(config);
+        completion.addAll(lineSelectorParser.suggestCompletion(lineSelectorArg));
         return completion;
     }
 

@@ -27,8 +27,8 @@ import org.bukkit.entity.Player;
 import javax.inject.Inject;
 import java.util.Arrays;
 
-import static net.deltik.mc.signedit.ArgParser.ALL_LINES_SELECTED;
-import static net.deltik.mc.signedit.ArgParser.NO_LINES_SELECTED;
+import static net.deltik.mc.signedit.LineSelectorParser.ALL_LINES_SELECTED;
+import static net.deltik.mc.signedit.LineSelectorParser.NO_LINES_SELECTED;
 
 public class CutSignEditInteraction implements SignEditInteraction {
     private final ArgParser argParser;
