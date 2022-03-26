@@ -20,9 +20,11 @@
 package net.deltik.mc.signedit.subcommands;
 
 import net.deltik.mc.signedit.ChatComms;
+import net.deltik.mc.signedit.ChatCommsModule;
 import net.deltik.mc.signedit.Configuration;
 import net.deltik.mc.signedit.SignEditPlugin;
 import net.deltik.mc.signedit.interactions.InteractionCommand;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -41,12 +43,28 @@ public class VersionSignSubcommandTest {
         Player player = mock(Player.class);
         Configuration config = mock(Configuration.class);
         when(config.getLocale()).thenReturn(new Locale("en"));
-        ChatComms comms = new ChatComms(player, config);
         PluginDescriptionFile pluginDescriptionFile = mock(PluginDescriptionFile.class);
         Plugin plugin = mock(SignEditPlugin.class);
         when(plugin.getDescription()).thenReturn(pluginDescriptionFile);
         when(pluginDescriptionFile.getVersion()).thenReturn(expected);
-        InteractionCommand subcommand = new VersionSignSubcommand(plugin, comms);
+        InteractionCommand subcommand = new VersionSignSubcommand(
+                plugin,
+                new ChatCommsModule.ChatCommsComponent.Builder() {
+                    ChatComms comms;
+
+                    @Override
+                    public ChatCommsModule.ChatCommsComponent build() {
+                        return () -> comms;
+                    }
+
+                    @Override
+                    public ChatCommsModule.ChatCommsComponent.Builder commandSender(CommandSender commandSender) {
+                        this.comms = new ChatComms(player, config);
+                        return this;
+                    }
+                },
+                player
+        );
         subcommand.execute();
 
         verify(player).sendMessage(contains(expected));

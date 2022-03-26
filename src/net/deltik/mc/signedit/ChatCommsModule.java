@@ -22,7 +22,7 @@ package net.deltik.mc.signedit;
 import dagger.BindsInstance;
 import dagger.Module;
 import dagger.Subcomponent;
-import org.bukkit.entity.Player;
+import org.bukkit.command.CommandSender;
 
 @Module(subcomponents = {
         ChatCommsModule.ChatCommsComponent.class
@@ -37,7 +37,7 @@ public abstract class ChatCommsModule {
             public abstract ChatCommsComponent build();
 
             @BindsInstance
-            public abstract Builder player(Player player);
+            public abstract Builder commandSender(CommandSender commandSender);
         }
     }
 }

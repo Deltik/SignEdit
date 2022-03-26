@@ -19,10 +19,7 @@
 
 package net.deltik.mc.signedit.interactions;
 
-import net.deltik.mc.signedit.ChatComms;
-import net.deltik.mc.signedit.SignText;
-import net.deltik.mc.signedit.SignTextClipboardManager;
-import net.deltik.mc.signedit.SignTextHistoryManager;
+import net.deltik.mc.signedit.*;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 
@@ -33,19 +30,19 @@ public class PasteSignEditInteraction implements SignEditInteraction {
     private final SignTextClipboardManager clipboardManager;
     private final Provider<SignText> signTextProvider;
     private final SignTextHistoryManager historyManager;
-    private final ChatComms comms;
+    private final ChatCommsModule.ChatCommsComponent.Builder commsBuilder;
 
     @Inject
     public PasteSignEditInteraction(
             SignTextClipboardManager clipboardManager,
             Provider<SignText> signTextProvider,
             SignTextHistoryManager historyManager,
-            ChatComms comms
+            ChatCommsModule.ChatCommsComponent.Builder commsBuilder
     ) {
         this.clipboardManager = clipboardManager;
         this.signTextProvider = signTextProvider;
         this.historyManager = historyManager;
-        this.comms = comms;
+        this.commsBuilder = commsBuilder;
     }
 
     @Override
@@ -62,6 +59,7 @@ public class PasteSignEditInteraction implements SignEditInteraction {
             historyManager.getHistory(player).push(signText);
         }
 
+        ChatComms comms = commsBuilder.commandSender(player).build().comms();
         comms.compareSignText(signText);
     }
 

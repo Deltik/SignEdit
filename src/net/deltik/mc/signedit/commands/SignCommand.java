@@ -51,18 +51,18 @@ public class SignCommand implements CommandExecutor {
     private static final int MAX_DISTANCE = 20;
     private final Configuration configuration;
     private final SignEditInteractionManager interactionManager;
-    private final Provider<ChatCommsModule.ChatCommsComponent.Builder> commsBuilderProvider;
+    private final ChatCommsModule.ChatCommsComponent.Builder commsBuilder;
     private final SignSubcommandComponent.Builder signSubcommandComponentBuilder;
 
     @Inject
     public SignCommand(
             Configuration configuration,
             SignEditInteractionManager interactionManager,
-            Provider<ChatCommsModule.ChatCommsComponent.Builder> commsBuilderProvider,
+            ChatCommsModule.ChatCommsComponent.Builder commsBuilder,
             SignSubcommandComponent.Builder signSubcommandComponent
     ) {
         this.interactionManager = interactionManager;
-        this.commsBuilderProvider = commsBuilderProvider;
+        this.commsBuilder = commsBuilder;
         this.configuration = configuration;
         this.signSubcommandComponentBuilder = signSubcommandComponent;
     }
@@ -72,12 +72,11 @@ public class SignCommand implements CommandExecutor {
         if (!(commandSender instanceof Player)) return true;
         Player player = (Player) commandSender;
 
-        ChatComms comms = commsBuilderProvider.get().player(player).build().comms();
+        ChatComms comms = commsBuilder.commandSender(player).build().comms();
 
         SignSubcommandComponent signSubcommandComponent = signSubcommandComponentBuilder
                 .player(player)
                 .commandArgs(args)
-                .comms(comms)
                 .build();
 
         Map<String, Provider<InteractionCommand>> signSubcommandMap = signSubcommandComponent.subcommandProviders();
@@ -128,11 +127,11 @@ public class SignCommand implements CommandExecutor {
         if (targetBlock != null) targetBlockState = targetBlock.getState();
         if (shouldDoClickingMode(targetBlock)) {
             interactionManager.setPendingInteraction(player, interaction);
-            comms.tellPlayer(comms.t("right_click_sign_to_apply_action"));
+            comms.tell(comms.t("right_click_sign_to_apply_action"));
         } else if (targetBlockState instanceof Sign) {
             interaction.interact(player, (Sign) targetBlockState);
         } else {
-            comms.tellPlayer(comms.t("must_look_at_sign_to_interact"));
+            comms.tell(comms.t("must_look_at_sign_to_interact"));
         }
     }
 

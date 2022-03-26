@@ -20,6 +20,7 @@
 package net.deltik.mc.signedit.interactions;
 
 import net.deltik.mc.signedit.ChatComms;
+import net.deltik.mc.signedit.ChatCommsModule;
 import net.deltik.mc.signedit.SignText;
 import net.deltik.mc.signedit.SignTextHistoryManager;
 import org.bukkit.Bukkit;
@@ -39,7 +40,7 @@ import javax.inject.Inject;
 public class BookUiSignEditInteraction implements SignEditInteraction {
     private final Plugin plugin;
     private final SignEditInteractionManager interactionManager;
-    private final ChatComms comms;
+    private final ChatCommsModule.ChatCommsComponent.Builder commsBuilder;
     private final SignText signText;
     private final SignTextHistoryManager historyManager;
     protected ItemStack originalItem;
@@ -50,13 +51,13 @@ public class BookUiSignEditInteraction implements SignEditInteraction {
     public BookUiSignEditInteraction(
             Plugin plugin,
             SignEditInteractionManager interactionManager,
-            ChatComms comms,
+            ChatCommsModule.ChatCommsComponent.Builder commsBuilder,
             SignText signText,
             SignTextHistoryManager historyManager
     ) {
         this.plugin = plugin;
         this.interactionManager = interactionManager;
-        this.comms = comms;
+        this.commsBuilder = commsBuilder;
         this.signText = signText;
         this.historyManager = historyManager;
     }
@@ -78,7 +79,8 @@ public class BookUiSignEditInteraction implements SignEditInteraction {
             return;
         }
 
-        comms.tellPlayer(comms.t("right_click_air_to_open_sign_editor"));
+        ChatComms comms = commsBuilder.commandSender(player).build().comms();
+        comms.tell(comms.t("right_click_air_to_open_sign_editor"));
     }
 
     @Override
@@ -91,6 +93,7 @@ public class BookUiSignEditInteraction implements SignEditInteraction {
 
     protected void openSignEditor(Player player) {
         this.player = player;
+        ChatComms comms = commsBuilder.commandSender(player).build().comms();
         PlayerInventory inventory = player.getInventory();
         ItemStack book = new ItemStack(Material.WRITABLE_BOOK, 1);
         BookMeta bookMeta = (BookMeta) book.getItemMeta();
@@ -100,7 +103,7 @@ public class BookUiSignEditInteraction implements SignEditInteraction {
         originalItem = inventory.getItemInMainHand();
         originalItemIndex = inventory.getHeldItemSlot();
         inventory.setItemInMainHand(book);
-        comms.tellPlayer(comms.t("right_click_air_to_open_sign_editor"));
+        comms.tell(comms.t("right_click_air_to_open_sign_editor"));
         interactionManager.removePendingInteraction(player);
         interactionManager.setPendingInteraction(player, this);
     }
@@ -140,6 +143,7 @@ public class BookUiSignEditInteraction implements SignEditInteraction {
             historyManager.getHistory(player).push(signText);
         }
 
+        ChatComms comms = commsBuilder.commandSender(player).build().comms();
         comms.compareSignText(signText);
     }
 

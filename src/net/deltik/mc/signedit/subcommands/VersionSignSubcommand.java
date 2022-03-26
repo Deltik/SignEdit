@@ -20,25 +20,34 @@
 package net.deltik.mc.signedit.subcommands;
 
 import net.deltik.mc.signedit.ChatComms;
+import net.deltik.mc.signedit.ChatCommsModule;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import javax.inject.Inject;
 
 public class VersionSignSubcommand extends SignSubcommand {
     private final Plugin plugin;
-    private final ChatComms comms;
+    private final ChatCommsModule.ChatCommsComponent.Builder commsBuilder;
+    private final Player player;
 
     @Inject
-    public VersionSignSubcommand(Plugin plugin, ChatComms comms) {
+    public VersionSignSubcommand(
+            Plugin plugin,
+            ChatCommsModule.ChatCommsComponent.Builder commsBuilder,
+            Player player
+    ) {
         this.plugin = plugin;
-        this.comms = comms;
+        this.commsBuilder = commsBuilder;
+        this.player = player;
     }
 
     @Override
     public SignEditInteraction execute() {
         String version = plugin.getDescription().getVersion();
-        comms.tellPlayer(comms.t("version", version));
+        ChatComms comms = commsBuilder.commandSender(player).build().comms();
+        comms.tell(comms.t("version", version));
         return null;
     }
 }

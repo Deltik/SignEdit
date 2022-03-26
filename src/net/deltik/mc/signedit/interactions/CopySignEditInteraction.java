@@ -19,10 +19,7 @@
 
 package net.deltik.mc.signedit.interactions;
 
-import net.deltik.mc.signedit.ArgParser;
-import net.deltik.mc.signedit.ChatComms;
-import net.deltik.mc.signedit.SignText;
-import net.deltik.mc.signedit.SignTextClipboardManager;
+import net.deltik.mc.signedit.*;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 
@@ -33,18 +30,19 @@ public class CopySignEditInteraction implements SignEditInteraction {
     private final ArgParser argParser;
     private final SignText signText;
     private final SignTextClipboardManager clipboardManager;
-    private final ChatComms comms;
+    private final ChatCommsModule.ChatCommsComponent.Builder commsBuilder;
 
     @Inject
     public CopySignEditInteraction(
             ArgParser argParser,
             SignText signText,
             SignTextClipboardManager clipboardManager,
-            ChatComms comms) {
+            ChatCommsModule.ChatCommsComponent.Builder commsBuilder
+    ) {
         this.argParser = argParser;
         this.signText = signText;
         this.clipboardManager = clipboardManager;
-        this.comms = comms;
+        this.commsBuilder = commsBuilder;
     }
 
     @Override
@@ -59,7 +57,8 @@ public class CopySignEditInteraction implements SignEditInteraction {
 
         clipboardManager.setClipboard(player, signText);
 
-        comms.tellPlayer(comms.t("lines_copied_section"));
+        ChatComms comms = commsBuilder.commandSender(player).build().comms();
+        comms.tell(comms.t("lines_copied_section"));
         comms.dumpLines(signText.getLines());
     }
 

@@ -20,7 +20,7 @@
 package net.deltik.mc.signedit.commands;
 
 import net.deltik.mc.signedit.ArgParser;
-import net.deltik.mc.signedit.ChatComms;
+import net.deltik.mc.signedit.ChatCommsModule;
 import net.deltik.mc.signedit.Configuration;
 import net.deltik.mc.signedit.subcommands.HelpSignSubcommand;
 import org.bukkit.block.Block;
@@ -388,10 +388,20 @@ public class SignCommandTabCompleterTest {
                 .collect(Collectors.joining("\n"));
         doAnswer(invocation -> new HelpSignSubcommand(
                 usage,
-                invocation.getArgument(2),
+                new ChatCommsModule.ChatCommsComponent.Builder() {
+                    @Override
+                    public ChatCommsModule.ChatCommsComponent build() {
+                        return () -> invocation.getArgument(2);
+                    }
+
+                    @Override
+                    public ChatCommsModule.ChatCommsComponent.Builder commandSender(CommandSender commandSender) {
+                        return this;
+                    }
+                },
                 invocation.getArgument(1),
                 invocation.getArgument(0)
-        )).when(tabCompleter).getSignSubcommand(any(Player.class), any(ArgParser.class), any(ChatComms.class));
+        )).when(tabCompleter).getSignSubcommand(any(Player.class), any(ArgParser.class));
 
         List<String> results = tabComplete("help ");
         int pagesCount = (commandCount - 1) / (HelpSignSubcommand.MAX_LINES - 2) + 1;
@@ -413,10 +423,20 @@ public class SignCommandTabCompleterTest {
                 .collect(Collectors.joining("\n"));
         doAnswer(invocation -> new HelpSignSubcommand(
                 usage,
-                invocation.getArgument(2),
+                new ChatCommsModule.ChatCommsComponent.Builder() {
+                    @Override
+                    public ChatCommsModule.ChatCommsComponent build() {
+                        return () -> invocation.getArgument(2);
+                    }
+
+                    @Override
+                    public ChatCommsModule.ChatCommsComponent.Builder commandSender(CommandSender commandSender) {
+                        return this;
+                    }
+                },
                 invocation.getArgument(1),
                 invocation.getArgument(0)
-        )).when(tabCompleter).getSignSubcommand(any(Player.class), any(ArgParser.class), any(ChatComms.class));
+        )).when(tabCompleter).getSignSubcommand(any(Player.class), any(ArgParser.class));
 
         List<String> results = tabComplete("help ");
         assertEquals(0, results.size());

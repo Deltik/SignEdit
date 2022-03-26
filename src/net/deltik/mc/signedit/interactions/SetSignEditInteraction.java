@@ -20,6 +20,7 @@
 package net.deltik.mc.signedit.interactions;
 
 import net.deltik.mc.signedit.ChatComms;
+import net.deltik.mc.signedit.ChatCommsModule;
 import net.deltik.mc.signedit.SignText;
 import net.deltik.mc.signedit.SignTextHistoryManager;
 import org.bukkit.block.Sign;
@@ -29,13 +30,17 @@ import javax.inject.Inject;
 
 public class SetSignEditInteraction implements SignEditInteraction {
     private final SignText signText;
-    private final ChatComms comms;
+    private final ChatCommsModule.ChatCommsComponent.Builder commsBuilder;
     private final SignTextHistoryManager historyManager;
 
     @Inject
-    public SetSignEditInteraction(SignText signText, ChatComms comms, SignTextHistoryManager historyManager) {
+    public SetSignEditInteraction(
+            SignText signText,
+            ChatCommsModule.ChatCommsComponent.Builder commsBuilder,
+            SignTextHistoryManager historyManager
+    ) {
         this.signText = signText;
-        this.comms = comms;
+        this.commsBuilder = commsBuilder;
         this.historyManager = historyManager;
     }
 
@@ -52,6 +57,7 @@ public class SetSignEditInteraction implements SignEditInteraction {
             historyManager.getHistory(player).push(signText);
         }
 
+        ChatComms comms = commsBuilder.commandSender(player).build().comms();
         comms.compareSignText(signText);
     }
 }

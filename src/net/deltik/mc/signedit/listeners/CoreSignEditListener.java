@@ -90,7 +90,7 @@ public class CoreSignEditListener extends SignEditListener {
                 SignEditInteraction interaction = interactionManager.removePendingInteraction(player);
                 interaction.interact(player, sign);
             } catch (Throwable e) {
-                ChatComms comms = commsBuilderProvider.get().player(player).build().comms();
+                ChatComms comms = commsBuilderProvider.get().commandSender(player).build().comms();
                 comms.reportException(e);
             }
         }

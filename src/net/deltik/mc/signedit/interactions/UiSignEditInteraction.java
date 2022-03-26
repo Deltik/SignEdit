@@ -20,6 +20,7 @@
 package net.deltik.mc.signedit.interactions;
 
 import net.deltik.mc.signedit.ChatComms;
+import net.deltik.mc.signedit.ChatCommsModule;
 import net.deltik.mc.signedit.SignText;
 import net.deltik.mc.signedit.SignTextHistoryManager;
 import net.deltik.mc.signedit.commands.SignCommand;
@@ -44,7 +45,7 @@ import static net.deltik.mc.signedit.CraftBukkitReflector.*;
 
 public class UiSignEditInteraction implements SignEditInteraction {
     private final SignEditInteractionManager interactionManager;
-    private final ChatComms comms;
+    private final ChatCommsModule.ChatCommsComponent.Builder commsBuilder;
     private final SignText signText;
     private final SignTextHistoryManager historyManager;
     private final SignCommand signCommand;
@@ -54,13 +55,13 @@ public class UiSignEditInteraction implements SignEditInteraction {
     @Inject
     public UiSignEditInteraction(
             SignEditInteractionManager interactionManager,
-            ChatComms comms,
+            ChatCommsModule.ChatCommsComponent.Builder commsBuilder,
             SignText signText,
             SignTextHistoryManager historyManager,
             SignCommand signCommand
     ) {
         this.interactionManager = interactionManager;
-        this.comms = comms;
+        this.commsBuilder = commsBuilder;
         this.signText = signText;
         this.historyManager = historyManager;
         this.signCommand = signCommand;
@@ -110,10 +111,12 @@ public class UiSignEditInteraction implements SignEditInteraction {
         }
 
         signText.importAuthoritativeSignChangeEvent(event);
+
         if (signText.signChanged()) {
-            historyManager.getHistory(event.getPlayer()).push(signText);
+            historyManager.getHistory(player).push(signText);
         }
 
+        ChatComms comms = commsBuilder.commandSender(player).build().comms();
         comms.compareSignText(signText);
     }
 

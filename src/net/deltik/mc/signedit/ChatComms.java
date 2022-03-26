@@ -22,6 +22,7 @@ package net.deltik.mc.signedit;
 import net.deltik.mc.signedit.exceptions.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -42,33 +43,40 @@ import java.util.stream.Stream;
 import static org.bukkit.Bukkit.getLogger;
 
 public class ChatComms {
-    private Player player;
+    static final Set<String> FORMATTING_CODE_SET = Stream.of(
+            "reset",
+            "primary", "primaryDark", "primaryLight",
+            "secondary",
+            "highlightBefore", "highlightAfter",
+            "strong", "italic", "strike", "error"
+    ).collect(Collectors.toSet());
+    private CommandSender commandSender;
     private Configuration config;
     private ResourceBundle phrases;
     private MessageFormat messageFormatter;
 
     @Inject
-    public ChatComms(Player player, Configuration config, UserComms userComms) {
-        this(player, config, userComms.getClassLoader());
+    public ChatComms(CommandSender commandSender, Configuration config, UserComms userComms) {
+        this(commandSender, config, userComms.getClassLoader());
     }
 
-    public ChatComms(Player player, Configuration config) {
-        initialize(player, config);
+    public ChatComms(CommandSender commandSender, Configuration config) {
+        initialize(commandSender, config);
     }
 
-    public ChatComms(Player player, Configuration config, ClassLoader classLoader) {
-        initialize(player, config, classLoader);
+    public ChatComms(CommandSender commandSender, Configuration config, ClassLoader classLoader) {
+        initialize(commandSender, config, classLoader);
     }
 
-    private void initialize(Player player, Configuration config) {
-        initialize(player, config, ChatComms.class.getClassLoader());
+    private void initialize(CommandSender commandSender, Configuration config) {
+        initialize(commandSender, config, ChatComms.class.getClassLoader());
     }
 
-    private void initialize(Player player, Configuration config, ClassLoader classLoader) {
-        this.player = player;
+    private void initialize(CommandSender commandSender, Configuration config, ClassLoader classLoader) {
+        this.commandSender = commandSender;
         this.config = config;
 
-        Locale locale = getSensibleLocale(player, config);
+        Locale locale = getSensibleLocale(commandSender);
         this.phrases = ResourceBundle.getBundle(
                 "Comms",
                 locale,
@@ -79,17 +87,22 @@ public class ChatComms {
         this.messageFormatter.setLocale(locale);
     }
 
-    private Locale getSensibleLocale(Player player, Configuration config) {
+    private Locale getSensibleLocale(CommandSender commandSender) {
         if (config.getForceLocale()) return config.getLocale();
         try {
-            return new Locale.Builder().setLanguageTag(player.getLocale().replace('_', '-')).build();
-        } catch (IllformedLocaleException | NullPointerException | NoSuchMethodError e) {
+            return new Locale
+                    .Builder()
+                    .setLanguageTag(
+                            ((Player) commandSender).getLocale().replace('_', '-')
+                    )
+                    .build();
+        } catch (IllformedLocaleException | NullPointerException | NoSuchMethodError | ClassCastException e) {
             return config.getLocale();
         }
     }
 
-    public void tellPlayer(String message) {
-        player.sendMessage(prefix(message));
+    public void tell(String message) {
+        commandSender.sendMessage(prefix(message));
     }
 
     public String t(String key, Object... messageArguments) {
@@ -102,15 +115,8 @@ public class ChatComms {
     }
 
     private String replaceFormattingCodes(String phrase) {
-        Set<String> formattingCodeSet = Stream.of(
-                "reset",
-                "primary", "primaryDark", "primaryLight",
-                "secondary",
-                "highlightBefore", "highlightAfter",
-                "strong", "italic", "strike", "error"
-        ).collect(Collectors.toSet());
         String formattingCodeReplacementPattern =
-                "\\{(" + StringUtils.join(formattingCodeSet, "|") + ")}";
+                "\\{(" + StringUtils.join(FORMATTING_CODE_SET, "|") + ")}";
         Pattern pattern = Pattern.compile(formattingCodeReplacementPattern);
         Matcher matcher = pattern.matcher(phrase);
         StringBuffer stringBuffer = new StringBuffer();
@@ -131,16 +137,16 @@ public class ChatComms {
     }
 
     public void informForbidden(String command, String subcommand) {
-        tellPlayer(t("you_cannot_use", "/" + command + " " + subcommand));
+        tell(t("you_cannot_use", "/" + command + " " + subcommand));
     }
 
     public void compareSignText(SignText signText) {
         boolean textModifiedByOtherPlugin = !SignText.linesMatch(signText.getStagedLines(), signText.getAfterLines());
         if (!signText.signChanged()) {
             if (textModifiedByOtherPlugin) {
-                tellPlayer(t("forbidden_sign_edit"));
+                tell(t("forbidden_sign_edit"));
             } else {
-                tellPlayer(t("sign_did_not_change"));
+                tell(t("sign_did_not_change"));
             }
         } else {
             String[] beforeHighlights = new String[4];
@@ -158,9 +164,9 @@ public class ChatComms {
                 afterSectionSummary = t("section_decorator", t("modified_by_another_plugin"));
             }
 
-            tellPlayer(t("before_section", beforeSectionSummary));
+            tell(t("before_section", beforeSectionSummary));
             dumpLines(signText.getBeforeLines(), beforeHighlights);
-            tellPlayer(t("after_section", afterSectionSummary));
+            tell(t("after_section", afterSectionSummary));
             dumpLines(signText.getAfterLines(), afterHighlights);
         }
     }
@@ -181,47 +187,46 @@ public class ChatComms {
                 line = "";
                 highlight = keyToPhrase("primaryDark") + keyToPhrase("strike");
             }
-            tellPlayer(t("print_line", highlight, relativeLineNumber, line));
+            tell(t("print_line", highlight, relativeLineNumber, line));
         }
     }
 
     public void reportException(Throwable e) {
         if (e instanceof ForbiddenSignEditException) {
-            tellPlayer(t("forbidden_sign_edit"));
+            tell(t("forbidden_sign_edit"));
         } else if (e instanceof MissingLineSelectionException) {
-            tellPlayer(t("missing_line_selection_exception"));
+            tell(t("missing_line_selection_exception"));
         } else if (e instanceof NumberParseLineSelectionException) {
-            tellPlayer(t("number_parse_line_selection_exception", e.getMessage()));
+            tell(t("number_parse_line_selection_exception", e.getMessage()));
         } else if (e instanceof OutOfBoundsLineSelectionException) {
-            tellPlayer(t(
-                            "out_of_bounds_line_selection_exception",
-                            config.getMinLine(), config.getMaxLine(), Integer.valueOf(e.getMessage())
-                    )
-            );
+            tell(t(
+                    "out_of_bounds_line_selection_exception",
+                    config.getMinLine(), config.getMaxLine(), Integer.valueOf(e.getMessage())
+            ));
         } else if (e instanceof RangeOrderLineSelectionException) {
             int lower = Integer.parseInt(((RangeOrderLineSelectionException) e).getInvalidLowerBound());
             int upper = Integer.parseInt(((RangeOrderLineSelectionException) e).getInvalidUpperBound());
-            tellPlayer(t("range_order_line_selection_exception", lower, upper, e.getMessage()));
+            tell(t("range_order_line_selection_exception", lower, upper, e.getMessage()));
         } else if (e instanceof RangeParseLineSelectionException) {
             String badRange = ((RangeParseLineSelectionException) e).getBadRange();
-            tellPlayer(t("range_parse_line_selection_exception", badRange, e.getMessage()));
+            tell(t("range_parse_line_selection_exception", badRange, e.getMessage()));
         } else if (e instanceof SignTextHistoryStackBoundsException) {
-            tellPlayer(t(e.getMessage()));
+            tell(t(e.getMessage()));
         } else if (e instanceof BlockStateNotPlacedException) {
-            tellPlayer(t("block_state_not_placed_exception"));
+            tell(t("block_state_not_placed_exception"));
         } else if (e instanceof NullClipboardException) {
-            tellPlayer(t("null_clipboard_exception"));
+            tell(t("null_clipboard_exception"));
         } else if (e instanceof SignEditorInvocationException) {
             Exception originalException = ((SignEditorInvocationException) e).getOriginalException();
-            tellPlayer(t("cannot_open_sign_editor"));
-            tellPlayer(t("likely_cause", t("minecraft_server_api_changed")));
-            tellPlayer(t("to_server_admin", t("check_for_updates_to_this_plugin")));
-            tellPlayer(t("error_code", originalException.toString()));
-            tellPlayer(t("hint_more_details_with_server_admin"));
+            tell(t("cannot_open_sign_editor"));
+            tell(t("likely_cause", t("minecraft_server_api_changed")));
+            tell(t("to_server_admin", t("check_for_updates_to_this_plugin")));
+            tell(t("error_code", originalException.toString()));
+            tell(t("hint_more_details_with_server_admin"));
             getLogger().severe(ExceptionUtils.getStackTrace(originalException));
         } else {
-            tellPlayer(t("uncaught_error", e.toString()));
-            tellPlayer(t("hint_more_details_with_server_admin"));
+            tell(t("uncaught_error", e.toString()));
+            tell(t("hint_more_details_with_server_admin"));
             getLogger().severe(ExceptionUtils.getStackTrace(e));
         }
     }
@@ -231,7 +236,7 @@ public class ChatComms {
         try {
             phrase = phrases.getString(key);
         } catch (MissingResourceException e) {
-            initialize(player, config);
+            initialize(commandSender, config);
             getLogger().warning("Please update your SignEdit locale override! It is missing this key: " + key);
             phrase = phrases.getString(key);
         }

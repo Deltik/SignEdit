@@ -19,12 +19,10 @@
 
 package net.deltik.mc.signedit.subcommands;
 
-import net.deltik.mc.signedit.ArgParser;
-import net.deltik.mc.signedit.ChatComms;
-import net.deltik.mc.signedit.Configuration;
-import net.deltik.mc.signedit.SignEditPlugin;
+import net.deltik.mc.signedit.*;
 import net.deltik.mc.signedit.commands.SignCommandModule;
 import net.deltik.mc.signedit.interactions.InteractionCommand;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.InvalidDescriptionException;
 import org.bukkit.plugin.Plugin;
@@ -74,7 +72,17 @@ public class HelpSignSubcommandTest {
     }
 
     private HelpSignSubcommand help(ArgParser argParser) {
-        return new HelpSignSubcommand(plugin, comms, argParser, player);
+        return new HelpSignSubcommand(plugin, new ChatCommsModule.ChatCommsComponent.Builder() {
+            @Override
+            public ChatCommsModule.ChatCommsComponent build() {
+                return () -> comms;
+            }
+
+            @Override
+            public ChatCommsModule.ChatCommsComponent.Builder commandSender(CommandSender commandSender) {
+                return this;
+            }
+        }, argParser, player);
     }
 
     @Test

@@ -23,7 +23,6 @@ import dagger.BindsInstance;
 import dagger.Subcomponent;
 import net.deltik.mc.signedit.ArgParser;
 import net.deltik.mc.signedit.ArgParserArgs;
-import net.deltik.mc.signedit.ChatComms;
 import net.deltik.mc.signedit.interactions.InteractionCommand;
 import net.deltik.mc.signedit.interactions.SignEditInteractionModule;
 import org.bukkit.entity.Player;
@@ -48,8 +47,5 @@ public interface SignSubcommandComponent {
 
         @BindsInstance
         public abstract Builder commandArgs(@ArgParserArgs String[] args);
-
-        @BindsInstance
-        public abstract Builder comms(ChatComms comms);
     }
 }

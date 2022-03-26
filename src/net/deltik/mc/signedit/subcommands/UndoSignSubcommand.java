@@ -19,10 +19,7 @@
 
 package net.deltik.mc.signedit.subcommands;
 
-import net.deltik.mc.signedit.ChatComms;
-import net.deltik.mc.signedit.SignText;
-import net.deltik.mc.signedit.SignTextHistory;
-import net.deltik.mc.signedit.SignTextHistoryManager;
+import net.deltik.mc.signedit.*;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
 import org.bukkit.entity.Player;
 
@@ -30,13 +27,17 @@ import javax.inject.Inject;
 
 public class UndoSignSubcommand extends SignSubcommand {
     private final Player player;
-    private final ChatComms comms;
+    private final ChatCommsModule.ChatCommsComponent.Builder commsBuilder;
     private final SignTextHistoryManager historyManager;
 
     @Inject
-    public UndoSignSubcommand(Player player, ChatComms comms, SignTextHistoryManager historyManager) {
+    public UndoSignSubcommand(
+            Player player,
+            ChatCommsModule.ChatCommsComponent.Builder commsBuilder,
+            SignTextHistoryManager historyManager
+    ) {
         this.player = player;
-        this.comms = comms;
+        this.commsBuilder = commsBuilder;
         this.historyManager = historyManager;
     }
 
@@ -44,6 +45,7 @@ public class UndoSignSubcommand extends SignSubcommand {
     public SignEditInteraction execute() {
         SignTextHistory history = historyManager.getHistory(player);
         SignText undoneSignText = history.undo();
+        ChatComms comms = commsBuilder.commandSender(player).build().comms();
         comms.compareSignText(undoneSignText);
         return null;
     }

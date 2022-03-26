@@ -28,7 +28,7 @@ import javax.inject.Inject;
 
 public class StatusSignSubcommand extends SignSubcommand {
     private final Player player;
-    private final ChatComms comms;
+    private final ChatCommsModule.ChatCommsComponent.Builder commsBuilder;
     private final SignEditInteractionManager interactionManager;
     private final SignTextClipboardManager clipboardManager;
     private final SignTextHistoryManager historyManager;
@@ -36,13 +36,13 @@ public class StatusSignSubcommand extends SignSubcommand {
     @Inject
     public StatusSignSubcommand(
             Player player,
-            ChatComms comms,
+            ChatCommsModule.ChatCommsComponent.Builder commsBuilder,
             SignEditInteractionManager interactionManager,
             SignTextClipboardManager clipboardManager,
             SignTextHistoryManager historyManager
     ) {
         this.player = player;
-        this.comms = comms;
+        this.commsBuilder = commsBuilder;
         this.interactionManager = interactionManager;
         this.clipboardManager = clipboardManager;
         this.historyManager = historyManager;
@@ -50,23 +50,26 @@ public class StatusSignSubcommand extends SignSubcommand {
 
     @Override
     public SignEditInteraction execute() {
-        reportHistory();
-        reportPendingAction();
-        reportClipboard();
+        ChatComms comms = commsBuilder.commandSender(player).build().comms();
+
+        reportHistory(comms);
+        reportPendingAction(comms);
+        reportClipboard(comms);
+
         return null;
     }
 
-    private void reportPendingAction() {
+    private void reportPendingAction(ChatComms comms) {
         if (!interactionManager.isInteractionPending(player)) {
-            comms.tellPlayer(comms.t("pending_action_section", comms.t("no_pending_action")));
+            comms.tell(comms.t("pending_action_section", comms.t("no_pending_action")));
         } else {
             SignEditInteraction interaction = interactionManager.getPendingInteraction(player);
-            comms.tellPlayer(comms.t("pending_action_section", comms.t(interaction.getName())));
-            comms.tellPlayer(interaction.getActionHint(comms));
+            comms.tell(comms.t("pending_action_section", comms.t(interaction.getName())));
+            comms.tell(interaction.getActionHint(comms));
         }
     }
 
-    private void reportHistory() {
+    private void reportHistory(ChatComms comms) {
         SignTextHistory history = historyManager.getHistory(player);
         int undosRemaining = 0;
         int redosRemaining = 0;
@@ -76,17 +79,17 @@ public class StatusSignSubcommand extends SignSubcommand {
             redosRemaining = history.redosRemaining();
         }
 
-        comms.tellPlayer(comms.t("history_section",
+        comms.tell(comms.t("history_section",
                 comms.t("history_have", undosRemaining, redosRemaining)
         ));
     }
 
-    private void reportClipboard() {
+    private void reportClipboard(ChatComms comms) {
         SignText clipboard = clipboardManager.getClipboard(player);
         if (clipboard == null) {
-            comms.tellPlayer(comms.t("clipboard_contents_section", comms.t("empty_clipboard")));
+            comms.tell(comms.t("clipboard_contents_section", comms.t("empty_clipboard")));
         } else {
-            comms.tellPlayer(comms.t("clipboard_contents_section", ""));
+            comms.tell(comms.t("clipboard_contents_section", ""));
             comms.dumpLines(clipboard.getLines());
         }
     }

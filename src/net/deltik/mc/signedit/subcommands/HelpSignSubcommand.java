@@ -21,6 +21,7 @@ package net.deltik.mc.signedit.subcommands;
 
 import net.deltik.mc.signedit.ArgParser;
 import net.deltik.mc.signedit.ChatComms;
+import net.deltik.mc.signedit.ChatCommsModule;
 import net.deltik.mc.signedit.commands.SignCommand;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
 import org.bukkit.entity.Player;
@@ -39,30 +40,49 @@ import java.util.regex.Pattern;
 
 public class HelpSignSubcommand extends SignSubcommand {
     public static final int MAX_LINES = 10;
-    private final String signCommandUsage;
-    private final ChatComms comms;
-    private final ArgParser args;
-    private final Player player;
     private static final Pattern WORD_PATTERN = Pattern.compile("([0-9a-zA-Z]+)");
 
+    private final String signCommandUsage;
+    private final ChatCommsModule.ChatCommsComponent.Builder commsBuilder;
+    private final ArgParser args;
+    private final Player player;
+
+    private ChatComms comms;
+
     @Inject
-    public HelpSignSubcommand(Plugin self, ChatComms comms, ArgParser args, Player player) {
-        this(self.getDescription(), comms, args, player);
+    public HelpSignSubcommand(
+            Plugin self,
+            ChatCommsModule.ChatCommsComponent.Builder commsBuilder,
+            ArgParser args,
+            Player player
+    ) {
+        this(self.getDescription(), commsBuilder, args, player);
     }
 
-    public HelpSignSubcommand(PluginDescriptionFile about, ChatComms comms, ArgParser args, Player player) {
-        this((String) about.getCommands().get(SignCommand.COMMAND_NAME).get("usage"), comms, args, player);
+    public HelpSignSubcommand(
+            PluginDescriptionFile about,
+            ChatCommsModule.ChatCommsComponent.Builder commsBuilder,
+            ArgParser args,
+            Player player
+    ) {
+        this((String) about.getCommands().get(SignCommand.COMMAND_NAME).get("usage"), commsBuilder, args, player);
     }
 
-    public HelpSignSubcommand(String signCommandUsage, ChatComms comms, ArgParser args, Player player) {
+    public HelpSignSubcommand(
+            String signCommandUsage,
+            ChatCommsModule.ChatCommsComponent.Builder commsBuilder,
+            ArgParser args,
+            Player player
+    ) {
         this.signCommandUsage = signCommandUsage;
-        this.comms = comms;
+        this.commsBuilder = commsBuilder;
         this.args = args;
         this.player = player;
     }
 
     @Override
     public SignEditInteraction execute() {
+        this.comms = commsBuilder.commandSender(player).build().comms();
         List<String[]> allowedCommands = getAllowedCommands();
 
         if (allowedCommands.size() == 0) {
@@ -73,11 +93,11 @@ public class HelpSignSubcommand extends SignSubcommand {
         int linesRemaining = MAX_LINES;
         String onlineDocsLine = comms.t("online_documentation", comms.t("online_documentation_url"));
         if (!onlineDocsLine.isEmpty()) {
-            comms.tellPlayer(onlineDocsLine);
+            comms.tell(onlineDocsLine);
             linesRemaining--;
         }
 
-        linesRemaining --;
+        linesRemaining--;
         int pageCount = (allowedCommands.size() - 1) / linesRemaining + 1;
         int unsafePageNumber = readInputPageNumber();
         int pageNumber = Integer.min(pageCount, Integer.max(1, unsafePageNumber));
@@ -87,7 +107,7 @@ public class HelpSignSubcommand extends SignSubcommand {
         } else {
             pageNumbering = "";
         }
-        comms.tellPlayer(
+        comms.tell(
                 comms.t("usage_page_heading",
                         comms.t("usage_page_info",
                                 SignCommand.COMMAND_NAME,
@@ -147,7 +167,7 @@ public class HelpSignSubcommand extends SignSubcommand {
 
     public void showSubcommandSyntax(String command, String subcommand, String... parameters) {
         String parametersJoined = String.join(" ", parameters);
-        comms.tellPlayer(comms.t("print_subcommand_usage", command, subcommand, parametersJoined));
+        comms.tell(comms.t("print_subcommand_usage", command, subcommand, parametersJoined));
     }
 
     protected List<String[]> getAllowedCommands() {

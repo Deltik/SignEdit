@@ -19,11 +19,9 @@
 
 package net.deltik.mc.signedit.commands;
 
-import net.deltik.mc.signedit.ArgParser;
-import net.deltik.mc.signedit.ChatComms;
-import net.deltik.mc.signedit.Configuration;
-import net.deltik.mc.signedit.SignText;
+import net.deltik.mc.signedit.*;
 import net.deltik.mc.signedit.interactions.InteractionCommand;
+import net.deltik.mc.signedit.subcommands.HelpSignSubcommand;
 import net.deltik.mc.signedit.subcommands.SignSubcommandComponent;
 import net.deltik.mc.signedit.subcommands.SubcommandName;
 import org.bukkit.block.Block;
@@ -36,6 +34,7 @@ import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -100,12 +99,12 @@ public class SignCommandTabCompleter implements TabCompleter {
         final int[] pageCount = {0};
 
         class MockComms extends ChatComms {
-            public MockComms(Player player, Configuration config) {
-                super(player, config);
+            public MockComms(CommandSender commandSender, Configuration config) {
+                super(commandSender, config);
             }
 
             @Override
-            public void tellPlayer(String message) {
+            public void tell(String message) {
             }
 
             @Override
@@ -118,7 +117,24 @@ public class SignCommandTabCompleter implements TabCompleter {
         }
         MockComms mockComms = new MockComms(player, config);
 
-        InteractionCommand signSubcommand = getSignSubcommand(player, argParser, mockComms);
+        HelpSignSubcommand signSubcommand = (HelpSignSubcommand) getSignSubcommand(player, argParser);
+        try {
+            Field commsBuilderField = signSubcommand.getClass().getDeclaredField("commsBuilder");
+            commsBuilderField.setAccessible(true);
+            commsBuilderField.set(signSubcommand, new ChatCommsModule.ChatCommsComponent.Builder() {
+                @Override
+                public ChatCommsModule.ChatCommsComponent build() {
+                    return () -> mockComms;
+                }
+
+                @Override
+                public ChatCommsModule.ChatCommsComponent.Builder commandSender(CommandSender commandSender) {
+                    return this;
+                }
+            });
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException("FIXME: Reflection shenanigans");
+        }
         signSubcommand.execute();
 
         List<String> remainder = argParser.getRemainder();
@@ -137,12 +153,11 @@ public class SignCommandTabCompleter implements TabCompleter {
                 .collect(Collectors.toSet());
     }
 
-    protected InteractionCommand getSignSubcommand(Player player, ArgParser argParser, ChatComms chatComms) {
+    protected InteractionCommand getSignSubcommand(Player player, ArgParser argParser) {
         String subcommandName = argParser.getSubcommand();
         SignSubcommandComponent component = signSubcommandComponentBuilder
                 .player(player)
                 .commandArgs(new String[]{subcommandName})
-                .comms(chatComms)
                 .build();
 
         return component.subcommandProviders().get(subcommandName).get();

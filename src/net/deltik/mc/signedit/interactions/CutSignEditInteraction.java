@@ -36,7 +36,7 @@ public class CutSignEditInteraction implements SignEditInteraction {
     private final SignText clipboard;
     private final SignTextClipboardManager clipboardManager;
     private final SignTextHistoryManager historyManager;
-    private final ChatComms comms;
+    private final ChatCommsModule.ChatCommsComponent.Builder commsBuilder;
 
     @Inject
     public CutSignEditInteraction(
@@ -45,13 +45,14 @@ public class CutSignEditInteraction implements SignEditInteraction {
             SignEditValidator validator,
             SignTextClipboardManager clipboardManager,
             SignTextHistoryManager historyManager,
-            ChatComms comms) {
+            ChatCommsModule.ChatCommsComponent.Builder commsBuilder
+            ) {
         this.argParser = argParser;
         this.sourceSign = signText;
         this.clipboard = new SignText(validator);
         this.clipboardManager = clipboardManager;
         this.historyManager = historyManager;
-        this.comms = comms;
+        this.commsBuilder = commsBuilder;
     }
 
     @Override
@@ -74,7 +75,8 @@ public class CutSignEditInteraction implements SignEditInteraction {
         }
         clipboardManager.setClipboard(player, clipboard);
 
-        comms.tellPlayer(comms.t("lines_cut_section"));
+        ChatComms comms = commsBuilder.commandSender(player).build().comms();
+        comms.tell(comms.t("lines_cut_section"));
         comms.dumpLines(clipboard.getLines());
     }
 
