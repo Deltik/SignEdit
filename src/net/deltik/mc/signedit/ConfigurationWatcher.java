@@ -27,6 +27,7 @@ import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
+import java.nio.file.attribute.FileTime;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.bukkit.Bukkit.getLogger;
@@ -34,30 +35,35 @@ import static org.bukkit.Bukkit.getLogger;
 @Singleton
 public class ConfigurationWatcher extends Thread {
     private final Configuration config;
-    private final File file;
     private final WatchService watcher;
     private final AtomicBoolean halt = new AtomicBoolean(false);
     private final SignEditPlugin plugin;
+
+    private Path configPath;
+    private FileTime lastModifiedTime;
 
     @Inject
     public ConfigurationWatcher(Plugin plugin, Configuration config) {
         this.plugin = (SignEditPlugin) plugin;
         this.config = config;
-        this.file = this.config.getConfigFile();
+        File file = this.config.getConfigFile();
 
         WatchService watcher;
         try {
             watcher = FileSystems.getDefault().newWatchService();
 
-            Path fileBasedir = this.file.toPath().getParent();
+            Path fileBasedir = file.toPath().getParent();
             fileBasedir.register(watcher, StandardWatchEventKinds.ENTRY_MODIFY);
+
+            configPath = file.toPath();
+            lastModifiedTime = Files.getLastModifiedTime(configPath);
         } catch (IOException e) {
             watcher = null;
             end();
 
             getLogger().warning(
                     "Could not set up SignEdit configuration watcher. " +
-                            "Configuration changes will require a CraftBukkit server restart to apply."
+                            "Configuration changes will require a Bukkit server restart to apply."
             );
             getLogger().warning(ExceptionUtils.getStackTrace(e));
         }
@@ -96,7 +102,18 @@ public class ConfigurationWatcher extends Thread {
                 if (!(context instanceof Path)) continue;
 
                 Path pathContext = (Path) context;
-                if (!pathContext.equals(this.file.toPath().getFileName())) continue;
+                if (!pathContext.equals(configPath.getFileName())) continue;
+                try {
+                    FileTime newLastModifiedTime = Files.getLastModifiedTime(configPath);
+                    if (newLastModifiedTime.equals(lastModifiedTime) && newLastModifiedTime.toMillis() != 0) continue;
+
+                    lastModifiedTime = newLastModifiedTime;
+                } catch (IOException e) {
+                    getLogger().warning(
+                            "SignEdit could not determine the file modification time of configuration file: "
+                                    + configPath.toString()
+                    );
+                }
 
                 if (isHalted()) return;
                 getLogger().info("SignEdit detected a configuration file change. Reloading configuration...");

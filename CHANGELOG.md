@@ -16,6 +16,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Credit to [@phpwutz](https://github.com/phpwutz)
 * A minor typo in the file that gets deployed to `./plugins/SignEdit/locales/README.txt`
 
+### Changed
+
+* If the file modification time of `./plugins/SignEdit/config.yml` is not changed, the configuration will no longer be reloaded. (#29)
+
+  This means that merely changing the file's ownership or permissions will not trigger the configuration reload anymore.
+
 ### Under the Hood
 
 * Updated copyright year 2022
