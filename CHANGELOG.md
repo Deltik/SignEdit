@@ -29,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Restructured `SignSubcommand` inheritance to make more sense
 * Replaced constructor injection of `ChatComms` with a factory to avoid nesting assisted dependency injections
 * Extracted line selection parsing to new class `LineSelectorParser` to improve separation of concerns
-* Gradle has been updated from version 7.3.1 to version 7.4.1.
+* Gradle has been updated from version 7.3.1 to version 8.1-rc-2.
 
 ## v1.13.7 (2021-12-18)
 
