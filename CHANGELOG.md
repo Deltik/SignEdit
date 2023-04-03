@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Under the Hood
 
-* Updated copyright year 2022
+* Updated copyright year 2023
 * Restructured `SignSubcommand` inheritance to make more sense
 * Replaced constructor injection of `ChatComms` with a factory to avoid nesting assisted dependency injections
 * Extracted line selection parsing to new class `LineSelectorParser` to improve separation of concerns
