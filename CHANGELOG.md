@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
   Credit to [@phpwutz](https://github.com/phpwutz)
 * A minor typo in the file that gets deployed to `./plugins/SignEdit/locales/README.txt`
+* A race condition that assumed that a block is still a sign when using `compatibility.edit-validation: Extra` (#33)
 
 ### Changed
 

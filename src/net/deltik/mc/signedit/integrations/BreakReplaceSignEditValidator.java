@@ -19,6 +19,7 @@
 
 package net.deltik.mc.signedit.integrations;
 
+import net.deltik.mc.signedit.exceptions.BlockStateNotPlacedException;
 import net.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
 import net.deltik.mc.signedit.listeners.CoreSignEditListener;
 import org.bukkit.block.Block;
@@ -64,10 +65,9 @@ public class BreakReplaceSignEditValidator extends StandardSignEditValidator {
     }
 
     private void validateBlockPlace(Sign sign) {
-        Block signBlock = sign.getBlock();
         BlockPlaceEvent blockPlaceEvent = new BlockPlaceEvent(
-                signBlock,
-                signBlock.getState(),
+                sign.getBlock(),
+                sign,
                 getBlockAgainst(sign),
                 player.getInventory().getItemInMainHand(),
                 player,
@@ -91,8 +91,13 @@ public class BreakReplaceSignEditValidator extends StandardSignEditValidator {
     }
 
     private Block getBlockAgainstWallSign(Block block) {
-        WallSign blockData = (WallSign) block.getBlockData();
-        return block.getRelative(blockData.getFacing().getOppositeFace());
+        BlockData blockData = block.getBlockData();
+        if (!(blockData instanceof WallSign)) {
+            throw new BlockStateNotPlacedException();
+        }
+
+        WallSign wallSign = (WallSign) blockData;
+        return block.getRelative(wallSign.getFacing().getOppositeFace());
     }
 
     private Block getBlockBelow(Block block) {
