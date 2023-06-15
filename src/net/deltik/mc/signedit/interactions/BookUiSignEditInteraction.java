@@ -127,8 +127,13 @@ public class BookUiSignEditInteraction implements SignEditInteraction {
                 0
         );
         BookMeta meta = editBookEvent.getNewBookMeta();
-        String page = meta.getPage(1);
-        String[] newLines = page.split("\n");
+        String[] newLines;
+        if (meta.hasPages()) {
+            String page = meta.getPage(1);
+            newLines = page.split("\n");
+        } else {
+            newLines = new String[]{};
+        }
         for (int i = 0; i < signText.getLines().length; i++) {
             String newLine;
             if (i >= newLines.length) {
