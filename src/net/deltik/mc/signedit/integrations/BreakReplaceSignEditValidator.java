@@ -26,6 +26,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -33,8 +34,11 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.plugin.PluginManager;
+import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
+import java.util.HashSet;
+import java.util.Set;
 
 public class BreakReplaceSignEditValidator extends StandardSignEditValidator {
     @Inject
@@ -86,6 +90,10 @@ public class BreakReplaceSignEditValidator extends StandardSignEditValidator {
             return getBlockAgainstWallSign(sign.getBlock());
         } else if (blockData instanceof org.bukkit.block.data.type.Sign) {
             return getBlockBelow(sign.getBlock());
+        } else if (isHangingSign(blockData)) {
+            return getBlockAbove(sign.getBlock());
+        } else if (isWallHangingSign(blockData)) {
+            return getBlockAttachedToHangingSign(sign.getBlock());
         }
         throw new RuntimeException("Unsupported sign type with BlockData: " + blockData.getAsString());
     }
@@ -102,5 +110,85 @@ public class BreakReplaceSignEditValidator extends StandardSignEditValidator {
 
     private Block getBlockBelow(Block block) {
         return block.getRelative(BlockFace.DOWN);
+    }
+
+    private Block getBlockAbove(Block block) {
+        return block.getRelative(BlockFace.UP);
+    }
+
+    private boolean classImplements(Class<?> item, String interfaceName) {
+        for (Class<?> x : item.getInterfaces()) {
+            if (x.getName().equals(interfaceName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Bukkit 1.13-compatible way of checking if a sign is a Bukkit 1.20 HangingSign
+     */
+    private boolean isHangingSign(BlockData blockData) {
+        return classImplements(blockData.getClass(), "org.bukkit.block.data.type.HangingSign");
+    }
+
+    /**
+     * Bukkit 1.13-compatible way of checking if a sign is a Bukkit 1.20 WallHangingSign
+     */
+    private boolean isWallHangingSign(BlockData blockData) {
+        return classImplements(blockData.getClass(), "org.bukkit.block.data.type.WallHangingSign");
+    }
+
+    @Nullable
+    private Block getBlockAttachedToHangingSign(Block block) {
+        BlockData blockData = block.getBlockData();
+        if (!isHangingSign(blockData)) {
+            throw new BlockStateNotPlacedException();
+        }
+
+        Directional directional = (Directional) blockData;
+        BlockFace blockFace = directional.getFacing();
+
+        Set<Block> leftAndRightBlocks = new HashSet<>();
+        leftAndRightBlocks.add(block.getRelative(cartesianClockwise(blockFace)));
+        leftAndRightBlocks.add(block.getRelative(cartesianCounterClockwise(blockFace)));
+
+        for (Block adjacentBlock : leftAndRightBlocks) {
+            if (adjacentBlock.getType().isSolid()) {
+                return adjacentBlock;
+            }
+        }
+
+        return null;
+    }
+
+    private BlockFace cartesianClockwise(BlockFace originalFace) {
+        switch (originalFace) {
+            case NORTH:
+                return BlockFace.EAST;
+            case EAST:
+                return BlockFace.SOUTH;
+            case SOUTH:
+                return BlockFace.WEST;
+            case WEST:
+                return BlockFace.NORTH;
+            default:
+                throw new RuntimeException("Unsupported BlockFace: " + originalFace.name());
+        }
+    }
+
+    private BlockFace cartesianCounterClockwise(BlockFace originalFace) {
+        switch (originalFace) {
+            case NORTH:
+                return BlockFace.WEST;
+            case EAST:
+                return BlockFace.NORTH;
+            case SOUTH:
+                return BlockFace.EAST;
+            case WEST:
+                return BlockFace.SOUTH;
+            default:
+                throw new RuntimeException("Unsupported BlockFace: " + originalFace.name());
+        }
     }
 }

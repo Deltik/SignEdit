@@ -7,6 +7,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.13.9 (UNRELEASED)
+
+### Fixed
+
+* Failure and error when editing [hanging signs and wall hanging signs](https://web.archive.org/web/20230615204117/https://minecraft.fandom.com/wiki/Sign#Hanging_signs) from Minecraft 1.20 when using `compatibility.edit-validation: Extra` (#34)
+
+  ![`/se paste` with SignEdit for Bukkit v1.13.9](https://i.imgur.com/1qNBnID.png)
+
 ## v1.13.8 (2023-04-02)
 
 ### Fixed
