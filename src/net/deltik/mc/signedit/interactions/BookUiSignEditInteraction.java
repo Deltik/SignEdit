@@ -23,9 +23,10 @@ import net.deltik.mc.signedit.ChatComms;
 import net.deltik.mc.signedit.ChatCommsModule;
 import net.deltik.mc.signedit.SignText;
 import net.deltik.mc.signedit.SignTextHistoryManager;
+import net.deltik.mc.signedit.shims.SideShim;
+import net.deltik.mc.signedit.shims.SignShim;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -68,11 +69,11 @@ public class BookUiSignEditInteraction implements SignEditInteraction {
     }
 
     @Override
-    public void interact(Player player, Sign sign) {
+    public void interact(Player player, SignShim sign, SideShim side) {
         interactionManager.setPendingInteraction(player, this);
 
         if (originalItem == null) {
-            signText.setTargetSign(sign);
+            signText.setTargetSign(sign, side);
             signText.importSign();
             formatSignTextForEdit(signText);
             openSignEditor(player);

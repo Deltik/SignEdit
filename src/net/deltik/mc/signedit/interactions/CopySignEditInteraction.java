@@ -20,7 +20,9 @@
 package net.deltik.mc.signedit.interactions;
 
 import net.deltik.mc.signedit.*;
-import org.bukkit.block.Sign;
+import net.deltik.mc.signedit.shims.ISignSide;
+import net.deltik.mc.signedit.shims.SideShim;
+import net.deltik.mc.signedit.shims.SignShim;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -49,13 +51,14 @@ public class CopySignEditInteraction implements SignEditInteraction {
     }
 
     @Override
-    public void interact(Player player, Sign sign) {
+    public void interact(Player player, SignShim sign, SideShim side) {
         int[] selectedLines = argParser.getLinesSelection();
         if (Arrays.equals(selectedLines, NO_LINES_SELECTED)) {
             selectedLines = ALL_LINES_SELECTED;
         }
+        ISignSide signSide = sign.getSide(side);
         for (int selectedLine : selectedLines) {
-            signText.setLineLiteral(selectedLine, sign.getLine(selectedLine));
+            signText.setLineLiteral(selectedLine, signSide.getLine(selectedLine));
         }
 
         clipboardManager.setClipboard(player, signText);

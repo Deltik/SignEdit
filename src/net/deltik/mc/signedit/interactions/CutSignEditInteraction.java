@@ -21,7 +21,9 @@ package net.deltik.mc.signedit.interactions;
 
 import net.deltik.mc.signedit.*;
 import net.deltik.mc.signedit.integrations.SignEditValidator;
-import org.bukkit.block.Sign;
+import net.deltik.mc.signedit.shims.ISignSide;
+import net.deltik.mc.signedit.shims.SideShim;
+import net.deltik.mc.signedit.shims.SignShim;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -56,16 +58,17 @@ public class CutSignEditInteraction implements SignEditInteraction {
     }
 
     @Override
-    public void interact(Player player, Sign sign) {
+    public void interact(Player player, SignShim sign, SideShim side) {
         int[] selectedLines = argParser.getLinesSelection();
         if (Arrays.equals(selectedLines, NO_LINES_SELECTED)) {
             selectedLines = ALL_LINES_SELECTED;
         }
 
-        sourceSign.setTargetSign(sign);
+        sourceSign.setTargetSign(sign, side);
 
+        ISignSide signSide = sign.getSide(side);
         for (int selectedLine : selectedLines) {
-            clipboard.setLineLiteral(selectedLine, sign.getLine(selectedLine));
+            clipboard.setLineLiteral(selectedLine, signSide.getLine(selectedLine));
             sourceSign.setLineLiteral(selectedLine, "");
         }
 

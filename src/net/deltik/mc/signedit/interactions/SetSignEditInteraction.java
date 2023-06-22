@@ -23,7 +23,8 @@ import net.deltik.mc.signedit.ChatComms;
 import net.deltik.mc.signedit.ChatCommsModule;
 import net.deltik.mc.signedit.SignText;
 import net.deltik.mc.signedit.SignTextHistoryManager;
-import org.bukkit.block.Sign;
+import net.deltik.mc.signedit.shims.SideShim;
+import net.deltik.mc.signedit.shims.SignShim;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -50,8 +51,8 @@ public class SetSignEditInteraction implements SignEditInteraction {
     }
 
     @Override
-    public void interact(Player player, Sign sign) {
-        signText.setTargetSign(sign);
+    public void interact(Player player, SignShim sign, SideShim side) {
+        signText.setTargetSign(sign, side);
         signText.applySign();
         if (signText.signChanged()) {
             historyManager.getHistory(player).push(signText);

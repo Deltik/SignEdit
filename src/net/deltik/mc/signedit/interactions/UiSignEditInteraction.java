@@ -26,6 +26,9 @@ import net.deltik.mc.signedit.SignTextHistoryManager;
 import net.deltik.mc.signedit.commands.SignCommand;
 import net.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
 import net.deltik.mc.signedit.exceptions.SignEditorInvocationException;
+import net.deltik.mc.signedit.shims.ISignSide;
+import net.deltik.mc.signedit.shims.SideShim;
+import net.deltik.mc.signedit.shims.SignShim;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
@@ -37,6 +40,7 @@ import org.bukkit.event.block.SignChangeEvent;
 
 import javax.inject.Inject;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.stream.IntStream;
@@ -78,7 +82,7 @@ public class UiSignEditInteraction implements SignEditInteraction {
             SignChangeEvent signChangeEvent = (SignChangeEvent) event;
             Player player = signChangeEvent.getPlayer();
             if (interactionManager.isInteractionPending(player)) {
-                if (signText.getTargetSign() == null) {
+                if (signText.getTargetSignSide() == null) {
                     signCommand.onCommand(player, new Command(SignCommand.COMMAND_NAME) {
                         @Override
                         public boolean execute(CommandSender sender, String commandLabel, String[] args) {
@@ -96,8 +100,9 @@ public class UiSignEditInteraction implements SignEditInteraction {
         }
 
         assert signText.getTargetSign() != null;
+        assert signText.getTargetSignSide() != null;
         if (player != null) {
-            formatSignForSave(player, signText.getTargetSign());
+            formatSignForSave(player, signText.getTargetSign(), signText.getSide());
         }
     }
 
@@ -121,18 +126,20 @@ public class UiSignEditInteraction implements SignEditInteraction {
     }
 
     @Override
-    public void interact(Player player, Sign sign) {
-        signText.setTargetSign(sign);
+    public void interact(Player player, SignShim sign, SideShim side) {
+        signText.setTargetSign(sign, side);
         signText.importSign();
         this.player = player;
 
-        formatSignForEdit(player, sign);
+        Sign signImpl = sign.getImplementation();
+
+        formatSignForEdit(player, signImpl, side);
         interactionManager.setPendingInteraction(player, this);
 
         try {
-            openSignEditor(player, sign);
+            openSignEditor(player, signImpl, side);
         } catch (Exception e) {
-            formatSignForSave(player, sign);
+            formatSignForSave(player, signImpl, side);
             throw new SignEditorInvocationException(e);
         }
     }
@@ -144,8 +151,19 @@ public class UiSignEditInteraction implements SignEditInteraction {
      * @param sign   The sign that should load into the player's sign editor
      * @throws Exception if anything goes wrong while trying to open the sign editor
      */
-    private void openSignEditor(Player player, Sign sign) throws Exception {
+    private void openSignEditor(Player player, Sign sign, SideShim side) throws Exception {
         try {
+            for (Method method : Player.class.getDeclaredMethods()) {
+                if (method.getName().equals("openSign") && method.getParameterCount() == 2) {
+                    Class<?>[] parameterTypes = method.getParameterTypes();
+                    if (parameterTypes[0].equals(Sign.class) && parameterTypes[1].isEnum()) {
+                        Method enumValueOf = parameterTypes[1].getMethod("valueOf", String.class);
+                        Enum<?> enumValue = (Enum<?>) enumValueOf.invoke(null, side.name());
+                        method.invoke(player, sign, enumValue);
+                        return;
+                    }
+                }
+            }
             @SuppressWarnings("JavaReflectionMemberAccess")
             Method method = Player.class.getMethod("openSign", Sign.class);
             method.invoke(player, sign);
@@ -195,13 +213,34 @@ public class UiSignEditInteraction implements SignEditInteraction {
         signIsEditable.set(tileEntitySign, true);
     }
 
-    private void formatSignForEdit(Player player, Sign sign) {
-        String[] parsedLines = IntStream.range(0, 4).mapToObj(signText::getLineParsed).toArray(String[]::new);
-        player.sendSignChange(sign.getLocation(), parsedLines);
+    private void formatSignForEdit(Player player, Sign sign, SideShim side) {
+        SignShim signShim = new SignShim(sign);
+        ISignSide signSide = signShim.getSide(side);
+        IntStream.range(0, 4).forEach(i -> signSide.setLine(i, signText.getLineParsed(i)));
+        try {
+            sendSignUpdate(player, sign, signSide);
+        } finally {
+            IntStream.range(0, 4).forEach(i -> signSide.setLine(i, signText.getLine(i)));
+        }
     }
 
-    private void formatSignForSave(Player player, Sign sign) {
-        String[] originalLines = IntStream.range(0, 4).mapToObj(signText::getLine).toArray(String[]::new);
-        player.sendSignChange(sign.getLocation(), originalLines);
+    private void formatSignForSave(Player player, Sign sign, SideShim side) {
+        SignShim signShim = new SignShim(sign);
+        ISignSide signSide = signShim.getSide(side);
+        IntStream.range(0, 4).forEach(i -> signSide.setLine(i, signText.getLine(i)));
+        sendSignUpdate(player, sign, signSide);
+    }
+
+    private static void sendSignUpdate(Player player, Sign sign, ISignSide signSide) {
+        try {
+            for (Method method : Player.class.getDeclaredMethods()) {
+                if (method.getName().equals("sendBlockUpdate") && method.getParameterCount() == 2) {
+                    method.invoke(player, sign.getLocation(), sign);
+                }
+            }
+            throw new NoSuchMethodException();
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            player.sendSignChange(sign.getLocation(), signSide.getLines());
+        }
     }
 }

@@ -20,14 +20,15 @@
 package net.deltik.mc.signedit.interactions;
 
 import net.deltik.mc.signedit.ChatComms;
-import org.bukkit.block.Sign;
+import net.deltik.mc.signedit.shims.SideShim;
+import net.deltik.mc.signedit.shims.SignShim;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
 public interface SignEditInteraction {
-    void interact(Player player, Sign sign);
+    void interact(Player player, SignShim sign, SideShim side);
 
     default String getName() {
         return this.getClass().getSimpleName();

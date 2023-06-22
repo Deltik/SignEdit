@@ -142,7 +142,7 @@ public class BreakReplaceSignEditValidator extends StandardSignEditValidator {
     @Nullable
     private Block getBlockAttachedToHangingSign(Block block) {
         BlockData blockData = block.getBlockData();
-        if (!isHangingSign(blockData)) {
+        if (!isWallHangingSign(blockData)) {
             throw new BlockStateNotPlacedException();
         }
 

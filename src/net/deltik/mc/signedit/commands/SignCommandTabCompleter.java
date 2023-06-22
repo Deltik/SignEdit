@@ -21,6 +21,8 @@ package net.deltik.mc.signedit.commands;
 
 import net.deltik.mc.signedit.*;
 import net.deltik.mc.signedit.interactions.InteractionCommand;
+import net.deltik.mc.signedit.shims.IBlockHitResult;
+import net.deltik.mc.signedit.shims.SideShim;
 import net.deltik.mc.signedit.subcommands.HelpSignSubcommand;
 import net.deltik.mc.signedit.subcommands.SignSubcommandComponent;
 import net.deltik.mc.signedit.subcommands.SubcommandName;
@@ -169,7 +171,8 @@ public class SignCommandTabCompleter implements TabCompleter {
     private List<String> completeExistingLines(Player player, ArgParser argParser) {
         List<String> nothing = new ArrayList<>();
 
-        Block targetBlock = SignCommand.getTargetBlockOfPlayer(player);
+        IBlockHitResult targetInfo = SignCommand.getLivingEntityTarget(player);
+        Block targetBlock = targetInfo.getHitBlock();
         BlockState targetBlockState = null;
         if (targetBlock != null) targetBlockState = targetBlock.getState();
         if (!(targetBlockState instanceof Sign)) {
@@ -178,7 +181,8 @@ public class SignCommandTabCompleter implements TabCompleter {
 
         Sign targetSign = (Sign) targetBlockState;
         SignText signText = new SignText();
-        signText.setTargetSign(targetSign);
+        SideShim side = SideShim.fromRelativePosition(targetSign, player);
+        signText.setTargetSign(targetSign, side);
         signText.importSign();
         List<String> qualifyingLines = new ArrayList<>();
         for (int selectedLine : argParser.getLinesSelection()) {

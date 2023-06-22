@@ -26,6 +26,9 @@ import net.deltik.mc.signedit.SignTextHistoryManager;
 import net.deltik.mc.signedit.exceptions.BlockStateNotPlacedException;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
 import net.deltik.mc.signedit.interactions.SignEditInteractionManager;
+import net.deltik.mc.signedit.shims.SideShim;
+import net.deltik.mc.signedit.shims.SignShim;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
@@ -79,7 +82,10 @@ public class CoreSignEditListener extends SignEditListener {
     @EventHandler
     public void onRightClickSign(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-        BlockState maybeSign = event.getClickedBlock().getState();
+        Block maybeBlock = event.getClickedBlock();
+        if (maybeBlock == null) return;
+
+        BlockState maybeSign = maybeBlock.getState();
         if (!(maybeSign instanceof Sign)) return;
 
         Sign sign = (Sign) maybeSign;
@@ -88,7 +94,8 @@ public class CoreSignEditListener extends SignEditListener {
         if (interactionManager.isInteractionPending(player)) {
             try {
                 SignEditInteraction interaction = interactionManager.removePendingInteraction(player);
-                interaction.interact(player, sign);
+                SideShim side = SideShim.fromRelativePosition(sign, player);
+                interaction.interact(player, new SignShim(sign), side);
             } catch (Throwable e) {
                 ChatComms comms = commsBuilderProvider.get().commandSender(player).build().comms();
                 comms.reportException(e);

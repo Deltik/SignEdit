@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.13.9 (UNRELEASED)
 
+### Added
+
+* Support for Minecraft 1.20 sign sides (front and back)
+
 ### Fixed
 
 * Failure and error when editing [hanging signs and wall hanging signs](https://web.archive.org/web/20230615204117/https://minecraft.fandom.com/wiki/Sign#Hanging_signs) from Minecraft 1.20 when using `compatibility.edit-validation: Extra` (#34)
@@ -18,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Under the Hood
 
+* Tacked on some adapters to make the plugin compatible with Bukkit 1.20 [`org.bukkit.block.sign.SignSide`](https://web.archive.org/web/20230622054725/https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/block/sign/SignSide.html)
 * Gradle 9.0 compatibility:
   * Replaced Gradle 8.2 deprecations with recommended replacements
   * Updated Gradle to version 8.2-rc-2

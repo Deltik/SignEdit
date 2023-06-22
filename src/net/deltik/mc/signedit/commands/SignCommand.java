@@ -27,6 +27,7 @@ import net.deltik.mc.signedit.exceptions.LineSelectionException;
 import net.deltik.mc.signedit.interactions.InteractionCommand;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
 import net.deltik.mc.signedit.interactions.SignEditInteractionManager;
+import net.deltik.mc.signedit.shims.*;
 import net.deltik.mc.signedit.subcommands.SignSubcommandComponent;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -34,6 +35,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -122,20 +124,23 @@ public class SignCommand implements CommandExecutor {
     private void autointeract(Player player, SignEditInteraction interaction, ChatComms comms) {
         if (interaction == null) return;
 
-        Block targetBlock = getTargetBlockOfPlayer(player);
+        IBlockHitResult targetInfo = getLivingEntityTarget(player);
+        Block targetBlock = targetInfo.getHitBlock();
         BlockState targetBlockState = null;
         if (targetBlock != null) targetBlockState = targetBlock.getState();
         if (shouldDoClickingMode(targetBlock)) {
             interactionManager.setPendingInteraction(player, interaction);
             comms.tell(comms.t("right_click_sign_to_apply_action"));
         } else if (targetBlockState instanceof Sign) {
-            interaction.interact(player, (Sign) targetBlockState);
+            SideShim side = SideShim.fromRelativePosition((Sign) targetBlockState, player);
+            interaction.interact(player, new SignShim((Sign) targetBlockState), side);
         } else {
             comms.tell(comms.t("must_look_at_sign_to_interact"));
         }
     }
 
     @Nullable
+    @Deprecated
     public static Block getTargetBlockOfPlayer(Player player) {
         try {
             @SuppressWarnings("JavaReflectionMemberAccess")
@@ -143,6 +148,16 @@ public class SignCommand implements CommandExecutor {
             return (Block) method.invoke(player, MAX_DISTANCE);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             return player.getTargetBlock(null, MAX_DISTANCE);
+        }
+    }
+
+    public static IBlockHitResult getLivingEntityTarget(LivingEntity entity) {
+        try {
+            @SuppressWarnings("JavaReflectionMemberAccess")
+            Method method = LivingEntity.class.getMethod("rayTraceBlocks", double.class);
+            return new PreciseBlockHitResult(method.invoke(entity, MAX_DISTANCE));
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            return new CalculatedBlockHitResult(entity, MAX_DISTANCE);
         }
     }
 

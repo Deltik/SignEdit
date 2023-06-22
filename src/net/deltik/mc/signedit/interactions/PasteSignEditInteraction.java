@@ -20,7 +20,8 @@
 package net.deltik.mc.signedit.interactions;
 
 import net.deltik.mc.signedit.*;
-import org.bukkit.block.Sign;
+import net.deltik.mc.signedit.shims.SideShim;
+import net.deltik.mc.signedit.shims.SignShim;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -46,10 +47,10 @@ public class PasteSignEditInteraction implements SignEditInteraction {
     }
 
     @Override
-    public void interact(Player player, Sign sign) {
+    public void interact(Player player, SignShim sign, SideShim side) {
         SignText clipboard = clipboardManager.getClipboard(player);
         SignText signText = signTextProvider.get();
-        signText.setTargetSign(sign);
+        signText.setTargetSign(sign, side);
 
         for (int i = 0; i < clipboard.getLines().length; i++) {
             signText.setLineLiteral(i, clipboard.getLine(i));

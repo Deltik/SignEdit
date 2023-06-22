@@ -25,6 +25,9 @@ import net.deltik.mc.signedit.integrations.NoopSignEditValidator;
 import net.deltik.mc.signedit.integrations.SignEditValidator;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
 import net.deltik.mc.signedit.listeners.CoreSignEditListener;
+import net.deltik.mc.signedit.shims.ISignSide;
+import net.deltik.mc.signedit.shims.SideShim;
+import net.deltik.mc.signedit.shims.SignShim;
 import net.deltik.mc.signedit.subcommands.PerSubcommand;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
@@ -34,6 +37,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,7 +54,9 @@ public class SignText {
     private String[] stagedLines = new String[4];
     private String[] afterLines = new String[4];
     @Nullable
-    private Sign targetSign;
+    private SignShim targetSign;
+    @Nullable
+    private SideShim targetSignSide;
 
     public SignText() {
         this(new NoopSignEditValidator());
@@ -63,42 +69,64 @@ public class SignText {
 
     @Nullable
     public Sign getTargetSign() {
-        return targetSign;
+        if (targetSign == null) return null;
+        return targetSign.getImplementation();
     }
 
-    public void setTargetSign(@Nullable Sign targetSign) {
+    @Nullable
+    public ISignSide getTargetSignSide() {
+        if (targetSign == null || targetSignSide == null) return null;
+
+        return targetSign.getSide(targetSignSide);
+    }
+
+    public SideShim getSide() {
+        return targetSignSide;
+    }
+
+    public void setTargetSign(@Nullable Sign targetSign, @Nullable SideShim targetSignSide) {
+        if (targetSign == null) {
+            setTargetSign((SignShim) null, targetSignSide);
+            return;
+        }
+        setTargetSign(new SignShim(targetSign), targetSignSide);
+    }
+
+    public void setTargetSign(@Nullable SignShim targetSign, @Nullable SideShim targetSignSide) {
         this.targetSign = targetSign;
+        this.targetSignSide = targetSignSide != null ? targetSignSide : SideShim.FRONT;
     }
 
     public void applySign() {
         reloadTargetSign();
+        assert getTargetSignSide() != null;
         assert getTargetSign() != null;
-        beforeLines = getTargetSign().getLines().clone();
+        beforeLines = getTargetSignSide().getLines().clone();
         for (int i = 0; i < changedLines.length; i++) {
             String line = getLine(i);
             if (line != null) {
-                getTargetSign().setLine(i, line);
+                getTargetSignSide().setLine(i, line);
             }
         }
 
-        stagedLines = getTargetSign().getLines().clone();
+        stagedLines = getTargetSignSide().getLines().clone();
 
         validator.validate(getTargetSign());
         getTargetSign().update();
 
-        afterLines = getTargetSign().getLines().clone();
+        afterLines = getTargetSignSide().getLines().clone();
     }
 
     private void reloadTargetSign() {
         BlockState newBlockState;
         try {
-            newBlockState = targetSign != null ? targetSign.getBlock().getState() : null;
+            newBlockState = getTargetSign() != null ? getTargetSign().getBlock().getState() : null;
         } catch (IllegalStateException ignored) {
             newBlockState = null;
         }
 
         if (newBlockState instanceof Sign && newBlockState.isPlaced()) {
-            targetSign = (Sign) newBlockState;
+            targetSign = new SignShim((Sign) newBlockState);
         } else {
             throw new BlockStateNotPlacedException();
         }
@@ -132,10 +160,13 @@ public class SignText {
      *              {@link EventPriority#MONITOR}
      */
     public void importPendingSignChangeEvent(SignChangeEvent event) {
-        targetSign = CoreSignEditListener.getPlacedSignFromBlockEvent(event);
+        targetSign = new SignShim(CoreSignEditListener.getPlacedSignFromBlockEvent(event));
+        importSignSide(event);
         String[] lines = event.getLines();
+        ISignSide signSide = getTargetSignSide();
+        assert signSide != null;
         for (int i = 0; i < lines.length; i++) {
-            targetSign.setLine(i, this.getLine(i));
+            signSide.setLine(i, this.getLine(i));
             this.setLine(i, lines[i]);
             event.setLine(i, this.getLine(i));
         }
@@ -149,21 +180,34 @@ public class SignText {
         }
     }
 
+    private void importSignSide(SignChangeEvent event) {
+        try {
+            Object getSide = SignChangeEvent.class.getMethod("getSide").invoke(event);
+            String enumValue = (String) getSide.getClass().getMethod("name").invoke(getSide);
+            targetSignSide = SideShim.valueOf(enumValue);
+        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+            targetSignSide = SideShim.FRONT;
+        }
+    }
+
     /**
      * Import sign lines from a {@link SignChangeEvent} for reporting/logging purposes only.
      *
      * @param event An event from an {@link EventHandler} of {@link EventPriority#MONITOR}
      */
     public void importAuthoritativeSignChangeEvent(SignChangeEvent event) {
-        targetSign = CoreSignEditListener.getPlacedSignFromBlockEvent(event);
-        beforeLines = targetSign.getLines().clone();
+        targetSign = new SignShim(CoreSignEditListener.getPlacedSignFromBlockEvent(event));
+        importSignSide(event);
+        assert getTargetSignSide() != null;
+        beforeLines = getTargetSignSide().getLines().clone();
         stagedLines = changedLines;
         afterLines = event.getLines();
     }
 
     public void importSign() {
-        assert targetSign != null;
-        changedLines = targetSign.getLines().clone();
+        ISignSide targetSignSide = getTargetSignSide();
+        assert targetSignSide != null;
+        changedLines = targetSignSide.getLines().clone();
     }
 
     public void setLineLiteral(int lineNumber, String value) {

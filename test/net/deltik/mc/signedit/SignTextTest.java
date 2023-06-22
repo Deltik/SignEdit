@@ -24,6 +24,7 @@ import net.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
 import net.deltik.mc.signedit.integrations.BreakReplaceSignEditValidator;
 import net.deltik.mc.signedit.integrations.NoopSignEditValidator;
 import net.deltik.mc.signedit.integrations.StandardSignEditValidator;
+import net.deltik.mc.signedit.shims.SideShim;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.block.data.BlockData;
@@ -235,11 +236,11 @@ public class SignTextTest {
     public void targetSignGetterAndSetter() {
         Sign sign = mock(Sign.class);
 
-        assertNull(signText.getTargetSign());
+        assertNull(signText.getTargetSignSide());
 
-        signText.setTargetSign(sign);
+        signText.setTargetSign(sign, SideShim.FRONT);
 
-        assertEquals(sign, signText.getTargetSign());
+        assertEquals(sign, signText.getTargetSignSide());
     }
 
     @Test
@@ -250,7 +251,7 @@ public class SignTextTest {
         signText.setLine(1, "two");
         signText.setLine(2, "three");
         signText.setLine(3, "four");
-        signText.setTargetSign(sign);
+        signText.setTargetSign(sign, SideShim.FRONT);
 
         signText.applySign();
 
@@ -265,7 +266,7 @@ public class SignTextTest {
         Sign sign = createSign();
 
         signText.setLine(1, "just this line");
-        signText.setTargetSign(sign);
+        signText.setTargetSign(sign, SideShim.FRONT);
 
         signText.applySign();
 
@@ -286,7 +287,7 @@ public class SignTextTest {
             return null;
         }).when(pluginManager).callEvent(any(Event.class));
 
-        signText.setTargetSign(sign);
+        signText.setTargetSign(sign, SideShim.FRONT);
         assertThrows(ForbiddenSignEditException.class, () -> signText.applySign());
     }
 
@@ -330,7 +331,7 @@ public class SignTextTest {
         Sign sign = createSign();
         when(sign.isPlaced()).thenReturn(false);
 
-        signText.setTargetSign(sign);
+        signText.setTargetSign(sign, SideShim.FRONT);
         signText.setLine(0, "doesn't matter");
         assertThrows(BlockStateNotPlacedException.class, () -> signText.applySign());
     }
@@ -342,7 +343,7 @@ public class SignTextTest {
         when(block.getState()).thenThrow(IllegalStateException.class);
         when(sign.getBlock()).thenReturn(block);
 
-        signText.setTargetSign(sign);
+        signText.setTargetSign(sign, SideShim.FRONT);
         signText.setLine(0, "doesn't matter");
         assertThrows(BlockStateNotPlacedException.class, () -> signText.applySign());
     }
@@ -351,7 +352,7 @@ public class SignTextTest {
     public void importSign() {
         Sign sign = createSign();
 
-        signText.setTargetSign(sign);
+        signText.setTargetSign(sign, SideShim.FRONT);
         signText.importSign();
 
         assertEquals(signText.getLine(0), "a");
@@ -366,7 +367,7 @@ public class SignTextTest {
         String[] source = new String[]{"a", "b", "c", "d"};
         when(sign.getLines()).thenReturn(source);
 
-        signText.setTargetSign(sign);
+        signText.setTargetSign(sign, SideShim.FRONT);
         signText.importSign();
 
         assertNotSame(source, signText.getLines());
@@ -388,7 +389,7 @@ public class SignTextTest {
         signText.setLine(expectedCancellationLine, expectedCancellation);
         signText.importAuthoritativeSignChangeEvent(signChangeEvent);
 
-        assertSame(sign, signText.getTargetSign());
+        assertSame(sign, signText.getTargetSignSide());
         assertArrayEquals(sign.getLines(), signText.getBeforeLines());
         assertEquals(expectedCancellation, signText.getStagedLine(2));
         assertArrayEquals(expectedAfter, signText.getAfterLines());
@@ -398,7 +399,7 @@ public class SignTextTest {
     public void signBackupAndRestore() {
         Sign sign = createSign();
 
-        signText.setTargetSign(sign);
+        signText.setTargetSign(sign, SideShim.FRONT);
 
         signText.setLine(1, "2");
         signText.setLine(3, "4");
@@ -420,7 +421,7 @@ public class SignTextTest {
     @Test
     public void signRevertFlipsBeforeAndAfter() {
         Sign sign = createSign();
-        signText.setTargetSign(sign);
+        signText.setTargetSign(sign, SideShim.FRONT);
 
         signText.setLine(0, "cotton eyed joe");
         signText.applySign();
@@ -438,7 +439,7 @@ public class SignTextTest {
     public void signRevertKeepsPreApplyChangedLines() {
         String expected = "cotton eyed joe";
         Sign sign = createSign();
-        signText.setTargetSign(sign);
+        signText.setTargetSign(sign, SideShim.FRONT);
 
         signText.setLine(0, expected);
         assertEquals(expected, signText.getLine(0));
@@ -457,7 +458,7 @@ public class SignTextTest {
         Sign sign = createSign();
         when(sign.isPlaced()).thenReturn(false);
 
-        signText.setTargetSign(sign);
+        signText.setTargetSign(sign, SideShim.FRONT);
         assertThrows(BlockStateNotPlacedException.class, () -> signText.revertSign());
     }
 
@@ -465,7 +466,7 @@ public class SignTextTest {
     public void signChangedReturnsTrueWhenSignChanged() {
         Sign sign = createSign();
 
-        signText.setTargetSign(sign);
+        signText.setTargetSign(sign, SideShim.FRONT);
 
         assertFalse(signText.signChanged());
         signText.setLine(1, "Anything else");
@@ -480,7 +481,7 @@ public class SignTextTest {
     public void signChangedReturnsFalseWhenSignNotChanged() {
         Sign sign = createSign();
 
-        signText.setTargetSign(sign);
+        signText.setTargetSign(sign, SideShim.FRONT);
 
         assertFalse(signText.signChanged());
         signText.setLine(1, "b");
@@ -495,7 +496,7 @@ public class SignTextTest {
     public void getBeforeLinesShowBeforeState() {
         Sign sign = createSign();
 
-        signText.setTargetSign(sign);
+        signText.setTargetSign(sign, SideShim.FRONT);
         signText.setLineLiteral(1, "CHANGED");
         signText.applySign();
 
@@ -512,7 +513,7 @@ public class SignTextTest {
         String[] expectedSignLines = defaultSignLines.clone();
         expectedSignLines[1] = "CHANGED";
 
-        signText.setTargetSign(sign);
+        signText.setTargetSign(sign, SideShim.FRONT);
         signText.setLineLiteral(1, "CHANGED");
         signText.applySign();
 
@@ -535,7 +536,7 @@ public class SignTextTest {
             return null;
         }).when(pluginManager).callEvent(any(Event.class));
 
-        signText.setTargetSign(sign);
+        signText.setTargetSign(sign, SideShim.FRONT);
         signText.setLineLiteral(1, "CHANGED");
         signText.applySign();
 
