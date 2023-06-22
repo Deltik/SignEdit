@@ -1,28 +1,5 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'com.guardsquare', name: 'proguard-gradle', version: '7.2.0-beta2'
-    }
-}
-
-plugins {
-    id 'com.palantir.git-version' version '0.12.3'
-}
-
-def name = 'SignEdit'
-
-def verDetails = versionDetails()
-def versionWithoutLeadingV = gitVersion().replaceFirst(/^v/, "")
-if (verDetails.isCleanTag) {
-    version versionWithoutLeadingV
-} else {
-    version versionWithoutLeadingV + '-SNAPSHOT'
-}
-
 /*
- * Copyright (C) 2017-2021 Deltik <https://www.deltik.net/>
+ * Copyright (C) 2017-2023 Deltik <https://www.deltik.net/>
  *
  * This file is part of SignEdit for Bukkit.
  *
@@ -40,15 +17,31 @@ if (verDetails.isCleanTag) {
  * along with SignEdit for Bukkit.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Set to '+' to use latest Bukkit
-// Otherwise, specify a version number like '1.13-R0.1-SNAPSHOT'
-def bukkit_version = '1.13-R0.1-SNAPSHOT'
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'com.guardsquare', name: 'proguard-gradle', version: '7.2.0-beta2'
+    }
+}
 
-apply plugin: 'java'
-apply plugin: 'java-library'
-apply plugin: 'application'
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'application'
+    id 'com.palantir.git-version' version '0.12.3'
+}
 
-mainClassName = 'net.deltik.mc.signedit.SignEditPlugin'
+def name = 'SignEdit'
+
+def verDetails = versionDetails()
+def versionWithoutLeadingV = gitVersion().replaceFirst(/^v/, "")
+if (verDetails.isCleanTag) {
+    version versionWithoutLeadingV
+} else {
+    version versionWithoutLeadingV + '-SNAPSHOT'
+}
 
 java {
     toolchain {
@@ -67,8 +60,13 @@ configurations {
     extraLibs
 }
 
+application {
+    mainClass.set("net.deltik.mc.signedit.SignEditPlugin")
+}
+
 dependencies {
-    implementation group: 'org.bukkit', name: 'bukkit', version: bukkit_version
+    implementation group: 'org.bukkit', name: 'bukkit', version: '1.13-R0.1-SNAPSHOT'
+//    implementation group: 'org.spigotmc', name: 'spigot-api', version: '1.20.1-R0.1-SNAPSHOT'
     implementation 'com.intellij:annotations:12.0@jar'
 
     implementation group: 'com.google.dagger', name: 'dagger', version: '2.36'
@@ -109,9 +107,9 @@ jar {
 
 processResources {
     def expandProperties = [
-            pluginName: name,
+            pluginName   : name,
             pluginVersion: version,
-            mainClassName: mainClassName,
+            mainClass: application.mainClass,
     ]
     inputs.properties(expandProperties)
     with copySpec {
@@ -123,12 +121,16 @@ processResources {
 
 def proguardOutFile = rootProject.file("$buildDir/libs/release.jar")
 def jarFile = jar.outputs.files.singleFile
-task proguard(type: proguard.gradle.ProGuardTask) {
+
+//noinspection UnnecessaryQualifiedReference
+tasks.register('proguard', proguard.gradle.ProGuardTask) {
     configuration 'configuration.pro'
 
-    injars  jarFile
+    injars jarFile
     outjars proguardOutFile
-    libraryjars configurations.findByName('runtimeClasspath').getFiles()
+    libraryjars configurations.named('runtimeClasspath') {
+        getFiles()
+    }
     // Java 8
     libraryjars "${System.getProperty("java.home")}/lib/rt.jar"
     // Java 9+ compatibility (requires JDK)

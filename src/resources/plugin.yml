@@ -1,4 +1,4 @@
-main: ${mainClassName}
+main: ${mainClass.get()}
 name: ${pluginName}
 author: Deltik
 website: https://github.com/Deltik/SignEdit

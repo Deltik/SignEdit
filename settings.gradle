@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2021 Deltik <https://www.deltik.net/>
+ * Copyright (C) 2017-2023 Deltik <https://www.deltik.net/>
  *
  * This file is part of SignEdit for Bukkit.
  *
@@ -17,5 +17,8 @@
  * along with SignEdit for Bukkit.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-rootProject.name = 'SignEdit'
+plugins {
+    id "org.gradle.toolchains.foojay-resolver-convention" version "0.5.0"
+}
 
+rootProject.name = 'SignEdit'

@@ -16,6 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ![`/se paste` with SignEdit for Bukkit v1.13.9](https://i.imgur.com/1qNBnID.png)
 * `java.lang.IllegalArgumentException: Invalid page number (1)` when using `compatibility.sign-ui: EditableBook` and saving a blank book
 
+### Under the Hood
+
+* Gradle 9.0 compatibility:
+  * Replaced Gradle 8.2 deprecations with recommended replacements
+  * Updated Gradle to version 8.2-rc-2
+  * Added JDK toolchain resolver plugin to download Java 1.8
+
 ## v1.13.8 (2023-04-02)
 
 ### Fixed
