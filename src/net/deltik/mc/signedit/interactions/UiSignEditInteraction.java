@@ -149,6 +149,7 @@ public class UiSignEditInteraction implements SignEditInteraction {
      *
      * @param player The player that wants to open the sign editor
      * @param sign   The sign that should load into the player's sign editor
+     * @param side   The side of the sign to open (ignored in Bukkit 1.19.4 and older)
      * @throws Exception if anything goes wrong while trying to open the sign editor
      */
     private void openSignEditor(Player player, Sign sign, SideShim side) throws Exception {
