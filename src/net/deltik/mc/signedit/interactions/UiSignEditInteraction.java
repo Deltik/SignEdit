@@ -43,6 +43,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static net.deltik.mc.signedit.CraftBukkitReflector.*;
@@ -154,23 +156,58 @@ public class UiSignEditInteraction implements SignEditInteraction {
      */
     private void openSignEditor(Player player, Sign sign, SideShim side) throws Exception {
         try {
-            for (Method method : Player.class.getDeclaredMethods()) {
-                if (method.getName().equals("openSign") && method.getParameterCount() == 2) {
-                    Class<?>[] parameterTypes = method.getParameterTypes();
-                    if (parameterTypes[0].equals(Sign.class) && parameterTypes[1].isEnum()) {
-                        Method enumValueOf = parameterTypes[1].getMethod("valueOf", String.class);
-                        Enum<?> enumValue = (Enum<?>) enumValueOf.invoke(null, side.name());
-                        method.invoke(player, sign, enumValue);
-                        return;
-                    }
-                }
-            }
-            @SuppressWarnings("JavaReflectionMemberAccess")
-            Method method = Player.class.getMethod("openSign", Sign.class);
-            method.invoke(player, sign);
-        } catch (NoSuchMethodException ignored) {
+            if (openSignEditorBukkit1_20(player, sign, side)) return;
+
+            openSignEditorBukkit1_18(player, sign);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) {
             openSignEditorWithReflection(player, sign);
         }
+    }
+
+    /**
+     * Open the sign editor for a player using the Bukkit 1.18 API
+     *
+     * @param player The player that wants to open the sign editor
+     * @param sign   The sign that should load into the player's sign editor
+     * @throws NoSuchMethodException     if the "openSign" method cannot be found in the Player class
+     * @throws IllegalAccessException    if the "openSign" method cannot be accessed due to Java reflection restrictions
+     * @throws InvocationTargetException if an exception occurs while invoking the "openSign" method
+     */
+    @SuppressWarnings("JavaReflectionMemberAccess")
+    private static void openSignEditorBukkit1_18(Player player, Sign sign)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        Method method = Player.class.getMethod("openSign", Sign.class);
+        method.invoke(player, sign);
+    }
+
+    /**
+     * Open the sign editor for a player using the Bukkit 1.20 API
+     *
+     * @param player The player that wants to open the sign editor
+     * @param sign   The sign that should load into the player's sign editor
+     * @param side   The player's viewing side for the sign
+     * @return true if the sign editor was successfully opened, false otherwise
+     * @throws NoSuchMethodException     if the "openSign" method cannot be found in the Player class
+     * @throws IllegalAccessException    if the "openSign" method cannot be accessed due to Java reflection restrictions
+     * @throws InvocationTargetException if an exception occurs while invoking the "openSign" method
+     */
+    private static boolean openSignEditorBukkit1_20(Player player, Sign sign, SideShim side)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        Optional<Method> optionalMethod = Arrays.stream(Player.class.getDeclaredMethods())
+                .filter(method -> method.getName().equals("openSign") && method.getParameterCount() == 2)
+                .filter(method -> {
+                    Class<?>[] parameterTypes = method.getParameterTypes();
+                    return parameterTypes[0].equals(Sign.class) && parameterTypes[1].isEnum();
+                }).findFirst();
+
+        if (optionalMethod.isPresent()) {
+            Method method = optionalMethod.get();
+            Method enumValueOf = method.getParameterTypes()[1].getMethod("valueOf", String.class);
+            Enum<?> enumValue = (Enum<?>) enumValueOf.invoke(null, side.name());
+            method.invoke(player, sign, enumValue);
+            return true;
+        }
+        return false;
     }
 
     /**
