@@ -34,7 +34,20 @@ public enum SideShim {
 
     public static SideShim fromRelativePosition(@NotNull Sign sign, @NotNull LivingEntity entity) {
         Vector vector = entity.getEyeLocation().toVector().subtract(sign.getLocation().add(0.5, 0.5, 0.5).toVector());
-        BlockData blockData = sign.getBlockData();
+        BlockData blockData;
+        try {
+            blockData = sign.getBlockData();
+        } catch (NoSuchMethodError e) {
+            // Compatibility with Bukkit 1.12.2 and older
+            return FRONT;
+        }
+
+        Vector signDirection = getSignDirection(blockData);
+        return vector.dot(signDirection) > 0 ? FRONT : BACK;
+    }
+
+    @NotNull
+    private static Vector getSignDirection(BlockData blockData) {
         BlockFace signFace;
 
         if (blockData instanceof Directional) {
@@ -47,8 +60,6 @@ public enum SideShim {
             signFace = BlockFace.NORTH;
         }
 
-        Vector signDirection = new Vector(signFace.getModX(), signFace.getModY(), signFace.getModZ());
-
-        return vector.dot(signDirection) > 0 ? FRONT : BACK;
+        return new Vector(signFace.getModX(), signFace.getModY(), signFace.getModZ());
     }
 }

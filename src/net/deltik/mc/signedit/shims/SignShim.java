@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 public class SignShim {
     @NotNull
@@ -35,21 +36,27 @@ public class SignShim {
 
     @NotNull
     public ISignSide getSide(@NotNull SideShim side) {
-        try {
-            for (Method method : Sign.class.getDeclaredMethods()) {
-                if (method.getName().equals("getSide") && method.getParameterCount() == 1) {
-                    Class<?> parameterType = method.getParameterTypes()[0];
-                    if (parameterType.isEnum()) {
-                        Method enumValueOf = parameterType.getMethod("valueOf", String.class);
-                        Enum<?> enumValue = (Enum<?>) enumValueOf.invoke(null, side.name());
-                        return new SignSideShim(method.invoke(implementation, enumValue));
-                    }
-                }
-            }
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+        Method getSideMethod = Arrays.stream(Sign.class.getDeclaredMethods())
+                .filter(method -> method.getName().equals("getSide") && method.getParameterCount() == 1)
+                .findFirst()
+                .orElse(null);
+
+        if (getSideMethod == null) {
             return new SignSideShim(implementation);
         }
-        throw new IllegalStateException("Unexpected structure of Sign");
+
+        Class<?> parameterType = getSideMethod.getParameterTypes()[0];
+        if (!parameterType.isEnum()) {
+            throw new IllegalStateException("Unexpected structure of Sign");
+        }
+
+        try {
+            Method enumValueOf = parameterType.getMethod("valueOf", String.class);
+            Enum<?> enumValue = (Enum<?>) enumValueOf.invoke(null, side.name());
+            return new SignSideShim(getSideMethod.invoke(implementation, enumValue));
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new IllegalStateException("Unable to call method: getSide", e);
+        }
     }
 
     @NotNull
