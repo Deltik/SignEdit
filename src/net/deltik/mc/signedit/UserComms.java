@@ -19,7 +19,6 @@
 
 package net.deltik.mc.signedit;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.plugin.Plugin;
 
 import javax.inject.Inject;
@@ -85,7 +84,7 @@ public class UserComms {
             getLogger().warning(
                     "Could not load user-defined locales; falling back to built-in locales. Details: "
             );
-            getLogger().warning(ExceptionUtils.getStackTrace(e));
+            getLogger().warning(SignEditPlugin.getStackTrace(e));
             return getClass().getClassLoader();
         }
     }

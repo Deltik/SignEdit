@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Updated Gradle to version 8.2-rc-2
   * Added JDK toolchain resolver plugin to download Java 1.8
 * Skip ProGuard for development builds
+* Eliminated the dependency on `commons-lang:commons-lang`
 
 ## v1.13.8 (2023-04-02)
 

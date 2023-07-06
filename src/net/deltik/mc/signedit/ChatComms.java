@@ -20,8 +20,6 @@
 package net.deltik.mc.signedit;
 
 import net.deltik.mc.signedit.exceptions.*;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -116,7 +114,7 @@ public class ChatComms {
 
     private String replaceFormattingCodes(String phrase) {
         String formattingCodeReplacementPattern =
-                "\\{(" + StringUtils.join(FORMATTING_CODE_SET, "|") + ")}";
+                "\\{(" + String.join("|", FORMATTING_CODE_SET) + ")}";
         Pattern pattern = Pattern.compile(formattingCodeReplacementPattern);
         Matcher matcher = pattern.matcher(phrase);
         StringBuffer stringBuffer = new StringBuffer();
@@ -223,11 +221,11 @@ public class ChatComms {
             tell(t("to_server_admin", t("check_for_updates_to_this_plugin")));
             tell(t("error_code", originalException.toString()));
             tell(t("hint_more_details_with_server_admin"));
-            getLogger().severe(ExceptionUtils.getStackTrace(originalException));
+            getLogger().severe(SignEditPlugin.getStackTrace(originalException));
         } else {
             tell(t("uncaught_error", e.toString()));
             tell(t("hint_more_details_with_server_admin"));
-            getLogger().severe(ExceptionUtils.getStackTrace(e));
+            getLogger().severe(SignEditPlugin.getStackTrace(e));
         }
     }
 

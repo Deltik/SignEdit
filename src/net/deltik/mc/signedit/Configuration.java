@@ -19,7 +19,6 @@
 
 package net.deltik.mc.signedit;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -91,7 +90,7 @@ public class Configuration {
         try {
             prepare();
         } catch (IOException e) {
-            getLogger().severe(ExceptionUtils.getStackTrace(e));
+            getLogger().severe(SignEditPlugin.getStackTrace(e));
             throw new IllegalStateException("Unrecoverable error while setting up plugin configuration");
         }
     }

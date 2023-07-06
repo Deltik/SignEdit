@@ -19,7 +19,6 @@
 
 package net.deltik.mc.signedit;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.plugin.Plugin;
 
 import javax.inject.Inject;
@@ -65,7 +64,7 @@ public class ConfigurationWatcher extends Thread {
                     "Could not set up SignEdit configuration watcher. " +
                             "Configuration changes will require a Bukkit server restart to apply."
             );
-            getLogger().warning(ExceptionUtils.getStackTrace(e));
+            getLogger().warning(SignEditPlugin.getStackTrace(e));
         }
         this.watcher = watcher;
     }
