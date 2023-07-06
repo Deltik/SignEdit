@@ -32,7 +32,6 @@ import java.util.Set;
 
 import static net.deltik.mc.signedit.LineSelectorParser.NO_LINES_SELECTED;
 
-@Deprecated
 public class ArgParser {
     private final Configuration config;
     private final Set<String> subcommandNames;
