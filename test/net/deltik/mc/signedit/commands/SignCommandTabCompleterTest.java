@@ -23,6 +23,8 @@ import net.deltik.mc.signedit.ArgParser;
 import net.deltik.mc.signedit.ChatCommsModule;
 import net.deltik.mc.signedit.Configuration;
 import net.deltik.mc.signedit.subcommands.HelpSignSubcommand;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
@@ -80,6 +82,7 @@ public class SignCommandTabCompleterTest {
         commandSender = mock(Player.class);
         when(commandSender.hasPermission(anyString())).thenReturn(true);
         when(((Player) commandSender).getTargetBlock(any(), anyInt())).thenReturn(block);
+        when(((Player) commandSender).getEyeLocation()).thenReturn(new Location(mock(World.class), 0, 0, 0));
     }
 
     private static Sign createSign(String[] signLines) {
@@ -93,6 +96,7 @@ public class SignCommandTabCompleterTest {
         doAnswer(invocation ->
                 signLinesCopy[(int) invocation.getArgument(0)] = invocation.getArgument(1)
         ).when(sign).setLine(anyInt(), anyString());
+        when(sign.getLocation()).thenReturn(new Location(mock(World.class), 0, 0, 0));
         when(sign.update()).thenReturn(true);
         return sign;
     }

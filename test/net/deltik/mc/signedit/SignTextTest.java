@@ -240,7 +240,7 @@ public class SignTextTest {
 
         signText.setTargetSign(sign, SideShim.FRONT);
 
-        assertEquals(sign, signText.getTargetSignSide());
+        assertEquals(sign, signText.getTargetSign());
     }
 
     @Test
@@ -389,7 +389,7 @@ public class SignTextTest {
         signText.setLine(expectedCancellationLine, expectedCancellation);
         signText.importAuthoritativeSignChangeEvent(signChangeEvent);
 
-        assertSame(sign, signText.getTargetSignSide());
+        assertSame(sign, signText.getTargetSign());
         assertArrayEquals(sign.getLines(), signText.getBeforeLines());
         assertEquals(expectedCancellation, signText.getStagedLine(2));
         assertArrayEquals(expectedAfter, signText.getAfterLines());
