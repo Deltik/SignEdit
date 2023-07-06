@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Replaced Gradle 8.2 deprecations with recommended replacements
   * Updated Gradle to version 8.2-rc-2
   * Added JDK toolchain resolver plugin to download Java 1.8
+* Skip ProGuard for development builds
 
 ## v1.13.8 (2023-04-02)
 

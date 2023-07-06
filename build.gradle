@@ -124,6 +124,8 @@ def jarFile = jar.outputs.files.singleFile
 
 //noinspection UnnecessaryQualifiedReference
 tasks.register('proguard', proguard.gradle.ProGuardTask) {
+    onlyIf { !project.version.endsWith('-SNAPSHOT') }
+
     configuration 'configuration.pro'
 
     injars jarFile
@@ -142,6 +144,7 @@ tasks.register('proguard', proguard.gradle.ProGuardTask) {
 
 jar.finalizedBy proguard
 proguard.doLast {
+    if (project.version.endsWith('-SNAPSHOT')) return
     if (!jarFile.delete()) throw new IllegalStateException()
     if (!proguardOutFile.renameTo(jarFile)) throw new IllegalStateException()
 }
