@@ -22,6 +22,8 @@ package net.deltik.mc.signedit.integrations;
 import net.deltik.mc.signedit.exceptions.BlockStateNotPlacedException;
 import net.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
 import net.deltik.mc.signedit.listeners.CoreSignEditListener;
+import net.deltik.mc.signedit.shims.SideShim;
+import net.deltik.mc.signedit.shims.SignShim;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
@@ -47,10 +49,11 @@ public class BreakReplaceSignEditValidator extends StandardSignEditValidator {
     }
 
     @Override
-    public void validate(Sign proposedSign) {
-        validateBlockBreak(proposedSign);
-        validateBlockPlace(proposedSign);
-        super.validate(proposedSign);
+    public void validate(SignShim proposedSign, SideShim side) {
+        Sign signImplementation = proposedSign.getImplementation();
+        validateBlockBreak(signImplementation);
+        validateBlockPlace(signImplementation);
+        super.validate(proposedSign, side);
     }
 
     @Override

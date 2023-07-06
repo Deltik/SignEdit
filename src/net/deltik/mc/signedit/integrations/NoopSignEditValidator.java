@@ -19,7 +19,8 @@
 
 package net.deltik.mc.signedit.integrations;
 
-import org.bukkit.block.Sign;
+import net.deltik.mc.signedit.shims.SideShim;
+import net.deltik.mc.signedit.shims.SignShim;
 import org.bukkit.event.block.SignChangeEvent;
 
 import javax.inject.Inject;
@@ -30,7 +31,7 @@ public class NoopSignEditValidator implements SignEditValidator {
     }
 
     @Override
-    public void validate(Sign proposedSign) {
+    public void validate(SignShim proposedSign, SideShim signSide) {
     }
 
     @Override

@@ -25,8 +25,11 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.Rotatable;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+
+import java.lang.reflect.InvocationTargetException;
 
 public enum SideShim {
     FRONT,
@@ -44,6 +47,16 @@ public enum SideShim {
 
         Vector signDirection = getSignDirection(blockData);
         return vector.dot(signDirection) > 0 ? FRONT : BACK;
+    }
+
+    public static SideShim fromSignChangeEvent(SignChangeEvent event) {
+        try {
+            Object getSide = SignChangeEvent.class.getMethod("getSide").invoke(event);
+            String enumValue = (String) getSide.getClass().getMethod("name").invoke(getSide);
+            return valueOf(enumValue);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            return FRONT;
+        }
     }
 
     @NotNull

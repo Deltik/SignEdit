@@ -37,7 +37,6 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -111,7 +110,7 @@ public class SignText {
 
         stagedLines = getTargetSignSide().getLines().clone();
 
-        validator.validate(getTargetSign());
+        validator.validate(this.targetSign, this.targetSignSide);
         getTargetSign().update();
 
         afterLines = getTargetSignSide().getLines().clone();
@@ -181,13 +180,7 @@ public class SignText {
     }
 
     private void importSignSide(SignChangeEvent event) {
-        try {
-            Object getSide = SignChangeEvent.class.getMethod("getSide").invoke(event);
-            String enumValue = (String) getSide.getClass().getMethod("name").invoke(getSide);
-            targetSignSide = SideShim.valueOf(enumValue);
-        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-            targetSignSide = SideShim.FRONT;
-        }
+        targetSignSide = SideShim.fromSignChangeEvent(event);
     }
 
     /**
