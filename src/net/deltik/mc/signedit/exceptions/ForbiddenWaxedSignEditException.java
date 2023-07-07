@@ -17,29 +17,7 @@
  * along with SignEdit for Bukkit.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package net.deltik.mc.signedit.subcommands;
+package net.deltik.mc.signedit.exceptions;
 
-import net.deltik.mc.signedit.interactions.SignEditInteraction;
-import org.bukkit.entity.Player;
-
-import javax.inject.Inject;
-import javax.inject.Provider;
-import java.util.Map;
-
-public class CopySignSubcommand extends SignSubcommand {
-    private final Map<String, Provider<SignEditInteraction>> interactions;
-
-    @Inject
-    public CopySignSubcommand(
-            Player player,
-            Map<String, Provider<SignEditInteraction>> interactions
-    ) {
-        super(player);
-        this.interactions = interactions;
-    }
-
-    @Override
-    public SignEditInteraction execute() {
-        return interactions.get("Copy").get();
-    }
+public class ForbiddenWaxedSignEditException extends ForbiddenSignEditException {
 }

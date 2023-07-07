@@ -23,6 +23,7 @@ import net.deltik.mc.signedit.Configuration;
 import net.deltik.mc.signedit.CraftBukkitReflector;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
 import net.deltik.mc.signedit.interactions.SignEditInteractionModule;
+import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -41,10 +42,12 @@ public class UiSignSubcommand extends SignSubcommand {
 
     @Inject
     public UiSignSubcommand(
+            Player player,
             Configuration config,
             Map<String, Provider<SignEditInteraction>> interactions,
             CraftBukkitReflector reflector
     ) {
+        super(player);
         this.config = config;
         this.interactions = interactions;
         this.reflector = reflector;

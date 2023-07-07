@@ -12,34 +12,35 @@
 
 ## Table of Contents
 
-   * [SignEdit for Bukkit](#signedit-for-bukkit)
-      * [Table of Contents](#table-of-contents)
-      * [Installation](#installation)
-      * [Usage](#usage)
-         * [Commands](#commands)
+* [SignEdit for Bukkit](#signedit-for-bukkit)
+    * [Table of Contents](#table-of-contents)
+    * [Installation](#installation)
+    * [Usage](#usage)
+        * [Commands](#commands)
             * [Commands from Older Versions](#commands-from-older-versions)
-         * [Aliases](#aliases)
-      * [Syntax](#syntax)
-         * [Formatting Codes](#formatting-codes)
+        * [Aliases](#aliases)
+    * [Syntax](#syntax)
+        * [Formatting Codes](#formatting-codes)
             * [Examples](#examples)
-         * [Language Tags](#language-tags)
+        * [Language Tags](#language-tags)
             * [Examples](#examples-1)
-         * [Selecting Multiple Lines](#selecting-multiple-lines)
+        * [Selecting Multiple Lines](#selecting-multiple-lines)
             * [Examples](#examples-2)
-         * [Versioning](#versioning)
+        * [Versioning](#versioning)
             * [Examples](#examples-3)
-      * [Permissions](#permissions)
-      * [Configuration](#configuration)
-         * [`clicking: [auto|false|true]`](#clicking-autofalsetrue)
-         * [`force-locale: [false|true]`](#force-locale-falsetrue)
-         * [`line-starts-at: [1|0]`](#line-starts-at-10)
-         * [`locale: [en|…]`](#locale-en)
-         * [`compatibility.sign-ui: [Auto|EditableBook|Native]`](#compatibilitysign-ui-autoeditablebooknative)
-         * [`compatibility.edit-validation: [Standard|Extra|None]`](#compatibilityedit-validation-standardextranone)
-      * [Features](#features)
-         * [Features from Older Versions](#features-from-older-versions)
-         * [Supported Locales](#supported-locales)
-         * [Visual Examples](#visual-examples)
+    * [Permissions](#permissions)
+        * [Wax/Unwax Permissions](#waxunwax-permissions)
+    * [Configuration](#configuration)
+        * [`clicking: [auto|false|true]`](#clicking-autofalsetrue)
+        * [`force-locale: [false|true]`](#force-locale-falsetrue)
+        * [`line-starts-at: [1|0]`](#line-starts-at-10)
+        * [`locale: [en|…]`](#locale-en)
+        * [`compatibility.sign-ui: [Auto|EditableBook|Native]`](#compatibilitysign-ui-autoeditablebooknative)
+        * [`compatibility.edit-validation: [Standard|Extra|None]`](#compatibilityedit-validation-standardextranone)
+    * [Features](#features)
+        * [Features from Older Versions](#features-from-older-versions)
+        * [Supported Locales](#supported-locales)
+        * [Visual Examples](#visual-examples)
             * [`/sign ui`](#sign-ui)
             * [`/sign 2 Deltik's`](#sign-2-deltiks)
             * [`/sign clear 1`](#sign-clear-1)
@@ -49,14 +50,14 @@
             * [`/se set 1-4 Arts\&Crafts`](#se-set-1-4-artscrafts)
             * [`/sign copy`](#sign-copy)
             * [`/sign <tab>`](#sign-tab)
-      * [Advanced Customization](#advanced-customization)
-         * [Theming and Colors](#theming-and-colors)
-         * [Custom Translations](#custom-translations)
-      * [Compatibility](#compatibility)
-         * [Version Compatibility Table](#version-compatibility-table)
-         * [Backwards Compatibility with Omel's SignEdit v1.3](#backwards-compatibility-with-omels-signedit-v13)
-         * [Compatibility with Permissions Plugins](#compatibility-with-permissions-plugins)
-         * [Minecraft 1.16.1 Sign Editor GUI](#minecraft-1161-sign-editor-gui)
+    * [Advanced Customization](#advanced-customization)
+        * [Theming and Colors](#theming-and-colors)
+        * [Custom Translations](#custom-translations)
+    * [Compatibility](#compatibility)
+        * [Version Compatibility Table](#version-compatibility-table)
+        * [Backwards Compatibility with Omel's SignEdit v1.3](#backwards-compatibility-with-omels-signedit-v13)
+        * [Compatibility with Permissions Plugins](#compatibility-with-permissions-plugins)
+        * [Minecraft 1.16.1 Sign Editor GUI](#minecraft-1161-sign-editor-gui)
 
 ## Installation
 
@@ -67,46 +68,48 @@
 
 ### Commands
 
-| Command | Usage | [Version](#versioning) |
-| --- | --- | --- |
-| `/? sign` | Show detailed help about the `/sign` command. | `>= 1.0` |
-| `/sign` | Show the first page of the usage syntax of the `/sign` subcommands. | `>= 1.0` |
-| `/sign help [<page>]` | Show the usage syntax of the `/sign` subcommands.  Specify a `<page>` number to view a specific page. | `>= 1.13` |
-| `/sign ui` | Open the native Minecraft sign editor on the targeted sign. | `>= 1.8` |
-| `/sign [set] <lines> [<text>]` | Change each of the [lines](#selecting-multiple-lines) `<lines>` of the targeted sign to `<text>`.  If `<text>` is blank, erase the lines `<lines>`.  `set` can be omitted. | `>= 1.10` |
-| `/sign clear [<lines>]` | Erase the text on the targeted sign.  If `<lines>` is specified, only those lines are blanked out. | `>= 1.13` |
-| `/sign cancel` | Abort your pending sign edit action. | `>= 1.9` |
-| `/sign status` | Show the pending action, what is in the copy buffer, and an overview of the undo/redo history stack. | `>= 1.10` |
-| `/sign copy [<lines>]` | Copy the targeted sign's text.  If `<lines>` is specified, only those lines are copied. | `>= 1.10` |
-| `/sign cut [<lines>]` | Copy the targeted sign's text and remove it from the sign.  If `<lines>` is specified, only those lines are cut. | `>= 1.10` |
-| `/sign paste` | Paste the lines buffered by the previous `/sign copy` or `/sign cut` command onto the targeted sign. | `>= 1.10` |
-| `/sign undo` | Revert the previous sign change. | `>= 1.10` |
-| `/sign redo` | Restore the most recent sign change that was undone by `/sign undo`. | `>= 1.10` |
-| `/sign version` | Show the installed version of this plugin. | `>= 1.9.3` |
+| Command                        | Usage                                                                                                                                                                      | [Version](#versioning) |
+|--------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------|
+| `/? sign`                      | Show detailed help about the `/sign` command.                                                                                                                              | `>= 1.0`               |
+| `/sign`                        | Show the first page of the usage syntax of the `/sign` subcommands.                                                                                                        | `>= 1.0`               |
+| `/sign help [<page>]`          | Show the usage syntax of the `/sign` subcommands.  Specify a `<page>` number to view a specific page.                                                                      | `>= 1.13`              |
+| `/sign ui`                     | Open the native Minecraft sign editor on the targeted sign.                                                                                                                | `>= 1.8`               |
+| `/sign [set] <lines> [<text>]` | Change each of the [lines](#selecting-multiple-lines) `<lines>` of the targeted sign to `<text>`.  If `<text>` is blank, erase the lines `<lines>`.  `set` can be omitted. | `>= 1.10`              |
+| `/sign clear [<lines>]`        | Erase the text on the targeted sign.  If `<lines>` is specified, only those lines are blanked out.                                                                         | `>= 1.13`              |
+| `/sign cancel`                 | Abort your pending sign edit action.                                                                                                                                       | `>= 1.9`               |
+| `/sign status`                 | Show the pending action, what is in the copy buffer, and an overview of the undo/redo history stack.                                                                       | `>= 1.10`              |
+| `/sign copy [<lines>]`         | Copy the targeted sign's text.  If `<lines>` is specified, only those lines are copied.                                                                                    | `>= 1.10`              |
+| `/sign cut [<lines>]`          | Copy the targeted sign's text and remove it from the sign.  If `<lines>` is specified, only those lines are cut.                                                           | `>= 1.10`              |
+| `/sign paste`                  | Paste the lines buffered by the previous `/sign copy` or `/sign cut` command onto the targeted sign.                                                                       | `>= 1.10`              |
+| `/sign undo`                   | Revert the previous sign text change.  Does not affect non-text changes like waxing and dyeing.                                                                            | `>= 1.14`              |
+| `/sign redo`                   | Restore the most recent sign text change that was undone by `/sign undo`.                                                                                                  | `>= 1.14`              |
+| `/sign version`                | Show the installed version of this plugin.                                                                                                                                 | `>= 1.9.3`             |
 
 #### Commands from Older Versions
 
 These commands no longer apply to the latest version of this plugin:
 
-| Command | Usage | [Version](#versioning) |
-| --- | --- | --- |
-| ~~`/sign [set] <line> [<text>]`~~ | ~~Change the line `<line>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. If `<text>` is blank, erase the line `<line>`. `set` can be omitted.~~ | ~~`>= 1.6, < 1.10`~~ |
-| ~~`/sign set <line> [<text>]`~~ | ~~Change the line `<line>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. If `<text>` is blank, erase the line `<line>`.~~ | ~~`>= 1.4, < 1.6`~~ |
-| ~~`/sign set <line> <text>`~~ | ~~Change the line `<line>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes.~~ | ~~`>= 1.0, < 1.4`~~ |
-| ~~`/sign clear <lines>`~~ | ~~Erase the lines `<lines>` of the targeted sign.~~ | ~~`>= 1.10, < 1.13`~~ |
-| ~~`/sign clear <line>`~~ | ~~Erase the line `<line>` of the targeted sign.~~ | ~~`>= 1.4, < 1.10`~~ |
+| Command                           | Usage                                                                                                                                                                                               | [Version](#versioning) |
+|-----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------|
+| ~~`/sign [set] <line> [<text>]`~~ | ~~Change the line `<line>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. If `<text>` is blank, erase the line `<line>`. `set` can be omitted.~~ | ~~`>= 1.6, < 1.10`~~   |
+| ~~`/sign set <line> [<text>]`~~   | ~~Change the line `<line>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes. If `<text>` is blank, erase the line `<line>`.~~                       | ~~`>= 1.4, < 1.6`~~    |
+| ~~`/sign set <line> <text>`~~     | ~~Change the line `<line>` of the targeted sign to `<text>`.  All `&` characters are replaced with `§` for formatting codes.~~                                                                      | ~~`>= 1.0, < 1.4`~~    |
+| ~~`/sign clear <lines>`~~         | ~~Erase the lines `<lines>` of the targeted sign.~~                                                                                                                                                 | ~~`>= 1.10, < 1.13`~~  |
+| ~~`/sign clear <line>`~~          | ~~Erase the line `<line>` of the targeted sign.~~                                                                                                                                                   | ~~`>= 1.4, < 1.10`~~   |
+| ~~`/sign undo`~~                  | ~~Revert the previous sign change.~~                                                                                                                                                                | ~~`>= 1.10, < 1.14`~~  |
+| ~~`/sign redo`~~                  | ~~Restore the most recent sign text change that was undone by `/sign undo`.~~                                                                                                                       | ~~`>= 1.10, < 1.14`~~  |
 
 ### Aliases
 
-| Alias | Command | [Version](#versioning) |
-| --- | --- | --- |
-| `/signedit` | `/sign` | `>= 1.4` |
-| `/editsign` | `/sign` | `>= 1.4` |
-| `/se` | `/sign` | `>= 1.4` |
-| ~~`/sign <line> [<text>]`~~ | ~~`/sign set <line> [<text>]`~~ | ~~`>= 1.6, < 1.10`~~ |
-| `/sign <lines> [<text>]` | `/sign set <lines> [<text>]` | `>= 1.10` |
-| ~~`/sign <line>`~~ | ~~`/sign clear <line>`~~ | ~~`>= 1.6, < 1.10`~~ |
-| `/sign <lines>` | `/sign clear <lines>` | `>= 1.10` |
+| Alias                       | Command                         | [Version](#versioning) |
+|-----------------------------|---------------------------------|------------------------|
+| `/signedit`                 | `/sign`                         | `>= 1.4`               |
+| `/editsign`                 | `/sign`                         | `>= 1.4`               |
+| `/se`                       | `/sign`                         | `>= 1.4`               |
+| ~~`/sign <line> [<text>]`~~ | ~~`/sign set <line> [<text>]`~~ | ~~`>= 1.6, < 1.10`~~   |
+| `/sign <lines> [<text>]`    | `/sign set <lines> [<text>]`    | `>= 1.10`              |
+| ~~`/sign <line>`~~          | ~~`/sign clear <line>`~~        | ~~`>= 1.6, < 1.10`~~   |
+| `/sign <lines>`             | `/sign clear <lines>`           | `>= 1.10`              |
 
 ## Syntax
 
@@ -143,29 +146,29 @@ The hex digits are case-insensitive, but the Minecraft server may internally con
 
 (`>= 1.10`)
 
-| Input | Output |
-| --- | --- |
-| `&bHELLO` | `§bHELLO` |
-| `a&b` | `a§b` |
-| `a\&b` | `a&b` |
-| `x&y` | `x&y` |
-| `x\&y` | `x\&y` |
-| `\&d &e &f &g` | `&d §e §f &g` |
+| Input           | Output          |
+|-----------------|-----------------|
+| `&bHELLO`       | `§bHELLO`       |
+| `a&b`           | `a§b`           |
+| `a\&b`          | `a&b`           |
+| `x&y`           | `x&y`           |
+| `x\&y`          | `x\&y`          |
+| `\&d &e &f &g`  | `&d §e §f &g`   |
 | `Arts & Crafts` | `Arts & Crafts` |
-| `Arts&Crafts` | `Arts§Crafts` |
-| `Arts\&Crafts` | `Arts&Crafts` |
+| `Arts&Crafts`   | `Arts§Crafts`   |
+| `Arts\&Crafts`  | `Arts&Crafts`   |
 
 (`>= 1.12`)
 
-| Input | Output |
-| --- | --- |
-| `&#abcdef` | `§x§A§B§C§D§E§F` |
-| `&#AbCdEf` | `§x§A§B§C§D§E§F` |
-| `\&#abcdef` | `&#abcdef` |
-| `\&#AbCdEf` | `&#AbCdEf` |
-| `&#08F` | `§x§0§0§8§8§F§F` |
-| `\&#08f` | `&#08f` |
-| `&x&0&1&2&3&4&5` | `§x§0§1§2§3§4§5` |
+| Input                   | Output           |
+|-------------------------|------------------|
+| `&#abcdef`              | `§x§A§B§C§D§E§F` |
+| `&#AbCdEf`              | `§x§A§B§C§D§E§F` |
+| `\&#abcdef`             | `&#abcdef`       |
+| `\&#AbCdEf`             | `&#AbCdEf`       |
+| `&#08F`                 | `§x§0§0§8§8§F§F` |
+| `\&#08f`                | `&#08f`          |
+| `&x&0&1&2&3&4&5`        | `§x§0§1§2§3§4§5` |
 | `\&x\&0\&1\&2\&3\&4\&5` | `&x&0&1&2&3&4&5` |
 
 ### Language Tags
@@ -179,14 +182,14 @@ Go to [Supported Locales](#supported-locales) for a list of languages supported 
 
 #### Examples
 
-| Tag | Locale |
-| --- | --- |
-| de | German |
-| de-AT | German (Austria)  |
-| en | English |
+| Tag   | Locale                   |
+|-------|--------------------------|
+| de    | German                   |
+| de-AT | German (Austria)         |
+| en    | English                  |
 | en-GB | English (United Kingdom) |
-| zh | Chinese |
-| zh-CN | Chinese (China) |
+| zh    | Chinese                  |
+| zh-CN | Chinese (China)          |
 
 ### Selecting Multiple Lines
 
@@ -256,13 +259,27 @@ Examples:
     signedit.sign.status
     signedit.sign.ui
     signedit.sign.undo
+    signedit.sign.unwax
+    signedit.sign.wax
     signedit.sign.version
+
+### Wax/Unwax Permissions
+
+(`>= 1.14`) On Bukkit 1.20 and newer,
+signs may be waxed with [honeycomb](https://minecraft.gamepedia.com/wiki/Honeycomb) to prevent them from being edited.
+
+To bypass this restriction, grant the `signedit.sign.unwax` permission.
+With this permission, not only can the player can use `/sign unwax` to make signs editable,
+but also the other `/sign` edit commands will unwax the sign.
+
+To preserve the wax but still edit the sign, grant the `signedit.sign.wax` permission as well.
+An unwaxed sign will remain unwaxed unless `/sign wax` is explicitly used.
 
 ## Configuration
 
 All configuration is in the file `plugins/SignEdit/config.yml`.
 
-(`>= 1.1`) The configuration file is created with default values when the plugin is loaded and the file does not already exist.
+(`>= 1.1`) The configuration file is created with default values when the plugin is loaded and the file does not yet exist.
 
 (`>= 1.5`) The configuration file is sanitized when the plugin is loaded and unloaded and rewritten when the plugin is unloaded.
 
@@ -333,9 +350,9 @@ Decide what events to send to other plugins for sign edit permission validation 
 
 **Standard** (default): Only emit [`SignChangeEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/SignChangeEvent.html).  This option is the most compliant with the Bukkit API.
 
-**Extra**: Emit [`BlockBreakEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/BlockBreakEvent.html), [`BlockPlaceEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/BlockPlaceEvent.html), and [`SignChangeEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/SignChangeEvent.html) (in that order).  The edited sign block will not actually be broken and replaced.  This option improves compatibility with permissions plugins that don't handle `SignChangeEvent` correctly, but it may conflict with plugins that expect block breaking or block placement behavior.  Requires Bukkit 1.13 or newer.
+**Extra**: Emit [`BlockBreakEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/BlockBreakEvent.html), [`BlockPlaceEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/BlockPlaceEvent.html), and [`SignChangeEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/SignChangeEvent.html) (in that order).  The edited sign block will not actually be broken and replaced.  This option improves compatibility with permission plugins that don't handle `SignChangeEvent` correctly, but it may conflict with plugins that expect block-breaking or block-placing behavior.  Requires Bukkit 1.13 or newer.
 
-**None** (not recommended): Bypass all permission validation by not sending any events.  All players with access to `/sign` modification commands will be able to edit all signs on the server.  This option matches the behavior of this plugin version `< 1.8`.
+**None** (not recommended): Bypass all permission validations by not sending any events.  All players with access to `/sign` modification commands will be able to edit all signs on the server.  This option matches the behavior of this plugin version `< 1.8`.
 
 ## Features
 
@@ -353,9 +370,10 @@ Decide what events to send to other plugins for sign edit permission validation 
 * (`>= 1.10`) [Tab completion for `/sign` subcommands](#sign-tab)
 * (`>= 1.10`) Copy, cut, and paste sign lines with `/sign copy`, `/sign cut`, and `/sign paste`, respectively.
 * (`>= 1.10`) Undo and redo sign changes with `/sign undo` and `/sign redo`, respectively.
-* (`>= 1.13`) Other plugins can [validate](#compatibilityedit-validation-standardextranone) any attempted sign edits as if the player was filling out a new sign.  Permissions plugins can block the edit, and censorship plugins can modify the inputted text before it is saved.
+* (`>= 1.13`) Other plugins can [validate](#compatibilityedit-validation-standardextranone) any attempted sign edits as if the player was filling out a new sign.  Permission plugins can block the edit, and censorship plugins can modify the inputted text before it is saved.
 * (`>= 1.10.2`) Automatically uses the player's language, [if supported](#supported-locales).
 * (`>= 1.11`) Fully customizable plugin text [theming and localization/translations](#advanced-customization)
+* (`>= 1.14`) Unwax signs with `/sign unwax` to make them editable again.
 
 ### Features from Older Versions
 These features no longer apply to the latest version of this plugin:
@@ -367,17 +385,17 @@ These features no longer apply to the latest version of this plugin:
 
 ### Supported Locales
 
-| Language Tag | Language | Proficiency | Maintainer(s) | [Version](#versioning) |
-| --- | --- | --- | --- | --- |
-| `en` | English | Native | [Deltik](https://git.io/Deltik) | `>= 1.4` |
-| ~~`en`~~ | ~~English~~ | ~~Intermediate~~ | ~~[Omel](https://www.spigotmc.org/members/omel.85850/)~~ | ~~`>= 1.0, < 1.4`~~ |
-| `de` | German | Native | [bleeding182](https://github.com/bleeding182) | `>= 1.10.2` |
-| `nl` | Dutch | Native | [SBDeveloper](https://github.com/stijnb1234), \_\_Dutch\_\_ | `>= 1.11.1` |
-| `zh` | Simplified Chinese | Intermediate | [eason329](https://github.com/eason329) | `>= 1.11.4` |
-| ~~`zh`~~ | ~~Simplified Chinese~~ | ~~Machine Translation~~ | ~~[Deltik](https://git.io/Deltik)~~ | ~~`>= 1.10.2, < 1.11.4`~~ |
-| `zh-CN` | Simplified Chinese | Intermediate | [eason329](https://github.com/eason329) | `>= 1.11.4` |
-| `zh-HK` | Hong Kong Cantonese | Native | [eason329](https://github.com/eason329) | `>= 1.13.2` |
-| `zh-TW` | Traditional Chinese | Intermediate | [eason329](https://github.com/eason329) | `>= 1.11.4` |
+| Language Tag | Language               | Proficiency             | Maintainer(s)                                               | [Version](#versioning)    |
+|--------------|------------------------|-------------------------|-------------------------------------------------------------|---------------------------|
+| `en`         | English                | Native                  | [Deltik](https://git.io/Deltik)                             | `>= 1.4`                  |
+| ~~`en`~~     | ~~English~~            | ~~Intermediate~~        | ~~[Omel](https://www.spigotmc.org/members/omel.85850/)~~    | ~~`>= 1.0, < 1.4`~~       |
+| `de`         | German                 | Native                  | [bleeding182](https://github.com/bleeding182)               | `>= 1.10.2`               |
+| `nl`         | Dutch                  | Native                  | [SBDeveloper](https://github.com/stijnb1234), \_\_Dutch\_\_ | `>= 1.11.1`               |
+| `zh`         | Simplified Chinese     | Intermediate            | [eason329](https://github.com/eason329)                     | `>= 1.11.4`               |
+| ~~`zh`~~     | ~~Simplified Chinese~~ | ~~Machine Translation~~ | ~~[Deltik](https://git.io/Deltik)~~                         | ~~`>= 1.10.2, < 1.11.4`~~ |
+| `zh-CN`      | Simplified Chinese     | Intermediate            | [eason329](https://github.com/eason329)                     | `>= 1.11.4`               |
+| `zh-HK`      | Hong Kong Cantonese    | Native                  | [eason329](https://github.com/eason329)                     | `>= 1.13.2`               |
+| `zh-TW`      | Traditional Chinese    | Intermediate            | [eason329](https://github.com/eason329)                     | `>= 1.11.4`               |
 
 ### Visual Examples
 
@@ -499,8 +517,8 @@ Support for Bukkit 1.8 and lower was dropped in plugin version `>= 1.3.1`.  This
 | `>= 1.12, < 1.12.7`           | 1.13                      | 1.16.5                     | Workaround for [native sign editor defect in Minecraft 1.16.1](#minecraft-1161-sign-editor-gui) uses Bukkit 1.13 materials                                                                                                                         |
 | `>= 1.12.7, < 1.13.4`         | 1.13                      | 1.17.1                     | Plugin updated to tolerate [a CraftBukkit unstable API (`net.minecraft` code) obfuscation requirement for Minecraft 1.17](https://web.archive.org/web/20210613005238/https://www.spigotmc.org/threads/spigot-bungeecord-1-17.510208/#post-4184317) |
 | `= 1.13.5`                    | 1.13                      | 1.19.1                     | Plugin updated again to tolerate even more obfuscation of the CraftBukkit unstable API; no more dependency on CraftBukkit if running on Bukkit 1.18 or newer                                                                                       |
-| `>= 1.13.6, < 1.13.9`         | 1.8.3                     | 1.19.1                     | Better error handling lets the plugin run with a limited feature set on old versions of Bukkit                                                                                                                                                     |
-| `>= 1.13.9`                   | 1.8.3                     | _No known incompatibility_ | Support for Minecraft 1.20 sign sides (front and back) and hanging signs                                                                                                                                                                           |
+| `>= 1.13.6, < 1.14`           | 1.8.3                     | 1.19.1                     | Better error handling lets the plugin run with a limited feature set on old versions of Bukkit                                                                                                                                                     |
+| `>= 1.14`                     | 1.8.3                     | _No known incompatibility_ | Support for Minecraft 1.20 sign sides (front and back) and hanging signs                                                                                                                                                                           |
 
 ### Backwards Compatibility with Omel's SignEdit v1.3
 
@@ -524,7 +542,7 @@ Since `>= 1.8`, other plugins can receive a [`SignChangeEvent`](https://hub.spig
 
 ~~In `>= 1.8, < 1.10`, this plugin emitted `SignChangeEvent`s with blank lines.  This is incompatible with plugins that validate the contents of sign changes (e.g. censorship or "bad word" plugins).~~  In `>= 1.10`, the new sign contents are sent with the `SignChangeEvent`, which allows other plugins to validate the text of the sign change.
 
-Some permissions plugins that check if a player can break or place a block do not also check if the player can edit signs.  It is typically undesirable for a player to be able to edit a sign that they cannot place or break.  To improve compatibility with these plugins, SignEdit for Bukkit `>= 1.12.2` offers [a configuration option](#compatibilityedit-validation-standardextranone) to send a [`BlockBreakEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/BlockBreakEvent.html) and a [`BlockPlaceEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/BlockPlaceEvent.html) before the `SignChangeEvent` as if the player broke, replaced, and rewrote the targeted sign.  The extra events will not reflect the actual condition of the sign block; it will not be broken and replaced―only changed.
+Some permission plugins that check if a player can break or place a block do not also check if the player can edit signs.  It is typically undesirable for a player to be able to edit a sign that they cannot place or break.  To improve compatibility with these plugins, SignEdit for Bukkit `>= 1.12.2` offers [a configuration option](#compatibilityedit-validation-standardextranone) to send a [`BlockBreakEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/BlockBreakEvent.html) and a [`BlockPlaceEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/BlockPlaceEvent.html) before the `SignChangeEvent` as if the player broke, replaced, and rewrote the targeted sign.  The extra events will not reflect the actual condition of the sign block; it will not be broken and replaced―only changed.
 
 ### Minecraft 1.16.1 Sign Editor GUI
 
@@ -541,12 +559,12 @@ Plugin version `= 1.12.0` introduces a clunky workaround that offers a sign edit
 
 The workaround is applicable to these Minecraft versions:
 
-|Plugin [Version](#versioning)|Minecraft Version|Rationale|
-|---|---|---|
-|`>= 1.12.2`|[_Admin's choice_](#compatibilitysign-ui-autoeditablebooknative)|To offer the choice of which sign editor GUI implementation to use|
-|`= 1.12.1`|1.16.1 only|The bug was [unexpectedly fixed in Minecraft 1.16.2](https://minecraft.gamepedia.com/Java_Edition_20w30a).|
-|`= 1.12.0`|1.16 and higher|[MC-192263 was closed as invalid](https://web.archive.org/web/20200901000000/https://bugs.mojang.com/browse/MC-192263?focusedCommentId=755369&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-755369), suggesting the bug was here to stay.|
-|`< 1.12`|_Not applicable_|The bug was unknown at the time these plugin versions were released.|
+| Plugin [Version](#versioning) | Minecraft Version                                                | Rationale                                                                                                                                                                                                                                                                   |
+|-------------------------------|------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `>= 1.12.2`                   | [_Admin's choice_](#compatibilitysign-ui-autoeditablebooknative) | To offer the choice of which sign editor GUI implementation to use                                                                                                                                                                                                          |
+| `= 1.12.1`                    | 1.16.1 only                                                      | The bug was [unexpectedly fixed in Minecraft 1.16.2](https://minecraft.gamepedia.com/Java_Edition_20w30a).                                                                                                                                                                  |
+| `= 1.12.0`                    | 1.16 and higher                                                  | [MC-192263 was closed as invalid](https://web.archive.org/web/20200901000000/https://bugs.mojang.com/browse/MC-192263?focusedCommentId=755369&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-755369), suggesting the bug was here to stay. |
+| `< 1.12`                      | _Not applicable_                                                 | The bug was unknown at the time these plugin versions were released.                                                                                                                                                                                                        |
 
 When using the workaround, instead of opening the native sign editor after the player runs `/sign ui`, this plugin places a temporary book and quill in their hand.
 To open the alternative sign editor, the player must look away from the sign and then right-mouse click.

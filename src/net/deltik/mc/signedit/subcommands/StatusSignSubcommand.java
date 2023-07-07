@@ -41,6 +41,7 @@ public class StatusSignSubcommand extends SignSubcommand {
             SignTextClipboardManager clipboardManager,
             SignTextHistoryManager historyManager
     ) {
+        super(player);
         this.player = player;
         this.commsBuilder = commsBuilder;
         this.interactionManager = interactionManager;

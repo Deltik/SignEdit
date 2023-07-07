@@ -20,6 +20,7 @@
 package net.deltik.mc.signedit.subcommands;
 
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
+import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -30,8 +31,10 @@ public class CutSignSubcommand extends SignSubcommand {
 
     @Inject
     public CutSignSubcommand(
+            Player player,
             Map<String, Provider<SignEditInteraction>> interactions
     ) {
+        super(player);
         this.interactions = interactions;
     }
 

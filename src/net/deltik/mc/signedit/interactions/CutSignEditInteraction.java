@@ -72,13 +72,14 @@ public class CutSignEditInteraction implements SignEditInteraction {
             sourceSign.setLineLiteral(selectedLine, "");
         }
 
-        sourceSign.applySign();
-        if (sourceSign.signChanged()) {
+        ChatComms comms = commsBuilder.commandSender(player).build().comms();
+
+        sourceSign.applySignAutoWax(player, comms);
+        if (sourceSign.signTextChanged()) {
             historyManager.getHistory(player).push(sourceSign);
         }
         clipboardManager.setClipboard(player, clipboard);
 
-        ChatComms comms = commsBuilder.commandSender(player).build().comms();
         comms.tell(comms.t("lines_cut_section"));
         comms.dumpLines(clipboard.getLines());
     }

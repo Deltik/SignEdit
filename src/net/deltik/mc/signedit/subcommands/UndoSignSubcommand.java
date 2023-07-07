@@ -36,6 +36,7 @@ public class UndoSignSubcommand extends SignSubcommand {
             ChatCommsModule.ChatCommsComponent.Builder commsBuilder,
             SignTextHistoryManager historyManager
     ) {
+        super(player);
         this.player = player;
         this.commsBuilder = commsBuilder;
         this.historyManager = historyManager;

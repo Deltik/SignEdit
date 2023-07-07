@@ -23,14 +23,19 @@ import net.deltik.mc.signedit.ChatComms;
 import net.deltik.mc.signedit.ChatCommsModule;
 import net.deltik.mc.signedit.SignTextClipboardManager;
 import net.deltik.mc.signedit.SignTextHistoryManager;
+import net.deltik.mc.signedit.commands.SignCommand;
 import net.deltik.mc.signedit.exceptions.BlockStateNotPlacedException;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
 import net.deltik.mc.signedit.interactions.SignEditInteractionManager;
 import net.deltik.mc.signedit.shims.SideShim;
+import net.deltik.mc.signedit.shims.SignHelpers;
 import net.deltik.mc.signedit.shims.SignShim;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -43,23 +48,28 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import static net.deltik.mc.signedit.shims.PlayerHelpers.getItemInMainHand;
+
 public class CoreSignEditListener extends SignEditListener {
     private final SignTextClipboardManager clipboardManager;
     private final SignTextHistoryManager historyManager;
     private final SignEditInteractionManager interactionManager;
     private final Provider<ChatCommsModule.ChatCommsComponent.Builder> commsBuilderProvider;
+    private final SignCommand signCommand;
 
     @Inject
     public CoreSignEditListener(
             SignTextClipboardManager clipboardManager,
             SignTextHistoryManager historyManager,
             SignEditInteractionManager interactionManager,
-            Provider<ChatCommsModule.ChatCommsComponent.Builder> commsBuilderProvider
+            Provider<ChatCommsModule.ChatCommsComponent.Builder> commsBuilderProvider,
+            SignCommand signCommand
     ) {
         this.clipboardManager = clipboardManager;
         this.historyManager = historyManager;
         this.interactionManager = interactionManager;
         this.commsBuilderProvider = commsBuilderProvider;
+        this.signCommand = signCommand;
     }
 
     /**
@@ -79,7 +89,7 @@ public class CoreSignEditListener extends SignEditListener {
         return (Sign) maybeSign;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onRightClickSign(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         Block maybeBlock = event.getClickedBlock();
@@ -89,17 +99,29 @@ public class CoreSignEditListener extends SignEditListener {
         if (!(maybeSign instanceof Sign)) return;
 
         Sign sign = (Sign) maybeSign;
+        SignShim signAdapter = new SignShim(sign);
         Player player = event.getPlayer();
+        Material playerHolding = getItemInMainHand(player).getType();
 
         if (interactionManager.isInteractionPending(player)) {
             try {
                 SignEditInteraction interaction = interactionManager.removePendingInteraction(player);
                 SideShim side = SideShim.fromRelativePosition(sign, player);
-                interaction.interact(player, new SignShim(sign), side);
+                interaction.interact(player, signAdapter, side);
             } catch (Throwable e) {
                 ChatComms comms = commsBuilderProvider.get().commandSender(player).build().comms();
                 comms.reportException(e);
             }
+        } else if (SignHelpers.isEditable(sign) && playerHolding != Material.valueOf("HONEYCOMB")) {
+            signCommand.onCommand(player, new Command(SignCommand.COMMAND_NAME) {
+                @Override
+                public boolean execute(CommandSender sender, String commandLabel, String[] args) {
+                    return false;
+                }
+            }, "", new String[]{"ui"});
+            assert interactionManager.isInteractionPending(player);
+            onRightClickSign(event);
+            event.setCancelled(true);
         }
     }
 

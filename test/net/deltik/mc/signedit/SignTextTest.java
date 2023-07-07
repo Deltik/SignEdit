@@ -468,13 +468,13 @@ public class SignTextTest {
 
         signText.setTargetSign(sign, SideShim.FRONT);
 
-        assertFalse(signText.signChanged());
+        assertFalse(signText.signTextChanged());
         signText.setLine(1, "Anything else");
 
-        assertFalse(signText.signChanged());
+        assertFalse(signText.signTextChanged());
         signText.applySign();
 
-        assertTrue(signText.signChanged());
+        assertTrue(signText.signTextChanged());
     }
 
     @Test
@@ -483,13 +483,13 @@ public class SignTextTest {
 
         signText.setTargetSign(sign, SideShim.FRONT);
 
-        assertFalse(signText.signChanged());
+        assertFalse(signText.signTextChanged());
         signText.setLine(1, "b");
 
-        assertFalse(signText.signChanged());
+        assertFalse(signText.signTextChanged());
         signText.applySign();
 
-        assertFalse(signText.signChanged());
+        assertFalse(signText.signTextChanged());
     }
 
     @Test

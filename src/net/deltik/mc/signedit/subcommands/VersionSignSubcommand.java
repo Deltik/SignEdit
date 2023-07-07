@@ -38,6 +38,7 @@ public class VersionSignSubcommand extends SignSubcommand {
             ChatCommsModule.ChatCommsComponent.Builder commsBuilder,
             Player player
     ) {
+        super(player);
         this.plugin = plugin;
         this.commsBuilder = commsBuilder;
         this.player = player;

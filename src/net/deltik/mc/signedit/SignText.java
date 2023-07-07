@@ -21,16 +21,19 @@ package net.deltik.mc.signedit;
 
 import net.deltik.mc.signedit.exceptions.BlockStateNotPlacedException;
 import net.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
+import net.deltik.mc.signedit.exceptions.ForbiddenWaxedSignEditException;
 import net.deltik.mc.signedit.integrations.NoopSignEditValidator;
 import net.deltik.mc.signedit.integrations.SignEditValidator;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
 import net.deltik.mc.signedit.listeners.CoreSignEditListener;
 import net.deltik.mc.signedit.shims.ISignSide;
 import net.deltik.mc.signedit.shims.SideShim;
+import net.deltik.mc.signedit.shims.SignHelpers;
 import net.deltik.mc.signedit.shims.SignShim;
 import net.deltik.mc.signedit.subcommands.PerSubcommand;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.SignChangeEvent;
@@ -38,6 +41,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,6 +52,7 @@ public class SignText {
     private static final String REGEX_6_AMP_HEX = new String(new char[6]).replace("\0", REGEX_AMP_HEX);
     private static final String REGEX_1_CODE = "[0-9A-Fa-fK-Ok-oRrXx]";
     private final SignEditValidator validator;
+    private Boolean shouldBeEditable = null;
     private String[] changedLines = new String[4];
     private String[] beforeLines = new String[4];
     private String[] stagedLines = new String[4];
@@ -96,10 +101,40 @@ public class SignText {
         this.targetSignSide = targetSignSide != null ? targetSignSide : SideShim.FRONT;
     }
 
+    public void applySignAutoWax(Player player, ChatComms comms) {
+        boolean needRewax = false;
+        reloadTargetSign();
+        if (!SignHelpers.isEditable(Objects.requireNonNull(getTargetSign()))) {
+            if (player.hasPermission("signedit.sign.unwax")) {
+                SignHelpers.setEditable(getTargetSign(), true);
+                getTargetSign().update();
+                needRewax = true;
+                comms.tell(comms.t("bypass_wax_before"));
+            } else {
+                throw new ForbiddenWaxedSignEditException();
+            }
+        }
+        applySign();
+        if (needRewax) {
+            if (player.hasPermission("signedit.sign.wax")) {
+                reloadTargetSign();
+                SignHelpers.setEditable(getTargetSign(), false);
+                getTargetSign().update();
+                comms.tell(comms.t("bypass_wax_after"));
+            } else {
+                comms.tell(comms.t("bypass_wax_cannot_rewax"));
+            }
+        }
+    }
+
     public void applySign() {
         reloadTargetSign();
         assert getTargetSignSide() != null;
-        assert getTargetSign() != null;
+        Sign target = getTargetSign();
+        assert target != null;
+        if (shouldBeEditable != null) {
+            SignHelpers.setEditable(target, shouldBeEditable);
+        }
         beforeLines = getTargetSignSide().getLines().clone();
         for (int i = 0; i < changedLines.length; i++) {
             String line = getLine(i);
@@ -111,7 +146,7 @@ public class SignText {
         stagedLines = getTargetSignSide().getLines().clone();
 
         validator.validate(this.targetSign, this.targetSignSide);
-        getTargetSign().update();
+        target.update();
 
         afterLines = getTargetSignSide().getLines().clone();
     }
@@ -142,13 +177,22 @@ public class SignText {
         changedLines = changedLinesTmp;
     }
 
-    public boolean signChanged() {
+    public boolean signTextChanged() {
         return !linesMatch(beforeLines, afterLines);
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     protected static boolean linesMatch(String[] beforeLines, String[] afterLines) {
         return Arrays.equals(beforeLines, afterLines);
+    }
+
+    @Nullable
+    public Boolean shouldBeEditable() {
+        return shouldBeEditable;
+    }
+
+    public void setShouldBeEditable(@Nullable Boolean shouldBeEditable) {
+        this.shouldBeEditable = shouldBeEditable;
     }
 
     /**

@@ -119,7 +119,7 @@ public class UiSignEditInteraction implements SignEditInteraction {
 
         signText.importAuthoritativeSignChangeEvent(event);
 
-        if (signText.signChanged()) {
+        if (signText.signTextChanged()) {
             historyManager.getHistory(player).push(signText);
         }
 

@@ -7,11 +7,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v1.13.9 (UNRELEASED)
+## v1.14.0 (UNRELEASED)
 
 ### Added
 
 * Support for Minecraft 1.20 sign sides (front and back)
+* On Minecraft 1.20+, opening an editable sign (sign without honeycomb wax) by right-click will open a sign editor handled by this plugin.
+* (Minecraft 1.20+ only) `/sign wax` and `/sign unwax` commands and permissions to apply and remove honeycomb wax from signs, respectively
+* New locale strings:
+  * `wax_removed` – Completed `/sign unwax` action
+  * `wax_applied` – Completed `/sign wax` action
+  * `bypass_wax_before` – Warning before a `/sign` text change that wax will be removed
+  * `bypass_wax_after` – Warning after a `/sign` text change that wax was reapplied
+  * `bypass_wax_cannot_rewax` – Warning after a `/sign` text change that wax was not reapplied because the player lacks permission to `/sign wax`
+  * `unwax_sign` – `/sign unwax` pending action description
+  * `wax_sign` – `/sign wax` pending action description
+  * `forbidden_waxed_sign_edit` – Error when attempting to edit a waxed sign without permission to run `/sign unwax`
+
+### Changed
+
+* The documentation of `/sign undo` and `/sign redo` has been clarified to indicate that they affect only the sign text, not the dyes or wax applied to the sign.
 
 ### Fixed
 
@@ -23,6 +38,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Under the Hood
 
 * Tacked on some adapters to make the plugin compatible with Bukkit 1.20 [`org.bukkit.block.sign.SignSide`](https://web.archive.org/web/20230622054725/https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/block/sign/SignSide.html)
+* Decreased the right-click event handling priority to the lowest level to avoid interfering with other plugins that handle right-click events on signs
+* Permission processing moved from `SignCommand.permitted(Player, String)` to `InteractionCommand.isPermitted()`
+* `SignText.signChanged()` renamed to `SignText.signTextChanged()` as part of clarification that only text changes count in `/sign undo` and `/sign redo`
 * Gradle 9.0 compatibility:
   * Replaced Gradle 8.2 deprecations with recommended replacements
   * Updated Gradle to version 8.2-rc-2

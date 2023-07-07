@@ -140,7 +140,7 @@ public class ChatComms {
 
     public void compareSignText(SignText signText) {
         boolean textModifiedByOtherPlugin = !SignText.linesMatch(signText.getStagedLines(), signText.getAfterLines());
-        if (!signText.signChanged()) {
+        if (!signText.signTextChanged()) {
             if (textModifiedByOtherPlugin) {
                 tell(t("forbidden_sign_edit"));
             } else {
@@ -190,7 +190,9 @@ public class ChatComms {
     }
 
     public void reportException(Throwable e) {
-        if (e instanceof ForbiddenSignEditException) {
+        if (e instanceof ForbiddenWaxedSignEditException) {
+            tell(t("forbidden_waxed_sign_edit"));
+        } else if (e instanceof ForbiddenSignEditException) {
             tell(t("forbidden_sign_edit"));
         } else if (e instanceof MissingLineSelectionException) {
             tell(t("missing_line_selection_exception"));

@@ -53,6 +53,12 @@ commands:
       /<command> redo
         Restore the most recent sign change that was undone by /sign undo.
 
+      /<command> unwax
+        Remove the honeycomb wax from the sign, allowing it to be edited again.
+
+      /<command> wax
+        Apply honeycomb wax to the sign, preventing it from being edited again.
+
       /<command> version
         Show the version of this plugin.
 
@@ -73,6 +79,8 @@ permissions:
       signedit.sign.paste: true
       signedit.sign.undo: true
       signedit.sign.redo: true
+      signedit.sign.unwax: true
+      signedit.sign.wax: true
       signedit.sign.version: true
   signedit.sign.help:
     description: Allow /sign help
@@ -96,5 +104,9 @@ permissions:
     description: Allow /sign undo
   signedit.sign.redo:
     description: Allow /sign redo
+  signedit.sign.unwax:
+    description: Allow /sign unwax; access to this command implicitly removes wax when editing with another command
+  signedit.sign.wax:
+    description: Allow /sign wax; access to this command implicitly reapplies wax if the sign was previously waxed
   signedit.sign.version:
     description: Allow /sign version

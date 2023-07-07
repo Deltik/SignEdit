@@ -21,4 +21,9 @@ package net.deltik.mc.signedit.interactions;
 
 public interface InteractionCommand {
     SignEditInteraction execute();
+
+    /**
+     * @return Whether this interaction is permitted to execute
+     */
+    boolean isPermitted();
 }

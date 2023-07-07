@@ -54,6 +54,8 @@ public abstract class SignCommandModule {
                 "paste",
                 "undo",
                 "redo",
+                "unwax",
+                "wax",
                 "version"
         ).collect(Collectors.toSet());
     }
@@ -112,6 +114,16 @@ public abstract class SignCommandModule {
     @IntoMap
     @StringKey("redo")
     abstract InteractionCommand BindRedoSignSubcommand(RedoSignSubcommand command);
+
+    @Binds
+    @IntoMap
+    @StringKey("unwax")
+    abstract InteractionCommand BindUnwaxSignSubcommand(UnwaxSignSubcommand command);
+
+    @Binds
+    @IntoMap
+    @StringKey("wax")
+    abstract InteractionCommand BindWaxSignSubcommand(WaxSignSubcommand command);
 
     @Binds
     @IntoMap

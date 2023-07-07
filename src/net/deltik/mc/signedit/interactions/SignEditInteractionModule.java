@@ -61,4 +61,9 @@ public abstract class SignEditInteractionModule {
     @IntoMap
     @StringKey("Paste")
     abstract SignEditInteraction bindPaste(PasteSignEditInteraction interaction);
+
+    @Binds
+    @IntoMap
+    @StringKey("Wax")
+    abstract SignEditInteraction bindWax(WaxSignEditInteraction interaction);
 }

@@ -53,12 +53,14 @@ public class SetSignEditInteraction implements SignEditInteraction {
     @Override
     public void interact(Player player, SignShim sign, SideShim side) {
         signText.setTargetSign(sign, side);
-        signText.applySign();
-        if (signText.signChanged()) {
+
+        ChatComms comms = commsBuilder.commandSender(player).build().comms();
+
+        signText.applySignAutoWax(player, comms);
+        if (signText.signTextChanged()) {
             historyManager.getHistory(player).push(signText);
         }
 
-        ChatComms comms = commsBuilder.commandSender(player).build().comms();
         comms.compareSignText(signText);
     }
 }

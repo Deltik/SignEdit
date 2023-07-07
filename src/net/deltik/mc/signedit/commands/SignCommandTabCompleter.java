@@ -203,7 +203,11 @@ public class SignCommandTabCompleter implements TabCompleter {
         candidateSubcommands = candidateSubcommands
                 .stream()
                 .filter(name -> name.startsWith(arg))
-                .filter(name -> SignCommand.permitted(player, name))
+                .filter(name -> {
+                    ArgParser argParser = new ArgParser(config, new String[]{name}, subcommandNames);
+                    InteractionCommand signSubcommand = getSignSubcommand(player, argParser);
+                    return signSubcommand.isPermitted();
+                })
                 .collect(Collectors.toSet());
         return new ArrayList<>(candidateSubcommands);
     }
@@ -251,7 +255,11 @@ public class SignCommandTabCompleter implements TabCompleter {
 
     private boolean playerIsAllowedToUseLineSelectors(Player player) {
         return subcommandsWithLineSelector.stream().anyMatch(
-                name -> SignCommand.permitted(player, name)
+                name -> {
+                    ArgParser argParser = new ArgParser(config, new String[]{name}, subcommandNames);
+                    InteractionCommand signSubcommand = getSignSubcommand(player, argParser);
+                    return signSubcommand.isPermitted();
+                }
         );
     }
 }

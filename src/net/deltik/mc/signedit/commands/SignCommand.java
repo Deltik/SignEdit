@@ -89,11 +89,6 @@ public class SignCommand implements CommandExecutor {
             subcommandName = SUBCOMMAND_NAME_HELP;
         }
 
-        if (!permitted(player, subcommandName)) {
-            comms.informForbidden(command.getName(), subcommandName);
-            return true;
-        }
-
         Provider<? extends InteractionCommand> signSubcommandProvider = signSubcommandMap.get(subcommandName);
 
         LineSelectionException selectedLinesError = argParser.getLinesSelectionError();
@@ -104,6 +99,11 @@ public class SignCommand implements CommandExecutor {
 
         InteractionCommand signSubcommand = signSubcommandProvider.get();
 
+        if (!signSubcommand.isPermitted()) {
+            comms.informForbidden(command.getName(), subcommandName);
+            return true;
+        }
+
         try {
             SignEditInteraction interaction = signSubcommand.execute();
             autointeract(player, interaction, comms);
@@ -112,13 +112,6 @@ public class SignCommand implements CommandExecutor {
         }
 
         return true;
-    }
-
-    public static boolean permitted(Player player, String subcommand) {
-        // Legacy (< 1.4) permissions
-        return (player.hasPermission("signedit.use") ||
-                // /sign <subcommand>
-                player.hasPermission("signedit." + COMMAND_NAME + "." + subcommand));
     }
 
     private void autointeract(Player player, SignEditInteraction interaction, ChatComms comms) {

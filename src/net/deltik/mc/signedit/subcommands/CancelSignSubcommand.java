@@ -38,6 +38,7 @@ public class CancelSignSubcommand extends SignSubcommand {
             Player player,
             ChatCommsModule.ChatCommsComponent.Builder commsBuilder
     ) {
+        super(player);
         this.interactionManager = interactionManager;
         this.player = player;
         this.commsBuilder = commsBuilder;

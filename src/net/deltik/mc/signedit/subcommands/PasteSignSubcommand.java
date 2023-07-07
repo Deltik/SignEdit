@@ -39,6 +39,7 @@ public class PasteSignSubcommand extends SignSubcommand {
             Player player,
             SignTextClipboardManager clipboardManager
     ) {
+        super(player);
         this.interactions = interactions;
         this.player = player;
         this.clipboardManager = clipboardManager;

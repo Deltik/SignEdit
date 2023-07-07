@@ -23,6 +23,7 @@ import net.deltik.mc.signedit.ArgParser;
 import net.deltik.mc.signedit.SignText;
 import net.deltik.mc.signedit.exceptions.MissingLineSelectionException;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
+import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -36,9 +37,11 @@ public class SetSignSubcommand extends SignSubcommand {
     @Inject
     public SetSignSubcommand(
             Map<String, Provider<SignEditInteraction>> interactions,
+            Player player,
             ArgParser argParser,
             SignText signText
     ) {
+        super(player);
         this.interactions = interactions;
         this.argParser = argParser;
         this.signText = signText;

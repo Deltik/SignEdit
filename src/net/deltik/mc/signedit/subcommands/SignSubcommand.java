@@ -19,7 +19,34 @@
 
 package net.deltik.mc.signedit.subcommands;
 
+import net.deltik.mc.signedit.commands.SignCommand;
 import net.deltik.mc.signedit.interactions.InteractionCommand;
+import org.bukkit.entity.Player;
 
 public abstract class SignSubcommand extends Subcommand implements InteractionCommand {
+    private final Player player;
+
+    protected SignSubcommand(Player player) {
+        this.player = player;
+    }
+
+    @Override
+    public boolean isPermitted() {
+        return  // Legacy (< 1.4) permissions
+                player.hasPermission("signedit.use") ||
+                        // /sign <subcommand>
+                        player.hasPermission("signedit." + SignCommand.COMMAND_NAME + "." + getName());
+    }
+
+    /**
+     * Get the subcommand name
+     */
+    private String getName() {
+        String simpleClassName = getClass().getSimpleName();
+        int end = simpleClassName.lastIndexOf(SignSubcommand.class.getSimpleName());
+        if (end != -1) {
+            return simpleClassName.substring(0, end).toLowerCase();
+        }
+        return simpleClassName.toLowerCase();
+    }
 }

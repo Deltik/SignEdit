@@ -55,12 +55,14 @@ public class PasteSignEditInteraction implements SignEditInteraction {
         for (int i = 0; i < clipboard.getLines().length; i++) {
             signText.setLineLiteral(i, clipboard.getLine(i));
         }
-        signText.applySign();
-        if (signText.signChanged()) {
+
+        ChatComms comms = commsBuilder.commandSender(player).build().comms();
+
+        signText.applySignAutoWax(player, comms);
+        if (signText.signTextChanged()) {
             historyManager.getHistory(player).push(signText);
         }
 
-        ChatComms comms = commsBuilder.commandSender(player).build().comms();
         comms.compareSignText(signText);
     }
 

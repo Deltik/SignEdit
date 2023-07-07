@@ -23,6 +23,7 @@ import net.deltik.mc.signedit.ArgParser;
 import net.deltik.mc.signedit.ChatCommsModule;
 import net.deltik.mc.signedit.Configuration;
 import net.deltik.mc.signedit.subcommands.HelpSignSubcommand;
+import net.deltik.mc.signedit.subcommands.SignSubcommand;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -51,6 +52,7 @@ public class SignCommandTabCompleterTest {
     private final Configuration config;
     private CommandSender commandSender;
     private Command command;
+    private SignSubcommand signSubcommand;
     private final String alias = "sign";
     private final Set<String> subcommandNames = SignCommandModule.provideSubcommandNames();
 
@@ -83,6 +85,10 @@ public class SignCommandTabCompleterTest {
         when(commandSender.hasPermission(anyString())).thenReturn(true);
         when(((Player) commandSender).getTargetBlock(any(), anyInt())).thenReturn(block);
         when(((Player) commandSender).getEyeLocation()).thenReturn(new Location(mock(World.class), 0, 0, 0));
+
+        signSubcommand = mock(SignSubcommand.class);
+        when(signSubcommand.isPermitted()).thenReturn(true);
+        doAnswer(invocation -> signSubcommand).when(tabCompleter).getSignSubcommand(any(), any());
     }
 
     private static Sign createSign(String[] signLines) {
@@ -359,7 +365,7 @@ public class SignCommandTabCompleterTest {
 
     @Test
     public void noCompletionWithNoPermissions() {
-        when(commandSender.hasPermission(anyString())).thenReturn(false);
+        when(signSubcommand.isPermitted()).thenReturn(false);
 
         List<String> result = tabComplete("");
 
@@ -368,12 +374,7 @@ public class SignCommandTabCompleterTest {
 
     @Test
     public void noLineSelectorCompletionWithoutLineSelectorPermissions() {
-        when(commandSender.hasPermission("signedit.use")).thenReturn(false);
-        SignCommandTabCompleter.subcommandsWithLineSelector.forEach(
-                subcommandName -> when(commandSender.hasPermission(
-                        "signedit." + SignCommand.COMMAND_NAME + "." + subcommandName
-                )).thenReturn(false)
-        );
+        when(signSubcommand.isPermitted()).thenReturn(false);
 
         List<String> results = tabComplete("");
 
