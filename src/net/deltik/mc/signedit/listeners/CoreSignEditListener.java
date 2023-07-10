@@ -119,7 +119,9 @@ public class CoreSignEditListener extends SignEditListener {
                     return false;
                 }
             }, "", new String[]{"ui"});
-            assert interactionManager.isInteractionPending(player);
+            if (!interactionManager.isInteractionPending(player)) {
+                return;
+            }
             onRightClickSign(event);
             event.setCancelled(true);
         }
