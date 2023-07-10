@@ -30,13 +30,13 @@ import net.deltik.mc.signedit.interactions.SignEditInteractionManager;
 import net.deltik.mc.signedit.shims.SideShim;
 import net.deltik.mc.signedit.shims.SignHelpers;
 import net.deltik.mc.signedit.shims.SignShim;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
@@ -47,8 +47,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-
-import static net.deltik.mc.signedit.shims.PlayerHelpers.getItemInMainHand;
 
 public class CoreSignEditListener extends SignEditListener {
     private final SignTextClipboardManager clipboardManager;
@@ -89,7 +87,7 @@ public class CoreSignEditListener extends SignEditListener {
         return (Sign) maybeSign;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onRightClickSign(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         Block maybeBlock = event.getClickedBlock();
@@ -101,7 +99,6 @@ public class CoreSignEditListener extends SignEditListener {
         Sign sign = (Sign) maybeSign;
         SignShim signAdapter = new SignShim(sign);
         Player player = event.getPlayer();
-        Material playerHolding = getItemInMainHand(player).getType();
 
         if (interactionManager.isInteractionPending(player)) {
             try {
@@ -112,7 +109,7 @@ public class CoreSignEditListener extends SignEditListener {
                 ChatComms comms = commsBuilderProvider.get().commandSender(player).build().comms();
                 comms.reportException(e);
             }
-        } else if (SignHelpers.isEditable(sign) && playerHolding != Material.valueOf("HONEYCOMB")) {
+        } else if (SignHelpers.isEditable(sign) && !event.useInteractedBlock().equals(Event.Result.DENY)) {
             signCommand.onCommand(player, new Command(SignCommand.COMMAND_NAME) {
                 @Override
                 public boolean execute(CommandSender sender, String commandLabel, String[] args) {
