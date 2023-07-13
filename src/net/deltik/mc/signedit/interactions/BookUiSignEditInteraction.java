@@ -146,7 +146,7 @@ public class BookUiSignEditInteraction implements SignEditInteraction {
         }
         ChatComms comms = commsBuilder.commandSender(player).build().comms();
 
-        signText.applySignAutoWax(player, comms);
+        signText.applySignAutoWax(player, comms, signText::applySign);
         if (signText.signTextChanged()) {
             historyManager.getHistory(player).push(signText);
         }

@@ -45,8 +45,8 @@ public class UndoSignSubcommand extends SignSubcommand {
     @Override
     public SignEditInteraction execute() {
         SignTextHistory history = historyManager.getHistory(player);
-        SignText undoneSignText = history.undo();
         ChatComms comms = commsBuilder.commandSender(player).build().comms();
+        SignText undoneSignText = history.undo(comms);
         comms.compareSignText(undoneSignText);
         return null;
     }

@@ -49,22 +49,22 @@ public class SignTextHistory {
         return history.size() - tailPosition;
     }
 
-    public SignText undo() {
+    public SignText undo(ChatComms comms) {
         if (tailPosition <= 0) {
             throw new SignTextHistoryStackBoundsException("nothing_to_undo");
         }
         SignText previousSignText = history.get(tailPosition - 1);
-        previousSignText.revertSign(player);
+        previousSignText.applySignAutoWax(player, comms, previousSignText::revertSign);
         tailPosition--;
         return previousSignText;
     }
 
-    public SignText redo() {
+    public SignText redo(ChatComms comms) {
         if (tailPosition == history.size()) {
             throw new SignTextHistoryStackBoundsException("nothing_to_redo");
         }
         SignText nextSignText = history.get(tailPosition);
-        nextSignText.applySign(player);
+        nextSignText.applySignAutoWax(player, comms, nextSignText::applySign);
         tailPosition++;
         return nextSignText;
     }

@@ -74,7 +74,7 @@ public class CutSignEditInteraction implements SignEditInteraction {
 
         ChatComms comms = commsBuilder.commandSender(player).build().comms();
 
-        sourceSign.applySignAutoWax(player, comms);
+        sourceSign.applySignAutoWax(player, comms, sourceSign::applySign);
         if (sourceSign.signTextChanged()) {
             historyManager.getHistory(player).push(sourceSign);
         }

@@ -98,10 +98,14 @@ public class SignText {
         this.targetSignSide = targetSignSide != null ? targetSignSide : SideShim.FRONT;
     }
 
-    public void applySignAutoWax(Player player, ChatComms comms) {
+    public interface Applicator {
+        void applySign(Player player);
+    }
+
+    public void applySignAutoWax(Player player, ChatComms comms, Applicator applicator) {
         Sign sign = Objects.requireNonNull(getTargetSign());
         boolean needRewax = SignHelpers.bypassWaxBefore(sign, player, comms);
-        applySign(player);
+        applicator.applySign(player);
         if (needRewax) {
             SignHelpers.bypassWaxAfter(sign, player, comms);
         }

@@ -45,8 +45,8 @@ public class RedoSignSubcommand extends SignSubcommand {
     @Override
     public SignEditInteraction execute() {
         SignTextHistory history = historyManager.getHistory(player);
-        SignText redoneSignText = history.redo();
         ChatComms comms = commsBuilder.commandSender(player).build().comms();
+        SignText redoneSignText = history.redo(comms);
         comms.compareSignText(redoneSignText);
         return null;
     }
