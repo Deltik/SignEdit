@@ -43,6 +43,7 @@ import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -128,8 +129,11 @@ public class CoreSignEditListener extends SignEditListener {
         SignText signText = new SignText(signEditValidator);
         SignEditInteraction maybeSignEditInteraction = null;
 
+        ItemStack eventItem = event.getItem();
+
         if (player.hasPermission("signedit." + SignCommand.COMMAND_NAME + ".wax") &&
-                event.getItem().getType().equals(Material.getMaterial("HONEYCOMB")) &&
+                eventItem != null &&
+                eventItem.getType().equals(Material.getMaterial("HONEYCOMB")) &&
                 !event.useItemInHand().equals(Event.Result.DENY)
         ) {
             signText.setShouldBeEditable(false);
