@@ -36,7 +36,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.plugin.PluginManager;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 import java.util.HashSet;
@@ -88,6 +88,7 @@ public class BreakReplaceSignEditValidator extends StandardSignEditValidator {
         }
     }
 
+    @NotNull
     private Block getBlockAgainst(Sign sign) {
         BlockData blockData = sign.getBlockData();
         if (blockData instanceof org.bukkit.block.data.type.WallSign) {
@@ -102,6 +103,7 @@ public class BreakReplaceSignEditValidator extends StandardSignEditValidator {
         throw new RuntimeException("Unsupported sign type with BlockData: " + blockData.getAsString());
     }
 
+    @NotNull
     private Block getBlockAgainstWallSign(Block block) {
         BlockData blockData = block.getBlockData();
         if (!(blockData instanceof WallSign)) {
@@ -112,10 +114,12 @@ public class BreakReplaceSignEditValidator extends StandardSignEditValidator {
         return block.getRelative(wallSign.getFacing().getOppositeFace());
     }
 
+    @NotNull
     private Block getBlockBelow(Block block) {
         return block.getRelative(BlockFace.DOWN);
     }
 
+    @NotNull
     private Block getBlockAbove(Block block) {
         return block.getRelative(BlockFace.UP);
     }
@@ -143,7 +147,7 @@ public class BreakReplaceSignEditValidator extends StandardSignEditValidator {
         return classImplements(blockData.getClass(), "org.bukkit.block.data.type.WallHangingSign");
     }
 
-    @Nullable
+    @NotNull
     private Block getBlockAttachedToHangingSign(Block block) {
         BlockData blockData = block.getBlockData();
         if (!isWallHangingSign(blockData)) {
@@ -163,7 +167,8 @@ public class BreakReplaceSignEditValidator extends StandardSignEditValidator {
             }
         }
 
-        return null;
+        // Floating wall hanging sign; attachment to air is arbitrary
+        return leftAndRightBlocks.iterator().next();
     }
 
     private BlockFace cartesianClockwise(BlockFace originalFace) {
