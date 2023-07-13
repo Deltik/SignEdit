@@ -103,6 +103,8 @@ public class SignHelpers {
      * @throws ForbiddenWaxedSignEditException if the player does not have permission to bypass waxing
      */
     public static boolean bypassWaxBefore(@NotNull Sign sign, Player player) {
+        if (!hasWaxableFeature()) return false;
+
         boolean needRewax = false;
         sign = refreshBlockState(sign);
         if (!SignHelpers.isEditable(sign)) {
@@ -142,6 +144,8 @@ public class SignHelpers {
      * @return A boolean value indicating if the {@link Sign} was successfully rewaxed
      */
     public static boolean bypassWaxAfter(Sign sign, Player player) {
+        if (!hasWaxableFeature()) return false;
+
         if (player.hasPermission("signedit." + SignCommand.COMMAND_NAME + ".wax")) {
             sign = refreshBlockState(sign);
             SignHelpers.setEditable(sign, false);
