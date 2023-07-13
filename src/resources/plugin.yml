@@ -48,10 +48,10 @@ commands:
         Paste the lines buffered by the previous /sign copy or /sign cut command onto the targeted sign.
 
       /<command> undo
-        Revert the previous sign change.
+        Revert the previous sign text change.  Does not affect non-text changes like waxing and dyeing.
 
       /<command> redo
-        Restore the most recent sign change that was undone by /sign undo.
+        Restore the most recent sign text change that was undone by /sign undo.
 
       /<command> unwax
         Remove the honeycomb wax from the sign, allowing it to be edited again.
