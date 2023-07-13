@@ -28,6 +28,7 @@ import net.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
 import net.deltik.mc.signedit.exceptions.SignEditorInvocationException;
 import net.deltik.mc.signedit.shims.ISignSide;
 import net.deltik.mc.signedit.shims.SideShim;
+import net.deltik.mc.signedit.shims.SignHelpers;
 import net.deltik.mc.signedit.shims.SignShim;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
@@ -55,6 +56,7 @@ public class UiSignEditInteraction implements SignEditInteraction {
     private final SignText signText;
     private final SignTextHistoryManager historyManager;
     private final SignCommand signCommand;
+    private boolean needsRewax;
 
     protected Player player;
 
@@ -95,6 +97,11 @@ public class UiSignEditInteraction implements SignEditInteraction {
                 }
 
                 runEarlyEventTask(signChangeEvent);
+                if (this.needsRewax) {
+                    ChatComms comms = commsBuilder.commandSender(player).build().comms();
+                    boolean isRewaxed = SignHelpers.bypassWaxAfter(signText.getTargetSign(), player, comms);
+                    if (isRewaxed) this.needsRewax = false;
+                }
             } else {
                 runLateEventTask(signChangeEvent);
             }
@@ -127,15 +134,19 @@ public class UiSignEditInteraction implements SignEditInteraction {
         comms.compareSignText(signText);
     }
 
-    @Override
-    public void interact(Player player, SignShim sign, SideShim side) {
+    public void load(Player player, Sign sign, SideShim side) {
+        this.player = player;
         signText.setTargetSign(sign, side);
         signText.importSign();
-        this.player = player;
+        ChatComms comms = commsBuilder.commandSender(player).build().comms();
+        this.needsRewax = SignHelpers.bypassWaxBefore(sign, player, comms);
+        formatSignForEdit(player, sign, side);
+    }
 
+    @Override
+    public void interact(Player player, SignShim sign, SideShim side) {
         Sign signImpl = sign.getImplementation();
-
-        formatSignForEdit(player, signImpl, side);
+        load(player, signImpl, side);
         interactionManager.setPendingInteraction(player, this);
 
         try {

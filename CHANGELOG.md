@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Support for Minecraft 1.20 sign sides (front and back)
+* Support for Minecraft 1.20 honeycomb wax on signs
 * On Minecraft 1.20+, opening an editable sign (sign without honeycomb wax) by right-click will open a sign editor handled by this plugin.
 * (Minecraft 1.20+ only) `/sign wax` and `/sign unwax` commands and permissions to apply and remove honeycomb wax from signs, respectively
 * New locale strings:
@@ -41,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Decreased the right-click event handling priority to the lowest level to avoid interfering with other plugins that handle right-click events on signs
 * Permission processing moved from `SignCommand.permitted(Player, String)` to `InteractionCommand.isPermitted()`
 * `SignText.signChanged()` renamed to `SignText.signTextChanged()` as part of clarification that only text changes count in `/sign undo` and `/sign redo`
+* Started pulling [`org.bukkit.entity.Player`](https://web.archive.org/web/20230622081000/https://hub.spigotmc.org/javadocs/spigot/org/bukkit/entity/Player.html) out of constructor injections, as various classes are being used in wider scopes.
 * Gradle 9.0 compatibility:
   * Replaced Gradle 8.2 deprecations with recommended replacements
   * Updated Gradle to version 8.2-rc-2

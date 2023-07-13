@@ -23,11 +23,8 @@ import dagger.Binds;
 import dagger.Module;
 import dagger.multibindings.IntoMap;
 import dagger.multibindings.StringKey;
-import net.deltik.mc.signedit.integrations.SignEditValidatorModule;
 
-@Module(includes = {
-        SignEditValidatorModule.class,
-})
+@Module
 public abstract class SignEditInteractionModule {
     public static final String UI_NATIVE = "NativeUi";
     public static final String UI_EDITABLE_BOOK = "EditableBookUi";

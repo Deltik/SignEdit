@@ -19,22 +19,21 @@
 
 package net.deltik.mc.signedit.listeners;
 
-import net.deltik.mc.signedit.ChatComms;
-import net.deltik.mc.signedit.ChatCommsModule;
-import net.deltik.mc.signedit.SignTextClipboardManager;
-import net.deltik.mc.signedit.SignTextHistoryManager;
+import net.deltik.mc.signedit.*;
 import net.deltik.mc.signedit.commands.SignCommand;
 import net.deltik.mc.signedit.exceptions.BlockStateNotPlacedException;
+import net.deltik.mc.signedit.integrations.SignEditValidator;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
 import net.deltik.mc.signedit.interactions.SignEditInteractionManager;
+import net.deltik.mc.signedit.interactions.UiSignEditInteraction;
+import net.deltik.mc.signedit.interactions.WaxSignEditInteraction;
 import net.deltik.mc.signedit.shims.SideShim;
 import net.deltik.mc.signedit.shims.SignHelpers;
 import net.deltik.mc.signedit.shims.SignShim;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -54,6 +53,7 @@ public class CoreSignEditListener extends SignEditListener {
     private final SignEditInteractionManager interactionManager;
     private final Provider<ChatCommsModule.ChatCommsComponent.Builder> commsBuilderProvider;
     private final SignCommand signCommand;
+    private final SignEditValidator signEditValidator;
 
     @Inject
     public CoreSignEditListener(
@@ -61,13 +61,15 @@ public class CoreSignEditListener extends SignEditListener {
             SignTextHistoryManager historyManager,
             SignEditInteractionManager interactionManager,
             Provider<ChatCommsModule.ChatCommsComponent.Builder> commsBuilderProvider,
-            SignCommand signCommand
+            SignCommand signCommand,
+            SignEditValidator signEditValidator
     ) {
         this.clipboardManager = clipboardManager;
         this.historyManager = historyManager;
         this.interactionManager = interactionManager;
         this.commsBuilderProvider = commsBuilderProvider;
         this.signCommand = signCommand;
+        this.signEditValidator = signEditValidator;
     }
 
     /**
@@ -100,27 +102,57 @@ public class CoreSignEditListener extends SignEditListener {
         SignShim signAdapter = new SignShim(sign);
         Player player = event.getPlayer();
 
-        if (interactionManager.isInteractionPending(player)) {
-            try {
+        try {
+            if (interactionManager.isInteractionPending(player)) {
+                event.setCancelled(true);
                 SignEditInteraction interaction = interactionManager.removePendingInteraction(player);
                 SideShim side = SideShim.fromRelativePosition(sign, player);
                 interaction.interact(player, signAdapter, side);
-            } catch (Throwable e) {
-                ChatComms comms = commsBuilderProvider.get().commandSender(player).build().comms();
-                comms.reportException(e);
+            } else if (SignHelpers.isEditable(sign)) {
+                overrideNativeBehavior(event, player, signAdapter);
             }
-        } else if (SignHelpers.isEditable(sign) && !event.useInteractedBlock().equals(Event.Result.DENY)) {
-            signCommand.onCommand(player, new Command(SignCommand.COMMAND_NAME) {
-                @Override
-                public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-                    return false;
-                }
-            }, "", new String[]{"ui"});
-            if (!interactionManager.isInteractionPending(player)) {
-                return;
-            }
-            onRightClickSign(event);
+        } catch (Throwable e) {
+            ChatComms comms = commsBuilderProvider.get().commandSender(player).build().comms();
+            comms.reportException(e);
+        }
+    }
+
+    /**
+     * Override the Bukkit 1.20 native behavior of what a {@link Player} can do with a {@link Sign}
+     *
+     * @param event       The {@link PlayerInteractEvent} that triggered the interaction with the sign
+     * @param player      The {@link Player} who performed the interaction
+     * @param signAdapter The {@link SignShim} implementation representing the sign being interacted with
+     */
+    private void overrideNativeBehavior(PlayerInteractEvent event, Player player, SignShim signAdapter) {
+        SignText signText = new SignText(signEditValidator);
+        SignEditInteraction maybeSignEditInteraction = null;
+
+        if (player.hasPermission("signedit." + SignCommand.COMMAND_NAME + ".wax") &&
+                event.getItem().getType().equals(Material.getMaterial("HONEYCOMB")) &&
+                !event.useItemInHand().equals(Event.Result.DENY)
+        ) {
+            signText.setShouldBeEditable(false);
+            maybeSignEditInteraction = new WaxSignEditInteraction(
+                    signText,
+                    commsBuilderProvider.get()
+            );
+        } else if (player.hasPermission("signedit." + SignCommand.COMMAND_NAME + ".ui") &&
+                !event.useInteractedBlock().equals(Event.Result.DENY)
+        ) {
+            maybeSignEditInteraction = new UiSignEditInteraction(
+                    interactionManager,
+                    commsBuilderProvider.get(),
+                    signText,
+                    historyManager,
+                    signCommand
+            );
+        }
+
+        if (maybeSignEditInteraction != null) {
             event.setCancelled(true);
+            SideShim side = SideShim.fromRelativePosition(signAdapter.getImplementation(), player);
+            maybeSignEditInteraction.interact(player, signAdapter, side);
         }
     }
 

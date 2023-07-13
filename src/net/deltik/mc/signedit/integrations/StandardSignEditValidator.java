@@ -38,19 +38,16 @@ import java.util.Arrays;
 
 public class StandardSignEditValidator implements SignEditValidator {
     protected final PluginManager pluginManager;
-    protected final Player player;
 
     @Inject
     public StandardSignEditValidator(
-            Player player,
             PluginManager pluginManager
     ) {
-        this.player = player;
         this.pluginManager = pluginManager;
     }
 
     @Override
-    public void validate(SignShim proposedSign, SideShim side) {
+    public void validate(SignShim proposedSign, SideShim side, Player player) {
         SignChangeEvent signChangeEvent;
         try {
             Constructor<?> constructor = Arrays.stream(SignChangeEvent.class.getConstructors())
@@ -80,7 +77,7 @@ public class StandardSignEditValidator implements SignEditValidator {
                 InvocationTargetException |
                 InstantiationException e
         ) {
-            signChangeEvent = makeOldSignChangeEvent(proposedSign, side);
+            signChangeEvent = makeOldSignChangeEvent(proposedSign, side, player);
         }
 
         pluginManager.callEvent(signChangeEvent);
@@ -93,12 +90,13 @@ public class StandardSignEditValidator implements SignEditValidator {
      * @param proposedSign The {@link Sign} with new values that hasn't been updated with {@link Sign#update()} yet
      * @param side Which side of the {@link Sign} changed
      *             (must be {@link SideShim#FRONT} because that was the only side before Bukkit 1.20)
+     * @param player The {@link Player} who intends to change the {@link Sign}
      * @return A new {@link SignChangeEvent} that should be sent to
      *         {@link PluginManager#callEvent(org.bukkit.event.Event)}
      */
     @SuppressWarnings("deprecation")
     @NotNull
-    private SignChangeEvent makeOldSignChangeEvent(SignShim proposedSign, SideShim side) {
+    private SignChangeEvent makeOldSignChangeEvent(SignShim proposedSign, SideShim side, Player player) {
         if (side != SideShim.FRONT) {
             throw new IllegalArgumentException("Bug: Event support missing for editing back of sign");
         }

@@ -19,9 +19,7 @@
 
 package net.deltik.mc.signedit;
 
-import net.deltik.mc.signedit.exceptions.BlockStateNotPlacedException;
 import net.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
-import net.deltik.mc.signedit.exceptions.ForbiddenWaxedSignEditException;
 import net.deltik.mc.signedit.integrations.NoopSignEditValidator;
 import net.deltik.mc.signedit.integrations.SignEditValidator;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
@@ -31,7 +29,6 @@ import net.deltik.mc.signedit.shims.SideShim;
 import net.deltik.mc.signedit.shims.SignHelpers;
 import net.deltik.mc.signedit.shims.SignShim;
 import net.deltik.mc.signedit.subcommands.PerSubcommand;
-import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -102,32 +99,16 @@ public class SignText {
     }
 
     public void applySignAutoWax(Player player, ChatComms comms) {
-        boolean needRewax = false;
-        reloadTargetSign();
-        if (!SignHelpers.isEditable(Objects.requireNonNull(getTargetSign()))) {
-            if (player.hasPermission("signedit.sign.unwax")) {
-                SignHelpers.setEditable(getTargetSign(), true);
-                getTargetSign().update();
-                needRewax = true;
-                comms.tell(comms.t("bypass_wax_before"));
-            } else {
-                throw new ForbiddenWaxedSignEditException();
-            }
-        }
-        applySign();
+        Sign sign = Objects.requireNonNull(getTargetSign());
+        boolean needRewax = SignHelpers.bypassWaxBefore(sign, player, comms);
+        applySign(player);
         if (needRewax) {
-            if (player.hasPermission("signedit.sign.wax")) {
-                reloadTargetSign();
-                SignHelpers.setEditable(getTargetSign(), false);
-                getTargetSign().update();
-                comms.tell(comms.t("bypass_wax_after"));
-            } else {
-                comms.tell(comms.t("bypass_wax_cannot_rewax"));
-            }
+            SignHelpers.bypassWaxAfter(sign, player, comms);
         }
+        reloadTargetSign();
     }
 
-    public void applySign() {
+    public void applySign(Player player) {
         reloadTargetSign();
         assert getTargetSignSide() != null;
         Sign target = getTargetSign();
@@ -145,35 +126,24 @@ public class SignText {
 
         stagedLines = getTargetSignSide().getLines().clone();
 
-        validator.validate(this.targetSign, this.targetSignSide);
+        validator.validate(this.targetSign, this.targetSignSide, player);
         target.update();
 
         afterLines = getTargetSignSide().getLines().clone();
     }
 
     private void reloadTargetSign() {
-        BlockState newBlockState;
-        try {
-            newBlockState = getTargetSign() != null ? getTargetSign().getBlock().getState() : null;
-        } catch (IllegalStateException ignored) {
-            newBlockState = null;
-        }
-
-        if (newBlockState instanceof Sign && newBlockState.isPlaced()) {
-            targetSign = new SignShim((Sign) newBlockState);
-        } else {
-            throw new BlockStateNotPlacedException();
-        }
+        targetSign = new SignShim(SignHelpers.refreshBlockState(getTargetSign()));
     }
 
-    public void revertSign() {
+    public void revertSign(Player player) {
         String[] changedLinesTmp = changedLines.clone();
         for (int i = 0; i < changedLines.length; i++) {
             if (changedLines[i] != null) {
                 this.setLineLiteral(i, beforeLines[i]);
             }
         }
-        applySign();
+        applySign(player);
         changedLines = changedLinesTmp;
     }
 

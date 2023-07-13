@@ -69,7 +69,7 @@ public class WaxSignEditInteraction implements SignEditInteraction {
             return;
         }
 
-        signText.applySign();
+        signText.applySign(player);
 
         realSign = signImplementation.getBlock().getState();
         realEditable = SignHelpers.isEditable((Sign) realSign);

@@ -20,18 +20,17 @@
 package net.deltik.mc.signedit;
 
 import net.deltik.mc.signedit.exceptions.SignTextHistoryStackBoundsException;
+import org.bukkit.entity.Player;
 
-import javax.inject.Inject;
 import java.util.LinkedList;
 
 public class SignTextHistory {
-    private final Configuration config;
+    private final Player player;
     private final LinkedList<SignText> history = new LinkedList<>();
     int tailPosition = 0;
 
-    @Inject
-    public SignTextHistory(Configuration config) {
-        this.config = config;
+    public SignTextHistory(Player player) {
+        this.player = player;
     }
 
     public void push(SignText signText) {
@@ -55,7 +54,7 @@ public class SignTextHistory {
             throw new SignTextHistoryStackBoundsException("nothing_to_undo");
         }
         SignText previousSignText = history.get(tailPosition - 1);
-        previousSignText.revertSign();
+        previousSignText.revertSign(player);
         tailPosition--;
         return previousSignText;
     }
@@ -65,7 +64,7 @@ public class SignTextHistory {
             throw new SignTextHistoryStackBoundsException("nothing_to_redo");
         }
         SignText nextSignText = history.get(tailPosition);
-        nextSignText.applySign();
+        nextSignText.applySign(player);
         tailPosition++;
         return nextSignText;
     }

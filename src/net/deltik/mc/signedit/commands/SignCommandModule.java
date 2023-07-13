@@ -24,6 +24,7 @@ import dagger.Module;
 import dagger.Provides;
 import dagger.multibindings.IntoMap;
 import dagger.multibindings.StringKey;
+import net.deltik.mc.signedit.integrations.SignEditValidatorModule;
 import net.deltik.mc.signedit.interactions.InteractionCommand;
 import net.deltik.mc.signedit.subcommands.*;
 
@@ -33,6 +34,9 @@ import java.util.stream.Stream;
 
 @Module(subcomponents = {
         SignSubcommandComponent.class,
+},
+includes = {
+        SignEditValidatorModule.class,
 })
 public abstract class SignCommandModule {
 

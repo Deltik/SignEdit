@@ -44,11 +44,13 @@ import static org.mockito.Mockito.*;
 
 public class SignTextTest {
     private SignText signText;
+    private Player player;
     private final String[] defaultSignLines = new String[]{"a", "b", "c", "d"};
 
     @BeforeEach
     public void newTestObject() {
         signText = new SignText(new NoopSignEditValidator());
+        player = mock(Player.class);
     }
 
     @Test
@@ -253,7 +255,7 @@ public class SignTextTest {
         signText.setLine(3, "four");
         signText.setTargetSign(sign, SideShim.FRONT);
 
-        signText.applySign();
+        signText.applySign(player);
 
         verify(sign).setLine(0, "one");
         verify(sign).setLine(1, "two");
@@ -268,7 +270,7 @@ public class SignTextTest {
         signText.setLine(1, "just this line");
         signText.setTargetSign(sign, SideShim.FRONT);
 
-        signText.applySign();
+        signText.applySign(player);
 
         verify(sign, times(0)).setLine(eq(0), any());
         verify(sign, times(1)).setLine(eq(1), eq("just this line"));
@@ -279,24 +281,22 @@ public class SignTextTest {
     @Test
     public void throwForbiddenSignEditExceptionWhenSignChangeEventIsCancelled() {
         Sign sign = createSign();
-        Player player = mock(Player.class);
         PluginManager pluginManager = mock(PluginManager.class);
-        signText = new SignText(new StandardSignEditValidator(player, pluginManager));
+        signText = new SignText(new StandardSignEditValidator(pluginManager));
         doAnswer((Answer<Void>) invocation -> {
             ((SignChangeEvent) invocation.getArgument(0)).setCancelled(true);
             return null;
         }).when(pluginManager).callEvent(any(Event.class));
 
         signText.setTargetSign(sign, SideShim.FRONT);
-        assertThrows(ForbiddenSignEditException.class, () -> signText.applySign());
+        assertThrows(ForbiddenSignEditException.class, () -> signText.applySign(player));
     }
 
     @Test
     public void signUiSignChangeEventCancelledWithBreakReplaceSignEditValidator() {
         Sign sign = createSign();
-        Player player = mock(Player.class);
         PluginManager pluginManager = mock(PluginManager.class);
-        signText = new SignText(new BreakReplaceSignEditValidator(player, pluginManager));
+        signText = new SignText(new BreakReplaceSignEditValidator(pluginManager));
         doAnswer((Answer<Void>) invocation -> {
             ((BlockBreakEvent) invocation.getArgument(0)).setCancelled(true);
             return null;
@@ -312,12 +312,11 @@ public class SignTextTest {
     @Test
     public void signUiSignChangeEventNotCancelledWithBreakReplaceSignEditValidator() {
         Sign sign = createSign();
-        Player player = mock(Player.class);
         PlayerInventory inventory = mock(PlayerInventory.class);
         when(player.getInventory()).thenReturn(inventory);
         when(inventory.getItemInMainHand()).thenReturn(mock(ItemStack.class));
         PluginManager pluginManager = mock(PluginManager.class);
-        signText = new SignText(new BreakReplaceSignEditValidator(player, pluginManager));
+        signText = new SignText(new BreakReplaceSignEditValidator(pluginManager));
         SignChangeEvent signChangeEvent = new SignChangeEvent(
                 sign.getBlock(), player, new String[]{"N", "I", "C", "K"}
         );
@@ -333,7 +332,7 @@ public class SignTextTest {
 
         signText.setTargetSign(sign, SideShim.FRONT);
         signText.setLine(0, "doesn't matter");
-        assertThrows(BlockStateNotPlacedException.class, () -> signText.applySign());
+        assertThrows(BlockStateNotPlacedException.class, () -> signText.applySign(player));
     }
 
     @Test
@@ -345,7 +344,7 @@ public class SignTextTest {
 
         signText.setTargetSign(sign, SideShim.FRONT);
         signText.setLine(0, "doesn't matter");
-        assertThrows(BlockStateNotPlacedException.class, () -> signText.applySign());
+        assertThrows(BlockStateNotPlacedException.class, () -> signText.applySign(player));
     }
 
     @Test
@@ -403,14 +402,14 @@ public class SignTextTest {
 
         signText.setLine(1, "2");
         signText.setLine(3, "4");
-        signText.applySign();
+        signText.applySign(player);
 
         verify(sign, times(0)).setLine(eq(0), any());
         verify(sign, times(1)).setLine(eq(1), eq("2"));
         verify(sign, times(0)).setLine(eq(2), any());
         verify(sign, times(1)).setLine(eq(3), eq("4"));
 
-        signText.revertSign();
+        signText.revertSign(player);
 
         verify(sign, times(0)).setLine(eq(0), any());
         verify(sign, times(1)).setLine(eq(1), eq("b"));
@@ -424,12 +423,12 @@ public class SignTextTest {
         signText.setTargetSign(sign, SideShim.FRONT);
 
         signText.setLine(0, "cotton eyed joe");
-        signText.applySign();
+        signText.applySign(player);
 
         assertEquals(defaultSignLines[0], signText.getBeforeLine(0));
         assertEquals("cotton eyed joe", signText.getAfterLine(0));
 
-        signText.revertSign();
+        signText.revertSign(player);
 
         assertEquals("cotton eyed joe", signText.getBeforeLine(0));
         assertEquals(defaultSignLines[0], signText.getAfterLine(0));
@@ -444,11 +443,11 @@ public class SignTextTest {
         signText.setLine(0, expected);
         assertEquals(expected, signText.getLine(0));
 
-        signText.applySign();
+        signText.applySign(player);
 
         assertEquals(expected, signText.getLine(0));
 
-        signText.revertSign();
+        signText.revertSign(player);
 
         assertEquals(expected, signText.getLine(0));
     }
@@ -459,7 +458,7 @@ public class SignTextTest {
         when(sign.isPlaced()).thenReturn(false);
 
         signText.setTargetSign(sign, SideShim.FRONT);
-        assertThrows(BlockStateNotPlacedException.class, () -> signText.revertSign());
+        assertThrows(BlockStateNotPlacedException.class, () -> signText.revertSign(player));
     }
 
     @Test
@@ -472,7 +471,7 @@ public class SignTextTest {
         signText.setLine(1, "Anything else");
 
         assertFalse(signText.signTextChanged());
-        signText.applySign();
+        signText.applySign(player);
 
         assertTrue(signText.signTextChanged());
     }
@@ -487,7 +486,7 @@ public class SignTextTest {
         signText.setLine(1, "b");
 
         assertFalse(signText.signTextChanged());
-        signText.applySign();
+        signText.applySign(player);
 
         assertFalse(signText.signTextChanged());
     }
@@ -498,7 +497,7 @@ public class SignTextTest {
 
         signText.setTargetSign(sign, SideShim.FRONT);
         signText.setLineLiteral(1, "CHANGED");
-        signText.applySign();
+        signText.applySign(player);
 
         assertArrayEquals(defaultSignLines, signText.getBeforeLines());
 
@@ -515,7 +514,7 @@ public class SignTextTest {
 
         signText.setTargetSign(sign, SideShim.FRONT);
         signText.setLineLiteral(1, "CHANGED");
-        signText.applySign();
+        signText.applySign(player);
 
         assertArrayEquals(expectedSignLines, signText.getAfterLines());
 
@@ -527,9 +526,8 @@ public class SignTextTest {
     @Test
     public void getStagedLinesIsUnaffectedBySignChangeEvent() {
         Sign sign = createSign();
-        Player player = mock(Player.class);
         PluginManager pluginManager = mock(PluginManager.class);
-        signText = new SignText(new StandardSignEditValidator(player, pluginManager));
+        signText = new SignText(new StandardSignEditValidator(pluginManager));
         doAnswer(invocation -> {
             SignChangeEvent event = invocation.getArgument(0);
             event.setLine(1, "OTHER");
@@ -538,7 +536,7 @@ public class SignTextTest {
 
         signText.setTargetSign(sign, SideShim.FRONT);
         signText.setLineLiteral(1, "CHANGED");
-        signText.applySign();
+        signText.applySign(player);
 
         assertEquals("CHANGED", signText.getStagedLine(1));
         assertEquals("OTHER", signText.getAfterLine(1));

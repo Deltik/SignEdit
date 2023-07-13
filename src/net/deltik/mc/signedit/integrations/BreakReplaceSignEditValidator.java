@@ -44,26 +44,27 @@ import java.util.Set;
 
 public class BreakReplaceSignEditValidator extends StandardSignEditValidator {
     @Inject
-    public BreakReplaceSignEditValidator(Player player, PluginManager pluginManager) {
-        super(player, pluginManager);
+    public BreakReplaceSignEditValidator(PluginManager pluginManager) {
+        super(pluginManager);
     }
 
     @Override
-    public void validate(SignShim proposedSign, SideShim side) {
+    public void validate(SignShim proposedSign, SideShim side, Player player) {
         Sign signImplementation = proposedSign.getImplementation();
-        validateBlockBreak(signImplementation);
-        validateBlockPlace(signImplementation);
-        super.validate(proposedSign, side);
+        validateBlockBreak(signImplementation, player);
+        validateBlockPlace(signImplementation, player);
+        super.validate(proposedSign, side, player);
     }
 
     @Override
     public void validate(SignChangeEvent signChangeEvent) {
         Sign sign = CoreSignEditListener.getPlacedSignFromBlockEvent(signChangeEvent);
-        validateBlockBreak(sign);
-        validateBlockPlace(sign);
+        Player player = signChangeEvent.getPlayer();
+        validateBlockBreak(sign, player);
+        validateBlockPlace(sign, player);
     }
 
-    private void validateBlockBreak(Sign sign) {
+    private void validateBlockBreak(Sign sign, Player player) {
         BlockBreakEvent blockBreakEvent = new BlockBreakEvent(sign.getBlock(), player);
         pluginManager.callEvent(blockBreakEvent);
         if (blockBreakEvent.isCancelled()) {
@@ -71,7 +72,7 @@ public class BreakReplaceSignEditValidator extends StandardSignEditValidator {
         }
     }
 
-    private void validateBlockPlace(Sign sign) {
+    private void validateBlockPlace(Sign sign, Player player) {
         BlockPlaceEvent blockPlaceEvent = new BlockPlaceEvent(
                 sign.getBlock(),
                 sign,

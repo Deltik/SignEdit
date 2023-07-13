@@ -25,7 +25,7 @@ import dagger.Provides;
 import dagger.multibindings.IntoMap;
 import dagger.multibindings.StringKey;
 import net.deltik.mc.signedit.Configuration;
-import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
 import javax.inject.Provider;
@@ -34,8 +34,8 @@ import java.util.Map;
 @Module
 public abstract class SignEditValidatorModule {
     @Provides
-    static PluginManager providePluginManager(Player player) {
-        return player.getServer().getPluginManager();
+    static PluginManager providePluginManager(Plugin plugin) {
+        return plugin.getServer().getPluginManager();
     }
 
     @Provides

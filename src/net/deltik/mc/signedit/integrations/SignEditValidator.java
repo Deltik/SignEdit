@@ -22,6 +22,7 @@ package net.deltik.mc.signedit.integrations;
 import net.deltik.mc.signedit.shims.SideShim;
 import net.deltik.mc.signedit.shims.SignShim;
 import org.bukkit.block.Sign;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.SignChangeEvent;
@@ -32,8 +33,9 @@ public interface SignEditValidator {
      *
      * @param proposedSign A changed sign that has not had {@link Sign#update()} called yet
      * @param side         The side of the sign that has staged changes
+     * @param player       The player that is trying to edit the sign
      */
-    void validate(SignShim proposedSign, SideShim side);
+    void validate(SignShim proposedSign, SideShim side, Player player);
 
     /**
      * Import sign changes from a {@link SignChangeEvent} and ensure that they pass checks before saving
