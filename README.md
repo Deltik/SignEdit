@@ -56,7 +56,7 @@
     * [Compatibility](#compatibility)
         * [Version Compatibility Table](#version-compatibility-table)
         * [Backwards Compatibility with Omel's SignEdit v1.3](#backwards-compatibility-with-omels-signedit-v13)
-        * [Compatibility with Permissions Plugins](#compatibility-with-permissions-plugins)
+        * [Compatibility with Permission Plugins](#compatibility-with-permission-plugins)
         * [Minecraft 1.16.1 Sign Editor GUI](#minecraft-1161-sign-editor-gui)
 
 ## Installation
@@ -500,24 +500,25 @@ If you have translated the plugin to your language, please help the development 
 
 ## Compatibility
 
-This plugin is a fork of [Omel's SignEdit](https://www.spigotmc.org/resources/signedit.25485/) v1.3.  Omel's SignEdit v1.3 and older are not compatible with Bukkit 1.12 and newer because a deprecated API method was removed ([see related issue in MyPet](https://github.com/xXKeyleXx/MyPet/issues/1033)).
-
-Since this plugin does not use deprecated methods, it is expected to be compatible with Bukkit 1.8.3 and newer.
+This plugin is a fork of [Omel's SignEdit](https://web.archive.org/web/20190905124503/https://www.spigotmc.org/resources/signedit.25485/) v1.3.  Omel's SignEdit v1.3 and older are not compatible with Bukkit 1.12 and newer because a deprecated API method was removed ([see related issue in MyPet](https://github.com/xXKeyleXx/MyPet/issues/1033)).
 
 Support for Bukkit 1.8 and lower was dropped in plugin version `>= 1.3.1`.  This is because plugin version `>= 1.3.1` compiles with a method signature introduced in Bukkit commit [e1f54099](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/commits/e1f54099c8d6ba708c2895803464a0b89cacd3b9#src/main/java/org/bukkit/entity/LivingEntity.java), which landed in [Bukkit 1.8.3](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/commits/ca4fd8554d297f3922d36328efd4612b05f9d8aa#pom.xml).
+
+Since that change, this plugin strives to be compatible with all versions of Bukkit since Bukkit 1.8.3
+by using stable API methods where possible and failing gracefully when a feature is not available.
 
 ### Version Compatibility Table
 
 | Plugin [Version](#versioning) | Minimum Minecraft Version | Maximum Minecraft Version  | Cause of Compatibility Change                                                                                                                                                                                                                      |
 |-------------------------------|---------------------------|----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `<= 1.3`                      | 1.2.2                     | 1.11.2                     | Deprecated API removed in Bukkit 1.12                                                                                                                                                                                                              |
-| `>= 1.3.1, < 1.8`             | 1.8.3                     | 1.19.1                     | [Switched to the non-deprecated Bukkit 1.8.3 API method](https://github.com/Deltik/SignEdit/commit/f1ca24893b3a0099da846f1dbd4b7770c2821c4a)                                                                                                       |
+| `>= 1.3.1, < 1.8`             | 1.8.3                     | 1.19.4                     | [Switched to the non-deprecated Bukkit 1.8.3 API method](https://github.com/Deltik/SignEdit/commit/f1ca24893b3a0099da846f1dbd4b7770c2821c4a)                                                                                                       |
 | `>= 1.8, < 1.10.2`            | 1.8.3                     | 1.15.2                     | [Native sign editor defect in Minecraft 1.16.1](#minecraft-1161-sign-editor-gui)                                                                                                                                                                   |
 | `>= 1.10.2, < 1.12`           | 1.12                      | 1.15.2                     | [Localization features](#supported-locales) only available starting in Bukkit 1.12                                                                                                                                                                 |
 | `>= 1.12, < 1.12.7`           | 1.13                      | 1.16.5                     | Workaround for [native sign editor defect in Minecraft 1.16.1](#minecraft-1161-sign-editor-gui) uses Bukkit 1.13 materials                                                                                                                         |
 | `>= 1.12.7, < 1.13.4`         | 1.13                      | 1.17.1                     | Plugin updated to tolerate [a CraftBukkit unstable API (`net.minecraft` code) obfuscation requirement for Minecraft 1.17](https://web.archive.org/web/20210613005238/https://www.spigotmc.org/threads/spigot-bungeecord-1-17.510208/#post-4184317) |
-| `= 1.13.5`                    | 1.13                      | 1.19.1                     | Plugin updated again to tolerate even more obfuscation of the CraftBukkit unstable API; no more dependency on CraftBukkit if running on Bukkit 1.18 or newer                                                                                       |
-| `>= 1.13.6, < 1.14`           | 1.8.3                     | 1.19.1                     | Better error handling lets the plugin run with a limited feature set on old versions of Bukkit                                                                                                                                                     |
+| `= 1.13.5`                    | 1.13                      | 1.19.4                     | Plugin updated again to tolerate even more obfuscation of the CraftBukkit unstable API; no more dependency on CraftBukkit if running on Bukkit 1.18 or newer                                                                                       |
+| `>= 1.13.6, < 1.14`           | 1.8.3                     | 1.19.4                     | Better error handling lets the plugin run with a limited feature set on old versions of Bukkit                                                                                                                                                     |
 | `>= 1.14`                     | 1.8.3                     | _No known incompatibility_ | Support for Minecraft 1.20 sign sides (front and back) and hanging signs                                                                                                                                                                           |
 
 ### Backwards Compatibility with Omel's SignEdit v1.3
@@ -536,7 +537,17 @@ SignEdit for Bukkit versions `~> 1.5` are backwards-compatible with Omel's SignE
 
   ~~Upgrade to SignEdit for Bukkit version `~> 1.5` to have the possibility of restoring the original line number range.~~
 
-### Compatibility with Permissions Plugins
+The original Omel's SignEdit releases are archived here:
+
+| Version   | Release Date | Release Notes                                                    | Download                                                                                 |
+|-----------|--------------|------------------------------------------------------------------|------------------------------------------------------------------------------------------|
+| `= 1.3.1` | 2018-06-13   | [GitHub](https://github.com/Deltik/SignEdit/releases/tag/v1.3.1) | [SignEdit.jar](https://github.com/Deltik/SignEdit/releases/download/v1.3.1/SignEdit.jar) |
+| `= 1.3`   | 2016-07-04   | [GitHub](https://github.com/Deltik/SignEdit/releases/tag/v1.3)   | [SignEdit.jar](https://github.com/Deltik/SignEdit/releases/download/v1.3/SignEdit.jar)   |
+| `= 1.2`   | 2016-07-04   | [GitHub](https://github.com/Deltik/SignEdit/releases/tag/v1.2)   | [SignEdit.jar](https://github.com/Deltik/SignEdit/releases/download/v1.2/SignEdit.jar)   |
+| `= 1.1`   | 2016-07-02   | [GitHub](https://github.com/Deltik/SignEdit/releases/tag/v1.1)   | [SignEdit.jar](https://github.com/Deltik/SignEdit/releases/download/v1.1/SignEdit.jar)   |
+| `= 1.0`   | 2016-06-26   | [GitHub](https://github.com/Deltik/SignEdit/releases/tag/v1.0)   | [SignEdit.jar](https://github.com/Deltik/SignEdit/releases/download/v1.0/SignEdit.jar)   |
+
+### Compatibility with Permission Plugins
 
 Since `>= 1.8`, other plugins can receive a [`SignChangeEvent`](https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/block/SignChangeEvent.html) from SignEdit for Bukkit and cancel the event to deny the player from editing a sign through this plugin.
 
