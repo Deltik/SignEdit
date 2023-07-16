@@ -138,8 +138,7 @@ public class UiSignEditInteraction implements SignEditInteraction {
         this.player = player;
         signText.setTargetSign(sign, side);
         signText.importSign();
-        ChatComms comms = commsBuilder.commandSender(player).build().comms();
-        this.needsRewax = SignHelpers.bypassWaxBefore(sign, player, comms);
+        this.needsRewax = SignHelpers.bypassWaxBefore(sign, player);
         formatSignForEdit(player, sign, side);
     }
 

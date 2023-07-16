@@ -18,12 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * New locale strings:
   * `wax_removed` – Completed `/sign unwax` action
   * `wax_applied` – Completed `/sign wax` action
-  * `bypass_wax_before` – Warning before a `/sign` text change that wax will be removed
-  * `bypass_wax_after` – Warning after a `/sign` text change that wax was reapplied
   * `bypass_wax_cannot_rewax` – Warning after a `/sign` text change that wax was not reapplied because the player lacks permission to `/sign wax`
   * `unwax_sign` – `/sign unwax` pending action description
   * `wax_sign` – `/sign wax` pending action description
-  * `forbidden_waxed_sign_edit` – Error when attempting to edit a waxed sign without permission to run `/sign unwax`
+  * `forbidden_waxed_sign_edit` – Error that a `/sign` text change was blocked because the target sign is waxed and the player lacks permission to `/sign unwax`
 
 ### Changed
 

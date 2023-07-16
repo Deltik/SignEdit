@@ -104,7 +104,7 @@ public class SignText {
 
     public void applySignAutoWax(Player player, ChatComms comms, Applicator applicator) {
         Sign sign = Objects.requireNonNull(getTargetSign());
-        boolean needRewax = SignHelpers.bypassWaxBefore(sign, player, comms);
+        boolean needRewax = SignHelpers.bypassWaxBefore(sign, player);
         applicator.applySign(player);
         if (needRewax) {
             SignHelpers.bypassWaxAfter(sign, player, comms);

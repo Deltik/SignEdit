@@ -30,9 +30,12 @@ import net.deltik.mc.signedit.shims.SignShim;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 
@@ -74,23 +77,15 @@ public class WaxSignEditInteraction implements SignEditInteraction {
         realSign = signImplementation.getBlock().getState();
         realEditable = SignHelpers.isEditable((Sign) realSign);
 
-        Particle confirmationParticle;
-        Sound confirmationSound;
         if (stagedEditable != realEditable) {
             throw new ForbiddenSignEditException();
         } else if (realEditable) {
             comms.tell(comms.t("wax_removed"));
-            confirmationParticle = Particle.valueOf("WAX_OFF");
-            confirmationSound = Sound.valueOf("BLOCK_SIGN_WAXED_INTERACT_FAIL");
+            playWaxOff(signImplementation);
         } else {
             comms.tell(comms.t("wax_applied"));
-            confirmationParticle = Particle.valueOf("WAX_ON");
-            confirmationSound = Sound.valueOf("ITEM_HONEYCOMB_WAX_ON");
+            playWaxOn(signImplementation);
         }
-
-        Location signLocation = signImplementation.getLocation().add(0.5, 0.5, 0.5);
-        player.getWorld().spawnParticle(confirmationParticle, signLocation, 20, 0.3, 0.3, 0.3, 0.5);
-        player.playSound(signLocation, confirmationSound, 1, 1);
     }
 
     @Override
@@ -100,5 +95,53 @@ public class WaxSignEditInteraction implements SignEditInteraction {
         } else {
             return "wax_sign";
         }
+    }
+
+    /**
+     * Send a firework-like burst initiating from the middle of the specified {@link BlockState} to its {@link World}
+     *
+     * @param block    The block state from where the burst should originate
+     * @param particle The kind of particle to spawn in the firework, or none if null
+     * @param sound    The sound to play at the block, or none if null
+     * @throws BlockStateNotPlacedException if the block state is not placed or somehow isn't in the {@link World}
+     */
+    private static void sendAudioVisualBurst(
+            @NotNull BlockState block,
+            @Nullable Particle particle,
+            @Nullable Sound sound
+    ) {
+        Location signLocation = block.getLocation().add(0.5, 0.5, 0.5);
+        World world = signLocation.getWorld();
+        if (world == null || !block.isPlaced()) {
+            throw new BlockStateNotPlacedException();
+        }
+        if (particle != null) {
+            world.spawnParticle(particle, signLocation, 20, 0.3, 0.3, 0.3, 0.5);
+        }
+        if (sound != null) {
+            world.playSound(signLocation, sound, 1, 1);
+        }
+    }
+
+    /**
+     * Play the "wax off" animation on the specified {@link Sign} by spawning particle effects and playing a sound
+     *
+     * @param sign The sign on which to play the "wax off" animation
+     */
+    public static void playWaxOff(Sign sign) {
+        Particle confirmationParticle = Particle.valueOf("WAX_OFF");
+        Sound confirmationSound = Sound.valueOf("BLOCK_SIGN_WAXED_INTERACT_FAIL");
+        sendAudioVisualBurst(sign, confirmationParticle, confirmationSound);
+    }
+
+    /**
+     * Play the "wax on" animation on the specified {@link Sign} by spawning particle effects and playing a sound
+     *
+     * @param sign The sign on which to play the "wax on" animation
+     */
+    public static void playWaxOn(Sign sign) {
+        Particle confirmationParticle = Particle.valueOf("WAX_ON");
+        Sound confirmationSound = Sound.valueOf("ITEM_HONEYCOMB_WAX_ON");
+        sendAudioVisualBurst(sign, confirmationParticle, confirmationSound);
     }
 }

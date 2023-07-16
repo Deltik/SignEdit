@@ -23,6 +23,7 @@ import net.deltik.mc.signedit.ChatComms;
 import net.deltik.mc.signedit.commands.SignCommand;
 import net.deltik.mc.signedit.exceptions.BlockStateNotPlacedException;
 import net.deltik.mc.signedit.exceptions.ForbiddenWaxedSignEditException;
+import net.deltik.mc.signedit.interactions.WaxSignEditInteraction;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
@@ -120,30 +121,13 @@ public class SignHelpers {
     }
 
     /**
-     * Check if a {@link Sign} needs to be rewaxed before editing it and handle the necessary actions to bypass waxing
-     *
-     * @param sign   The {@link Sign} that needs to be checked and potentially bypassed
-     * @param player The {@link Player} attempting to edit the sign
-     * @param comms  The {@link ChatComms} object used to notify the {@link Player}
-     * @return A boolean value indicating if the {@link Sign} needs to be rewaxed after being bypassed
-     * @throws ForbiddenWaxedSignEditException if the player does not have permission to bypass waxing
-     */
-    public static boolean bypassWaxBefore(@NotNull Sign sign, Player player, ChatComms comms) {
-        boolean needRewax = bypassWaxBefore(sign, player);
-        if (needRewax) {
-            comms.tell(comms.t("bypass_wax_before"));
-        }
-        return needRewax;
-    }
-
-    /**
      * Rewax a {@link Sign} after it has been edited. Check if rewaxing is necessary before calling this method!
      *
      * @param sign   The {@link Sign} that needs to be rewaxed
      * @param player The {@link Player} who edited the sign
      * @return A boolean value indicating if the {@link Sign} was successfully rewaxed
      */
-    public static boolean bypassWaxAfter(Sign sign, Player player) {
+    private static boolean bypassWaxAfter(Sign sign, Player player) {
         if (!hasWaxableFeature()) return false;
 
         if (player.hasPermission("signedit." + SignCommand.COMMAND_NAME + ".wax")) {
@@ -166,10 +150,9 @@ public class SignHelpers {
      */
     public static boolean bypassWaxAfter(Sign sign, Player player, ChatComms comms) {
         boolean success = bypassWaxAfter(sign, player);
-        if (success) {
-            comms.tell(comms.t("bypass_wax_after"));
-        } else {
+        if (!success) {
             comms.tell(comms.t("bypass_wax_cannot_rewax"));
+            WaxSignEditInteraction.playWaxOff(sign);
         }
         return success;
     }
