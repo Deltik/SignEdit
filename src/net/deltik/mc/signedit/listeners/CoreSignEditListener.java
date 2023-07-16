@@ -131,19 +131,20 @@ public class CoreSignEditListener extends SignEditListener {
 
         ItemStack eventItem = event.getItem();
 
-        if (player.hasPermission("signedit." + SignCommand.COMMAND_NAME + ".wax") &&
-                eventItem != null &&
+        if (eventItem != null &&
                 eventItem.getType().equals(Material.getMaterial("HONEYCOMB")) &&
                 !event.useItemInHand().equals(Event.Result.DENY)
         ) {
+            if (!player.hasPermission("signedit." + SignCommand.COMMAND_NAME + ".wax")) return;
+
             signText.setShouldBeEditable(false);
             maybeSignEditInteraction = new WaxSignEditInteraction(
                     signText,
                     commsBuilderProvider.get()
             );
-        } else if (player.hasPermission("signedit." + SignCommand.COMMAND_NAME + ".ui") &&
-                !event.useInteractedBlock().equals(Event.Result.DENY)
-        ) {
+        } else if (!event.useInteractedBlock().equals(Event.Result.DENY)) {
+            if (!player.hasPermission("signedit." + SignCommand.COMMAND_NAME + ".ui")) return;
+
             maybeSignEditInteraction = new UiSignEditInteraction(
                     interactionManager,
                     commsBuilderProvider.get(),
