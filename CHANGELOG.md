@@ -44,7 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Started pulling [`org.bukkit.entity.Player`](https://web.archive.org/web/20230622081000/https://hub.spigotmc.org/javadocs/spigot/org/bukkit/entity/Player.html) out of constructor injections, as various classes are being used in wider scopes.
 * Gradle 9.0 compatibility:
   * Replaced Gradle 8.2 deprecations with recommended replacements
-  * Updated Gradle to version 8.2-rc-2
+  * Updated Gradle to version 8.2.1
   * Added JDK toolchain resolver plugin to download Java 1.8
 * Skip ProGuard for development builds
 * Eliminated the dependency on `commons-lang:commons-lang`
