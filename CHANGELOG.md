@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Failure and error when editing [hanging signs and wall hanging signs](https://web.archive.org/web/20230615204117/https://minecraft.fandom.com/wiki/Sign#Hanging_signs) from Minecraft 1.20 when using `compatibility.edit-validation: Extra` (#34)
 
   ![`/se paste` with SignEdit for Bukkit v1.13.9](https://i.imgur.com/1qNBnID.png)
+* Workaround for a Spigot 1.20 bug where having a player open a sign does not make the sign editable ([SPIGOT-7391](https://hub.spigotmc.org/jira/browse/SPIGOT-7391))
 * `java.lang.IllegalArgumentException: Invalid page number (1)` when using `compatibility.sign-ui: EditableBook` and saving a blank book
 
 ### Under the Hood

@@ -46,6 +46,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.IntStream;
 
 import static net.deltik.mc.signedit.CraftBukkitReflector.*;
@@ -203,6 +204,11 @@ public class UiSignEditInteraction implements SignEditInteraction {
      */
     private static boolean openSignEditorBukkit1_20(Player player, Sign sign, SideShim side)
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        try {
+            setPlayerWhoMayEditSign(player, sign);
+        } catch (Exception ignored) {
+        }
+
         Optional<Method> optionalMethod = Arrays.stream(Player.class.getDeclaredMethods())
                 .filter(method -> method.getName().equals("openSign") && method.getParameterCount() == 2)
                 .filter(method -> {
@@ -218,6 +224,24 @@ public class UiSignEditInteraction implements SignEditInteraction {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Work around the Spigot 1.20 limitation of not setting the player who may edit the sign
+     * <p>
+     * Bug report: <a href="https://hub.spigotmc.org/jira/browse/SPIGOT-7391">SPIGOT-7391</a>
+     * <p>
+     * FIXME: Find a more reliable way than looking for the first public UUID to assign the TileEntitySign to the Player
+     *
+     * @param player The player that wants to open the sign editor
+     * @param sign   The sign that should load into the player's sign editor
+     */
+    private static void setPlayerWhoMayEditSign(Player player, Sign sign) throws Exception {
+        Object tileEntitySign = toRawTileEntity(sign);
+
+        Field playerWhoMayEdit = getFirstFieldOfType(tileEntitySign, UUID.class, Modifier.PUBLIC);
+        playerWhoMayEdit.setAccessible(true);
+        playerWhoMayEdit.set(tileEntitySign, player.getUniqueId());
     }
 
     /**
@@ -244,11 +268,11 @@ public class UiSignEditInteraction implements SignEditInteraction {
         openSignMethod.invoke(entityPlayer, tileEntitySign);
     }
 
-    private Object toRawEntity(Entity entity) throws Exception {
+    private static Object toRawEntity(Entity entity) throws Exception {
         return getDeclaredMethodRecursive(entity.getClass(), "getHandle").invoke(entity);
     }
 
-    private Object toRawTileEntity(BlockState blockState) throws Exception {
+    private static Object toRawTileEntity(BlockState blockState) throws Exception {
         return getDeclaredMethodRecursive(blockState.getClass(), "getTileEntity").invoke(blockState);
     }
 
