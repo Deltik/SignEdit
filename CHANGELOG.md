@@ -7,20 +7,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v1.14.0 (UNRELEASED)
+## v1.14.0 (2023-07-17)
 
 ### Added
 
 * Support for Minecraft 1.20 sign sides (front and back)
 * Support for Minecraft 1.20 honeycomb wax on signs
-* On Minecraft 1.20+, opening an editable sign (sign without honeycomb wax) by right-click will open a sign editor handled by this plugin.
+* On Minecraft 1.20+, opening an editable sign (without honeycomb wax) by right-click will open a sign editor handled by this plugin.
 * (Minecraft 1.20+ only) `/sign wax` and `/sign unwax` commands and permissions to apply and remove honeycomb wax from signs, respectively
 * New locale strings:
+  * `unwax_sign` – `/sign unwax` pending action description
+  * `wax_sign` – `/sign wax` pending action description
   * `wax_removed` – Completed `/sign unwax` action
   * `wax_applied` – Completed `/sign wax` action
   * `bypass_wax_cannot_rewax` – Warning after a `/sign` text change that wax was not reapplied because the player lacks permission to `/sign wax`
-  * `unwax_sign` – `/sign unwax` pending action description
-  * `wax_sign` – `/sign wax` pending action description
   * `forbidden_waxed_sign_edit` – Error that a `/sign` text change was blocked because the target sign is waxed and the player lacks permission to `/sign unwax`
 
 ### Changed
@@ -32,13 +32,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Failure and error when editing [hanging signs and wall hanging signs](https://web.archive.org/web/20230615204117/https://minecraft.fandom.com/wiki/Sign#Hanging_signs) from Minecraft 1.20 when using `compatibility.edit-validation: Extra` (#34)
 
   ![`/se paste` with SignEdit for Bukkit v1.13.9](https://i.imgur.com/1qNBnID.png)
-* Workaround for a Spigot 1.20 bug where having a player open a sign does not make the sign editable ([SPIGOT-7391](https://hub.spigotmc.org/jira/browse/SPIGOT-7391))
-* `java.lang.IllegalArgumentException: Invalid page number (1)` when using `compatibility.sign-ui: EditableBook` and saving a blank book
+* Workaround for a Spigot 1.20 bug where using the stable API to have a player open a sign does not make the sign editable ([SPIGOT-7391](https://hub.spigotmc.org/jira/browse/SPIGOT-7391))
+* Error `java.lang.IllegalArgumentException: Invalid page number (1)` when using `compatibility.sign-ui: EditableBook` and saving a blank book
 
 ### Under the Hood
 
 * Tacked on some adapters to make the plugin compatible with Bukkit 1.20 [`org.bukkit.block.sign.SignSide`](https://web.archive.org/web/20230622054725/https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/block/sign/SignSide.html)
-* Decreased the right-click event handling priority to the lowest level to avoid interfering with other plugins that handle right-click events on signs
+* Increased the right-click event handling priority to the highest level to avoid interfering with other plugins that take over right-click events on signs (#36)
 * Permission processing moved from `SignCommand.permitted(Player, String)` to `InteractionCommand.isPermitted()`
 * `SignText.signChanged()` renamed to `SignText.signTextChanged()` as part of clarification that only text changes count in `/sign undo` and `/sign redo`
 * Started pulling [`org.bukkit.entity.Player`](https://web.archive.org/web/20230622081000/https://hub.spigotmc.org/javadocs/spigot/org/bukkit/entity/Player.html) out of constructor injections, as various classes are being used in wider scopes.
