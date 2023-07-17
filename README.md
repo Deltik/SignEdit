@@ -8,7 +8,7 @@
 
 **SignEdit for Bukkit** is a [Bukkit plugin](https://www.spigotmc.org/resources/categories/bukkit.4/) that allows players to edit sign objects by looking at them or clicking on them and typing in a SignEdit command.
 
-![Screenshot of usage help in SignEdit for Bukkit v1.13.0](https://i.imgur.com/CoSsFoe.png)
+![Screenshot of usage help in SignEdit for Bukkit v1.14.0](https://i.imgur.com/VBCjDIr.png)
 
 ## Table of Contents
 
@@ -83,6 +83,8 @@
 | `/sign paste`                  | Paste the lines buffered by the previous `/sign copy` or `/sign cut` command onto the targeted sign.                                                                       | `>= 1.10`              |
 | `/sign undo`                   | Revert the previous sign text change.  Does not affect non-text changes like waxing and dyeing.                                                                            | `>= 1.14`              |
 | `/sign redo`                   | Restore the most recent sign text change that was undone by `/sign undo`.                                                                                                  | `>= 1.14`              |
+| `/sign unwax`                  | Remove wax from the targeted sign, allowing the sign to be edited by the Minecraft 1.20+ right-click action.                                                               | `>= 1.14`              |
+| `/sign wax`                    | Apply wax to the targeted sign, preventing the sign from being edited by right-clicking the sign in Minecraft 1.20+.                                                       | `>= 1.14`              |
 | `/sign version`                | Show the installed version of this plugin.                                                                                                                                 | `>= 1.9.3`             |
 
 #### Commands from Older Versions
@@ -519,7 +521,7 @@ by using stable API methods where possible and failing gracefully when a feature
 | `>= 1.12.7, < 1.13.4`         | 1.13                      | 1.17.1                     | Plugin updated to tolerate [a CraftBukkit unstable API (`net.minecraft` code) obfuscation requirement for Minecraft 1.17](https://web.archive.org/web/20210613005238/https://www.spigotmc.org/threads/spigot-bungeecord-1-17.510208/#post-4184317) |
 | `= 1.13.5`                    | 1.13                      | 1.19.4                     | Plugin updated again to tolerate even more obfuscation of the CraftBukkit unstable API; no more dependency on CraftBukkit if running on Bukkit 1.18 or newer                                                                                       |
 | `>= 1.13.6, < 1.14`           | 1.8.3                     | 1.19.4                     | Better error handling lets the plugin run with a limited feature set on old versions of Bukkit                                                                                                                                                     |
-| `>= 1.14`                     | 1.8.3                     | _No known incompatibility_ | Support for Minecraft 1.20 sign sides (front and back) and hanging signs                                                                                                                                                                           |
+| `>= 1.14`                     | 1.8.3                     | _No known incompatibility_ | Support for Minecraft 1.20 sign sides (front and back), hanging signs, and waxed signs                                                                                                                                                             |
 
 ### Backwards Compatibility with Omel's SignEdit v1.3
 

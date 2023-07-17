@@ -54,10 +54,12 @@ commands:
         Restore the most recent sign text change that was undone by /sign undo.
 
       /<command> unwax
-        Remove the honeycomb wax from the sign, allowing it to be edited again.
+        Remove wax from the targeted sign,
+        allowing the sign to be edited by the Minecraft 1.20+ right-click action.
 
       /<command> wax
-        Apply honeycomb wax to the sign, preventing it from being edited again.
+        Apply wax to the targeted sign,
+        preventing the sign from being edited by right-clicking the sign in Minecraft 1.20+.
 
       /<command> version
         Show the version of this plugin.
@@ -107,6 +109,6 @@ permissions:
   signedit.sign.unwax:
     description: Allow /sign unwax; access to this command implicitly removes wax when editing with another command
   signedit.sign.wax:
-    description: Allow /sign wax; access to this command implicitly reapplies wax if the sign was previously waxed
+    description: Allow /sign wax; access to this command implicitly reapplies wax if the sign was de-waxed for editing
   signedit.sign.version:
     description: Allow /sign version
