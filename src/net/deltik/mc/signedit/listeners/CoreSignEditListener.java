@@ -43,6 +43,7 @@ import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import javax.inject.Inject;
@@ -93,6 +94,11 @@ public class CoreSignEditListener extends SignEditListener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onRightClickSign(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        try {
+            if (event.getHand() == EquipmentSlot.OFF_HAND) return;
+        } catch (NoSuchMethodError ignored) {
+            // No-op in Bukkit 1.8.8 and older
+        }
         Block maybeBlock = event.getClickedBlock();
         if (maybeBlock == null) return;
 
@@ -110,7 +116,7 @@ public class CoreSignEditListener extends SignEditListener {
                 SideShim side = SideShim.fromRelativePosition(sign, player);
                 interaction.interact(player, signAdapter, side);
             } else if (SignHelpers.isEditable(sign)) {
-                overrideNativeBehavior(event, player, signAdapter);
+                overrideNativeBehavior(event, signAdapter);
             }
         } catch (Throwable e) {
             ChatComms comms = commsBuilderProvider.get().commandSender(player).build().comms();
@@ -122,10 +128,14 @@ public class CoreSignEditListener extends SignEditListener {
      * Override the Bukkit 1.20 native behavior of what a {@link Player} can do with a {@link Sign}
      *
      * @param event       The {@link PlayerInteractEvent} that triggered the interaction with the sign
-     * @param player      The {@link Player} who performed the interaction
      * @param signAdapter The {@link SignShim} implementation representing the sign being interacted with
      */
-    private void overrideNativeBehavior(PlayerInteractEvent event, Player player, SignShim signAdapter) {
+    private void overrideNativeBehavior(PlayerInteractEvent event, SignShim signAdapter) {
+        Player player = event.getPlayer();
+        if (player.isSneaking() && event.hasItem()) {
+            return;
+        }
+
         SignText signText = new SignText(signEditValidator);
         SignEditInteraction maybeSignEditInteraction = null;
 
