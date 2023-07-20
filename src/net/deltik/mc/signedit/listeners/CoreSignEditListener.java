@@ -30,6 +30,7 @@ import net.deltik.mc.signedit.interactions.WaxSignEditInteraction;
 import net.deltik.mc.signedit.shims.SideShim;
 import net.deltik.mc.signedit.shims.SignHelpers;
 import net.deltik.mc.signedit.shims.SignShim;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -45,6 +46,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -125,7 +128,7 @@ public class CoreSignEditListener extends SignEditListener {
     }
 
     /**
-     * Override the Bukkit 1.20 native behavior of what a {@link Player} can do with a {@link Sign}
+     * Override the Bukkit native behavior of what a {@link Player} can do with a {@link Sign}
      *
      * @param event       The {@link PlayerInteractEvent} that triggered the interaction with the sign
      * @param signAdapter The {@link SignShim} implementation representing the sign being interacted with
@@ -139,19 +142,9 @@ public class CoreSignEditListener extends SignEditListener {
         SignText signText = new SignText(signEditValidator);
         SignEditInteraction maybeSignEditInteraction = null;
 
-        ItemStack eventItem = event.getItem();
-
-        if (eventItem != null &&
-                eventItem.getType().equals(Material.getMaterial("HONEYCOMB")) &&
-                !event.useItemInHand().equals(Event.Result.DENY)
-        ) {
-            if (!player.hasPermission("signedit." + SignCommand.COMMAND_NAME + ".wax")) return;
-
-            signText.setShouldBeEditable(false);
-            maybeSignEditInteraction = new WaxSignEditInteraction(
-                    signText,
-                    commsBuilderProvider.get()
-            );
+        Material eventItemMaterial = event.getMaterial();
+        if (eventItemMaterial != null) {
+            maybeSignEditInteraction = overrideNativeUseItem(event, signAdapter, signText, eventItemMaterial);
         } else if (!event.useInteractedBlock().equals(Event.Result.DENY)) {
             if (!player.hasPermission("signedit." + SignCommand.COMMAND_NAME + ".ui")) return;
 
@@ -169,6 +162,61 @@ public class CoreSignEditListener extends SignEditListener {
             SideShim side = SideShim.fromRelativePosition(signAdapter.getImplementation(), player);
             maybeSignEditInteraction.interact(player, signAdapter, side);
         }
+    }
+
+    /**
+     * Override the Bukkit native behavior of a {@link Player} using an {@link ItemStack} on a {@link Sign}
+     *
+     * @param event       The {@link PlayerInteractEvent} that triggered the interaction with the {@link Sign}
+     * @param signAdapter The {@link SignShim} adapting the {@link Sign} with which the {@link Player} is interacting
+     * @param signText    The {@link SignText} to stage changes to the {@link Sign}
+     * @param material    The {@link Material} of the {@link ItemStack} being used on the {@link Sign}
+     * @return A {@link SignEditInteraction} if the native behavior will be overridden, otherwise {@code null}
+     */
+    @Nullable
+    private SignEditInteraction overrideNativeUseItem(
+            @NotNull PlayerInteractEvent event,
+            @NotNull SignShim signAdapter,
+            @NotNull SignText signText,
+            @NotNull Material material
+    ) {
+        if (event.useItemInHand().equals(Event.Result.DENY)) return null;
+
+        Player player = event.getPlayer();
+
+        if (Material.getMaterial("HONEYCOMB").equals(material)) {
+            if (!player.hasPermission("signedit." + SignCommand.COMMAND_NAME + ".wax")) return null;
+
+            signText.setShouldBeEditable(false);
+            return new WaxSignEditInteraction(signText, commsBuilderProvider.get());
+        }
+
+        SideShim side = SideShim.fromRelativePosition(signAdapter.getImplementation(), player);
+
+        if (material.name().endsWith("_DYE")) {
+            DyeColor dyeColor = DyeColor.valueOf(material.name().replace("_DYE", ""));
+
+            if (!dyeColor.equals(signAdapter.getSide(side).getColor())) {
+                return null;
+            }
+        }
+
+        boolean signIsGlowing = signAdapter.getSide(side).isGlowingText();
+
+        if (Material.getMaterial("INK_SAC").equals(material) && signIsGlowing) {
+            return null;
+        }
+        if (Material.getMaterial("GLOW_INK_SAC").equals(material) && !signIsGlowing) {
+            return null;
+        }
+
+        return new UiSignEditInteraction(
+                interactionManager,
+                commsBuilderProvider.get(),
+                signText,
+                historyManager,
+                signCommand
+        );
     }
 
     @EventHandler

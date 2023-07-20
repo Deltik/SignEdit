@@ -19,7 +19,9 @@
 
 package net.deltik.mc.signedit.shims;
 
+import org.bukkit.DyeColor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -57,6 +59,43 @@ public class SignSideShim implements ISignSide {
         try {
             Method setLine = signSideLikeClass.getMethod("setLine", int.class, String.class);
             setLine.invoke(signSideLike, index, line);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new IllegalStateException("Unexpected structure of Sign-like object");
+        }
+    }
+
+    public boolean isGlowingText() {
+        try {
+            Method isGlowingText = signSideLikeClass.getMethod("isGlowingText");
+            return (boolean) isGlowingText.invoke(signSideLike);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new IllegalStateException("Unexpected structure of Sign-like object");
+        }
+    }
+
+    public void setGlowingText(boolean glowing) {
+        try {
+            Method setGlowingText = signSideLikeClass.getMethod("setGlowingText", boolean.class);
+            setGlowingText.invoke(signSideLike, glowing);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new IllegalStateException("Unexpected structure of Sign-like object");
+        }
+    }
+
+    @Nullable
+    public DyeColor getColor() {
+        try {
+            Method getColor = signSideLikeClass.getMethod("getColor");
+            return (DyeColor) getColor.invoke(signSideLike);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new IllegalStateException("Unexpected structure of Sign-like object");
+        }
+    }
+
+    public void setColor(@Nullable DyeColor color) {
+        try {
+            Method setColor = signSideLikeClass.getMethod("setColor", DyeColor.class);
+            setColor.invoke(signSideLike, color);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             throw new IllegalStateException("Unexpected structure of Sign-like object");
         }

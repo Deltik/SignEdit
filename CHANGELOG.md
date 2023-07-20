@@ -11,9 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+* Dyes could not be used on editable signs due to an overly aggressive override. (#41)
+* Ink sacs and glow ink sacs could not be used on editable signs due to an overly aggressive override. (#41)
 * Item usages on signs should be ignored when the player is sneaking.
   This is the native Minecraft behavior.
-  This issue was a regression from `= 1.14.0`.
 
 ## v1.14.0 (2023-07-17)
 

@@ -19,6 +19,9 @@
 
 package net.deltik.mc.signedit.shims;
 
+import org.bukkit.DyeColor;
+import org.jetbrains.annotations.Nullable;
+
 public interface ISignSide {
     /**
      * Gets the line of text at the specified index on this side of the sign.
@@ -49,4 +52,36 @@ public interface ISignSide {
      * @throws IndexOutOfBoundsException If the index is out of the range 0..3
      */
     void setLine(int index, String line) throws IndexOutOfBoundsException;
+
+    /**
+     * Gets whether this side of the sign has glowing text.
+     *
+     * @return if this side of the sign has glowing text
+     */
+    boolean isGlowingText();
+
+    /**
+     * Sets whether this side of the sign has glowing text.
+     *
+     * @param glowing if this side of the sign has glowing text
+     */
+    void setGlowingText(boolean glowing);
+
+    /**
+     * Gets the color of this object.
+     * This may be null to represent the default color of an object if the object has a special default color.
+     *
+     * @return The {@link DyeColor} of this object.
+     */
+    @Nullable
+    DyeColor getColor();
+
+    /**
+     * Sets the color of this object to the specified {@link DyeColor}.
+     * This may be null to represent the default color of an object if the object has a special default color.
+     *
+     * @param color The color of the object as a {@link DyeColor}
+     * @throws NullPointerException if argument is null and this implementation does not support null
+     */
+    void setColor(@Nullable DyeColor color);
 }
