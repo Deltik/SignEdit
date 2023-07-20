@@ -76,7 +76,7 @@ public class CoreSignEditListener extends SignEditListener {
     /**
      * Extract the {@link Sign} from the provided {@link BlockEvent}
      *
-     * @param blockEvent A {@link BlockEvent} that is has yet been confirmed to return a {@link Sign} with a
+     * @param blockEvent A {@link BlockEvent} that has not yet been confirmed to return a {@link Sign} with a
      *                   call to {@link BlockEvent#getBlock()}
      * @return The {@link Sign} from the provided {@link BlockEvent}
      * @throws BlockStateNotPlacedException if the {@link BlockEvent} does not provide a placed {@link Sign} block
