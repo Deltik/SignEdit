@@ -9,9 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.14.2 (UNRELEASED)
 
+### Fixed
+
+* `/sign ui` and the equivalent right-click override may incorrectly be hiding issues with the player opening the sign editor. (#42)
+
 ### Under the Hood
 
 * Remove ProGuard to improve the readability of stack traces
+* Narrow down potential `/sign ui` issues by reducing the `catch` scopes to just methods and fields that are missing when opening the native sign editor GUI
 
 ## v1.14.1 (2023-07-20)
 

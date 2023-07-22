@@ -151,7 +151,7 @@ public class UiSignEditInteraction implements SignEditInteraction {
 
         try {
             openSignEditor(player, signImpl, side);
-        } catch (Exception e) {
+        } catch (NoSuchFieldException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             formatSignForSave(player, signImpl, side);
             throw new SignEditorInvocationException(e);
         }
@@ -163,15 +163,19 @@ public class UiSignEditInteraction implements SignEditInteraction {
      * @param player The player that wants to open the sign editor
      * @param sign   The sign that should load into the player's sign editor
      * @param side   The side of the sign to open (ignored in Bukkit 1.19.4 and older)
-     * @throws Exception if anything goes wrong while trying to open the sign editor
+     * @throws NoSuchFieldException      if something goes wrong while trying to open the sign editor
+     * @throws InvocationTargetException if something goes wrong while trying to open the sign editor
+     * @throws NoSuchMethodException     if something goes wrong while trying to open the sign editor
+     * @throws IllegalAccessException    if something goes wrong while trying to open the sign editor
      */
-    private void openSignEditor(Player player, Sign sign, SideShim side) throws Exception {
+    private void openSignEditor(Player player, Sign sign, SideShim side)
+            throws NoSuchFieldException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         try {
             if (openSignEditorBukkit1_20(player, sign, side)) return;
 
             openSignEditorBukkit1_18(player, sign);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) {
-            openSignEditorWithReflection(player, sign);
+        } catch (NoSuchMethodException ignored) {
+            openSignEditorWithReflection(player, sign, side);
         }
     }
 
@@ -184,7 +188,6 @@ public class UiSignEditInteraction implements SignEditInteraction {
      * @throws IllegalAccessException    if the "openSign" method cannot be accessed due to Java reflection restrictions
      * @throws InvocationTargetException if an exception occurs while invoking the "openSign" method
      */
-    @SuppressWarnings("JavaReflectionMemberAccess")
     private static void openSignEditorBukkit1_18(Player player, Sign sign)
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         Method method = Player.class.getMethod("openSign", Sign.class);
@@ -198,7 +201,7 @@ public class UiSignEditInteraction implements SignEditInteraction {
      * @param sign   The sign that should load into the player's sign editor
      * @param side   The player's viewing side for the sign
      * @return true if the sign editor was successfully opened, false otherwise
-     * @throws NoSuchMethodException     if the "openSign" method cannot be found in the Player class
+     * @throws NoSuchMethodException     if the "openSign" method does not match the expected signature
      * @throws IllegalAccessException    if the "openSign" method cannot be accessed due to Java reflection restrictions
      * @throws InvocationTargetException if an exception occurs while invoking the "openSign" method
      */
@@ -206,10 +209,11 @@ public class UiSignEditInteraction implements SignEditInteraction {
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         try {
             setPlayerWhoMayEditSign(player, sign);
-        } catch (Exception ignored) {
+        } catch (NoSuchFieldException ignored) {
+            // Ignore PaperMC implementation detail
         }
 
-        Optional<Method> optionalMethod = Arrays.stream(Player.class.getDeclaredMethods())
+        Optional<Method> optionalMethod = Arrays.stream(player.getClass().getMethods())
                 .filter(method -> method.getName().equals("openSign") && method.getParameterCount() == 2)
                 .filter(method -> {
                     Class<?>[] parameterTypes = method.getParameterTypes();
@@ -236,7 +240,8 @@ public class UiSignEditInteraction implements SignEditInteraction {
      * @param player The player that wants to open the sign editor
      * @param sign   The sign that should load into the player's sign editor
      */
-    private static void setPlayerWhoMayEditSign(Player player, Sign sign) throws Exception {
+    private static void setPlayerWhoMayEditSign(Player player, Sign sign)
+            throws InvocationTargetException, NoSuchMethodException, IllegalAccessException, NoSuchFieldException {
         Object tileEntitySign = toRawTileEntity(sign);
 
         Field playerWhoMayEdit = getFirstFieldOfType(tileEntitySign, UUID.class, Modifier.PUBLIC);
@@ -245,41 +250,65 @@ public class UiSignEditInteraction implements SignEditInteraction {
     }
 
     /**
-     * Take a reflection-based guess to open the sign editor for common CraftBukkit implementations prior to Bukkit 1.18
+     * Take a reflection-based guess to open the sign editor for common CraftBukkit implementations that are missing a
+     * Bukkit stable API method to open the sign editor, i.e., no <code>Player#openSign(Sign, Side)</code> method.
      * <p>
      * Prior to Bukkit 1.18, there was no stable API to open the sign editor.
-     * Instead, there was a method called <code>EntityHuman#openSign</code> available since CraftBukkit 1.8, which took
-     * a <code>TileEntitySign</code> as its argument.
-     * This method tries to call that unstable API method.
+     * Instead, there was a method called <code>EntityHuman#openSign(TileEntitySign)</code> available since CraftBukkit
+     * 1.8.
+     * <p>
+     * CraftBukkit 1.20 replaced that method with <code>EntityHuman#openSign(TileEntitySign, boolean)</code> where the
+     * boolean parameter indicates the side of the sign to open: <code>true</code> for the front and <code>false</code>
+     * for the back.
+     * <p>
+     * This method tries to call one of those unstable API methods.
      *
      * @param player The player that wants to open the sign editor
      * @param sign   The sign that should load into the player's sign editor
-     * @throws Exception if anything goes wrong while trying to open the sign editor
+     * @param side   The side of the sign to open (unused in Bukkit 1.19.4 and older)
+     * @throws NoSuchFieldException      if something goes wrong while trying to open the sign editor
+     * @throws InvocationTargetException if something goes wrong while trying to open the sign editor
+     * @throws NoSuchMethodException     if something goes wrong while trying to open the sign editor
+     * @throws IllegalAccessException    if something goes wrong while trying to open the sign editor
      */
-    private void openSignEditorWithReflection(Player player, Sign sign) throws Exception {
+    private void openSignEditorWithReflection(Player player, Sign sign, SideShim side)
+            throws InvocationTargetException, NoSuchMethodException, IllegalAccessException, NoSuchFieldException {
         Object tileEntitySign = toRawTileEntity(sign);
         Object entityPlayer = toRawEntity(player);
 
-        makeTileEntitySignEditable(tileEntitySign);
+        try {
+            makeTileEntitySignEditable(tileEntitySign);
+        } catch (NoSuchFieldException e) {
+            setPlayerWhoMayEditSign(player, sign);
+        }
 
-        Method openSignMethod = findMethodByParameterTypes(
-                entityPlayer.getClass(), tileEntitySign.getClass()
-        );
-        openSignMethod.invoke(entityPlayer, tileEntitySign);
+        try {
+            Method openSignMethod = findMethodByParameterTypes(
+                    entityPlayer.getClass(), tileEntitySign.getClass()
+            );
+            openSignMethod.invoke(entityPlayer, tileEntitySign);
+        } catch (NoSuchMethodException e) {
+            Method openSignMethod = findMethodByParameterTypes(
+                    entityPlayer.getClass(), tileEntitySign.getClass(), boolean.class
+            );
+            openSignMethod.invoke(entityPlayer, tileEntitySign, SideShim.FRONT.equals(side));
+        }
     }
 
-    private static Object toRawEntity(Entity entity) throws Exception {
+    private static Object toRawEntity(Entity entity)
+            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         return getDeclaredMethodRecursive(entity.getClass(), "getHandle").invoke(entity);
     }
 
-    private static Object toRawTileEntity(BlockState blockState) throws Exception {
+    private static Object toRawTileEntity(BlockState blockState)
+            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         return getDeclaredMethodRecursive(blockState.getClass(), "getTileEntity").invoke(blockState);
     }
 
     /**
      * FIXME: Find a more reliable way than looking for the first public boolean to mark the TileEntitySign as editable
      */
-    private void makeTileEntitySignEditable(Object tileEntitySign) throws Exception {
+    private void makeTileEntitySignEditable(Object tileEntitySign) throws NoSuchFieldException, IllegalAccessException {
         Field signIsEditable = getFirstFieldOfType(tileEntitySign, boolean.class, Modifier.PUBLIC);
         signIsEditable.setAccessible(true);
         signIsEditable.set(tileEntitySign, true);
@@ -305,9 +334,10 @@ public class UiSignEditInteraction implements SignEditInteraction {
 
     private static void sendSignUpdate(Player player, Sign sign, ISignSide signSide) {
         try {
-            for (Method method : Player.class.getDeclaredMethods()) {
+            for (Method method : player.getClass().getMethods()) {
                 if (method.getName().equals("sendBlockUpdate") && method.getParameterCount() == 2) {
                     method.invoke(player, sign.getLocation(), sign);
+                    return;
                 }
             }
             throw new NoSuchMethodException();
