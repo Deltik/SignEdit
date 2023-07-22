@@ -21,9 +21,6 @@ buildscript {
     repositories {
         mavenCentral()
     }
-    dependencies {
-        classpath group: 'com.guardsquare', name: 'proguard-gradle', version: '7.2.0-beta2'
-    }
 }
 
 plugins {
@@ -109,7 +106,7 @@ processResources {
     def expandProperties = [
             pluginName   : name,
             pluginVersion: version,
-            mainClass: application.mainClass,
+            mainClass    : application.mainClass,
     ]
     inputs.properties(expandProperties)
     with copySpec {
@@ -117,34 +114,4 @@ processResources {
         expand(expandProperties)
         duplicatesStrategy(DuplicatesStrategy.INCLUDE)
     }
-}
-
-def proguardOutFile = rootProject.file("$buildDir/libs/release.jar")
-def jarFile = jar.outputs.files.singleFile
-
-//noinspection UnnecessaryQualifiedReference
-tasks.register('proguard', proguard.gradle.ProGuardTask) {
-    onlyIf { !project.version.endsWith('-SNAPSHOT') }
-
-    configuration 'configuration.pro'
-
-    injars jarFile
-    outjars proguardOutFile
-    libraryjars configurations.named('runtimeClasspath') {
-        getFiles()
-    }
-    // Java 8
-    libraryjars "${System.getProperty("java.home")}/lib/rt.jar"
-    // Java 9+ compatibility (requires JDK)
-    libraryjars "${System.getProperty("java.home")}/jmods/java.base.jmod"
-    libraryjars "${System.getProperty("java.home")}/jmods/java.desktop.jmod"
-    libraryjars "${System.getProperty("java.home")}/jmods/java.logging.jmod"
-    libraryjars "${System.getProperty("java.home")}/jmods/jdk.unsupported.jmod"
-}
-
-jar.finalizedBy proguard
-proguard.doLast {
-    if (project.version.endsWith('-SNAPSHOT')) return
-    if (!jarFile.delete()) throw new IllegalStateException()
-    if (!proguardOutFile.renameTo(jarFile)) throw new IllegalStateException()
 }
