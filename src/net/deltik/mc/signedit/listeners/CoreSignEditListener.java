@@ -210,6 +210,8 @@ public class CoreSignEditListener extends SignEditListener {
             return null;
         }
 
+        if (!player.hasPermission("signedit." + SignCommand.COMMAND_NAME + ".ui")) return null;
+
         return new UiSignEditInteraction(
                 interactionManager,
                 commsBuilderProvider.get(),
