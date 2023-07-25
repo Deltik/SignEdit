@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * `/sign ui` could be invoked by right-clicking a sign in Minecraft 1.20 when the player did not have the `signedit.sign.ui` permission.
+* `java.lang.IllegalArgumentException: Sign must be in same world as Player` in the right-click-on-sign event handler (#42)
 
 ## v1.14.2 (2023-07-22)
 

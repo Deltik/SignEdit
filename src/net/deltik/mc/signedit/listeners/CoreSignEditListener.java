@@ -111,6 +111,7 @@ public class CoreSignEditListener extends SignEditListener {
         Sign sign = (Sign) maybeSign;
         SignShim signAdapter = new SignShim(sign);
         Player player = event.getPlayer();
+        if (!sign.getWorld().equals(player.getWorld())) return;
 
         try {
             if (interactionManager.isInteractionPending(player)) {
