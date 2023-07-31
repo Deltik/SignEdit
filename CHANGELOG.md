@@ -7,6 +7,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.14.4 (UNRELEASED)
+
+### Under the Hood
+
+* `SignHelpers.setEditableOldApi()` called the wrong Bukkit method (should be `Sign.setEditable()` instead of `Sign.setWaxed()`), but this probably has no practical effect.  It only affects the correctness of how this plugin interacts with Bukkit 1.13.2 through Bukkit 1.19.4.
+
 ## v1.14.3 (2023-07-25)
 
 ### Fixed

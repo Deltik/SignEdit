@@ -66,7 +66,7 @@ public class SignHelpers {
 
     private static void setEditableOldApi(Sign sign, boolean editable) {
         try {
-            Method setWaxedMethod = sign.getClass().getMethod("setWaxed", boolean.class);
+            Method setWaxedMethod = sign.getClass().getMethod("setEditable", boolean.class);
             setWaxedMethod.invoke(sign, !editable);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) {
             // Ignore broken "editable" flag of signs in Bukkit 1.13.1 and below
