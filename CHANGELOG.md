@@ -9,9 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.14.4 (UNRELEASED)
 
+### Fixed
+
+* `java.lang.IllegalStateException: Unable to call method: getSide` on Bukkit 1.19.4 due to incomplete sign side support in that version of Bukkit
+
 ### Under the Hood
 
 * `SignHelpers.setEditableOldApi()` called the wrong Bukkit method (should be `Sign.setEditable()` instead of `Sign.setWaxed()`), but this probably has no practical effect.  It only affects the correctness of how this plugin interacts with Bukkit 1.13.2 through Bukkit 1.19.4.
+* The sign side calculation based on the player's relative position from the sign (`SideShim.fromRelativePosition`) will now say front on Bukkit 1.19.4 and older, as the back side had not yet been added in those versions of Bukkit.
 
 ## v1.14.3 (2023-07-25)
 

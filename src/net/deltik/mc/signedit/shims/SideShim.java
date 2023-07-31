@@ -36,13 +36,16 @@ public enum SideShim {
     BACK;
 
     public static SideShim fromRelativePosition(@NotNull Sign sign, @NotNull LivingEntity entity) {
+        if (!SignHelpers.hasSignSideFeature()) {
+            return FRONT; // Compatibility with Bukkit 1.19.4
+        }
+
         Vector vector = entity.getEyeLocation().toVector().subtract(sign.getLocation().add(0.5, 0.5, 0.5).toVector());
         BlockData blockData;
         try {
             blockData = sign.getBlockData();
         } catch (NoSuchMethodError e) {
-            // Compatibility with Bukkit 1.12.2 and older
-            return FRONT;
+            return FRONT; // Compatibility with Bukkit 1.12.2 and older
         }
 
         Vector signDirection = getSignDirection(blockData);

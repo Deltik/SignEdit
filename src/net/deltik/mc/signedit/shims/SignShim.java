@@ -23,8 +23,6 @@ import org.bukkit.block.Sign;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
 
 public class SignShim {
     @NotNull
@@ -36,25 +34,13 @@ public class SignShim {
 
     @NotNull
     public ISignSide getSide(@NotNull SideShim side) {
-        Method getSideMethod = Arrays.stream(Sign.class.getDeclaredMethods())
-                .filter(method -> method.getName().equals("getSide") && method.getParameterCount() == 1)
-                .findFirst()
-                .orElse(null);
-
-        if (getSideMethod == null) {
-            return new SignSideShim(implementation);
-        }
-
-        Class<?> parameterType = getSideMethod.getParameterTypes()[0];
-        if (!parameterType.isEnum()) {
-            throw new IllegalStateException("Unexpected structure of Sign");
-        }
-
         try {
-            Method enumValueOf = parameterType.getMethod("valueOf", String.class);
-            Enum<?> enumValue = (Enum<?>) enumValueOf.invoke(null, side.name());
-            return new SignSideShim(getSideMethod.invoke(implementation, enumValue));
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            Object rawGetSide = SignHelpers.rawGetSide(implementation, side.toString());
+            if (rawGetSide == null) {
+                return getFrontSignSide();
+            }
+            return new SignSideShim(rawGetSide);
+        } catch (InvocationTargetException e) {
             throw new IllegalStateException("Unable to call method: getSide", e);
         }
     }
@@ -62,5 +48,15 @@ public class SignShim {
     @NotNull
     public Sign getImplementation() {
         return implementation;
+    }
+
+    /**
+     * Proxy this {@link Sign} as the front side only for Bukkit 1.19.4 and below
+     *
+     * @return The front sign side as the {@link SignSideShim} adapter
+     */
+    @NotNull
+    private SignSideShim getFrontSignSide() {
+        return new SignSideShim(implementation);
     }
 }

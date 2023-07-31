@@ -32,8 +32,66 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 public class SignHelpers {
+    public static boolean hasSignSideFeature() {
+        Class<Enum<?>> sideEnumClass = getSideEnumClass();
+        if (sideEnumClass == null) {
+            return false;
+        }
+
+        try {
+            Method enumValueOf = sideEnumClass.getMethod("valueOf", String.class);
+            String checkString = SideShim.BACK.toString();
+            return enumValueOf.invoke(null, checkString).toString().equals(checkString);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            return false;
+        }
+    }
+
+    @Nullable
+    public static Object rawGetSide(@NotNull Sign sign, @NotNull String side) throws InvocationTargetException {
+        Method getSideMethod = getGetSideMethod();
+        Class<Enum<?>> sideEnumClass = getSideEnumClass();
+        if (getSideMethod == null || sideEnumClass == null) {
+            return null;
+        }
+
+        try {
+            Method enumValueOf = sideEnumClass.getMethod("valueOf", String.class);
+            Object rawSide = enumValueOf.invoke(null, side);
+            return getSideMethod.invoke(sign, rawSide);
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            return null;
+        }
+    }
+
+    @Nullable
+    private static Method getGetSideMethod() {
+        return Arrays.stream(Sign.class.getMethods())
+                .filter(method -> method.getName().equals("getSide") && method.getParameterCount() == 1)
+                .findFirst()
+                .orElse(null);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Nullable
+    private static Class<Enum<?>> getSideEnumClass() {
+        Method getSideMethod = getGetSideMethod();
+        if (getSideMethod == null) {
+            return null;
+        }
+        if (getSideMethod.getParameterCount() != 1) {
+            return null;
+        }
+        Class<?> parameterType = getSideMethod.getParameterTypes()[0];
+        if (!parameterType.isEnum()) {
+            return null;
+        }
+        return (Class<Enum<?>>) parameterType;
+    }
+
     @SuppressWarnings("JavaReflectionMemberAccess")
     public static boolean hasWaxableFeature() {
         try {
