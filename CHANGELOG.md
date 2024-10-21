@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
   Only affects `compatibility.edit-validation: Extra`.
 
+### Under the Hood
+
+* Switched CI provider from CircleCI to GitHub Actions
+
 ## v1.14.4 (2023-07-31)
 
 ### Fixed
