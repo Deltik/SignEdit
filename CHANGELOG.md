@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Under the Hood
 
+* Updated copyright year 2024
 * Switched CI provider from CircleCI to GitHub Actions
 * Fully automated release in CI
 
