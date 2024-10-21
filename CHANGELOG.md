@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Updated copyright year 2024
 * Switched CI provider from CircleCI to GitHub Actions
 * Fully automated release in CI
+* Updated Gradle to version 8.10.2
 
 ## v1.14.4 (2023-07-31)
 
