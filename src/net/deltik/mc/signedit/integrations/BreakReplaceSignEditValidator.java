@@ -62,6 +62,7 @@ public class BreakReplaceSignEditValidator extends StandardSignEditValidator {
         Player player = signChangeEvent.getPlayer();
         validateBlockBreak(sign, player);
         validateBlockPlace(sign, player);
+        super.validate(signChangeEvent);
     }
 
     private void validateBlockBreak(Sign sign, Player player) {
