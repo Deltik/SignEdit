@@ -57,10 +57,52 @@ jobs:
           name: JAR Artifact(s)
           path: build/libs/*.jar
 
+      - name: Extract release notes from CHANGELOG.md
+        if: startsWith(github.ref, 'refs/tags/')
+        id: extract_release_notes
+        uses: actions/github-script@v7
+        with:
+          result-encoding: string
+          script: |
+            const fs = require('fs');
+            const tag = context.ref.replace('refs/tags/', '');
+            const tagPattern = '^##\\s*' + tag.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*';
+
+            const versionPattern = new RegExp(tagPattern);
+
+            const changelog = fs.readFileSync('CHANGELOG.md', 'utf8');
+
+            const lines = changelog.split('\n');
+
+            let inSection = false;
+            let releaseTitle = '';
+            let releaseBodyLines = [];
+            for (let i = 0; i < lines.length; i++) {
+              const line = lines[i];
+              if (versionPattern.test(line)) {
+                releaseTitle = line.replace(/^##\s+/, '').trim();
+                inSection = true;
+                continue;
+              }
+              if (inSection) {
+                if (/^##\s+/.test(line)) {
+                  break;
+                } else {
+                  releaseBodyLines.push(line);
+                }
+              }
+            }
+            const releaseBody = releaseBodyLines.join('\n').trim();
+
+            core.setOutput('release_title', releaseTitle);
+            core.setOutput('release_body', releaseBody);
+
       - name: Upload release asset
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
           files: build/libs/*.jar
+          body: ${{ steps.extract_release_notes.outputs.release_body }}
+          name: ${{ steps.extract_release_notes.outputs.release_title }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
