@@ -75,12 +75,19 @@
 | `/sign help [<page>]`          | Show the usage syntax of the `/sign` subcommands.  Specify a `<page>` number to view a specific page.                                                                      | `>= 1.13`              |
 | `/sign ui`                     | Open the native Minecraft sign editor on the targeted sign.                                                                                                                | `>= 1.8`               |
 | `/sign [set] <lines> [<text>]` | Change each of the [lines](#selecting-multiple-lines) `<lines>` of the targeted sign to `<text>`.  If `<text>` is blank, erase the lines `<lines>`.  `set` can be omitted. | `>= 1.10`              |
+| `/sign all <text>`             | Edit all lines of a sign at once using pipe characters (`|`) as line separators, e.g., `/sign all First line|Second line|Third line|Fourth line`.                           | `>= 1.15`              |
+| `/sign shift [<offset>]`       | Shift the lines of the targeted sign up or down by the specified `<offset>`. Positive values shift down, negative values shift up.                                          | `>= 1.15`              |
+| `/sign rotate [<direction>]`   | Rotate a floor sign to face the specified `<direction>` (north, south, east, west, etc.) or by a specific angle.                                                           | `>= 1.15`              |
+| `/sign rotate lock`            | Enter rotation lock mode to repeatedly rotate multiple signs with a single command.                                                                                         | `>= 1.15`              |
+| `/sign replace`                | Replace the targeted sign with a different sign material from your main hand while preserving the text.                                                                     | `>= 1.15`              |
+| `/sign replace lock`           | Enter replacement lock mode to repeatedly replace multiple signs with a single command.                                                                                     | `>= 1.15`              |
 | `/sign clear [<lines>]`        | Erase the text on the targeted sign.  If `<lines>` is specified, only those lines are blanked out.                                                                         | `>= 1.13`              |
 | `/sign cancel`                 | Abort your pending sign edit action.                                                                                                                                       | `>= 1.9`               |
 | `/sign status`                 | Show the pending action, what is in the copy buffer, and an overview of the undo/redo history stack.                                                                       | `>= 1.10`              |
 | `/sign copy [<lines>]`         | Copy the targeted sign's text.  If `<lines>` is specified, only those lines are copied.                                                                                    | `>= 1.10`              |
 | `/sign cut [<lines>]`          | Copy the targeted sign's text and remove it from the sign.  If `<lines>` is specified, only those lines are cut.                                                           | `>= 1.10`              |
 | `/sign paste`                  | Paste the lines buffered by the previous `/sign copy` or `/sign cut` command onto the targeted sign.                                                                       | `>= 1.10`              |
+| `/sign paste lock`             | Enter paste lock mode to repeatedly paste the same content onto multiple signs with a single command.                                                                       | `>= 1.15`              |
 | `/sign undo`                   | Revert the previous sign text change.  Does not affect non-text changes like waxing and dyeing.                                                                            | `>= 1.14`              |
 | `/sign redo`                   | Restore the most recent sign text change that was undone by `/sign undo`.                                                                                                  | `>= 1.14`              |
 | `/sign unwax`                  | Remove wax from the targeted sign, allowing the sign to be edited by the Minecraft 1.20+ right-click action.                                                               | `>= 1.14`              |
@@ -264,6 +271,10 @@ Examples:
     signedit.sign.unwax
     signedit.sign.wax
     signedit.sign.version
+    signedit.sign.all
+    signedit.sign.shift
+    signedit.sign.rotate
+    signedit.sign.replace
 
 ### Wax/Unwax Permissions
 
@@ -356,11 +367,26 @@ Decide what events to send to other plugins for sign edit permission validation 
 
 **None** (not recommended): Bypass all permission validations by not sending any events.  All players with access to `/sign` modification commands will be able to edit all signs on the server.  This option matches the behavior of this plugin version `< 1.8`.
 
+### `multiline-whitespace-stripping: [true|false]`
+
+(`>= 1.15`)
+
+When using the `/sign all` command with pipe character (`|`) line separators, controls whether trailing whitespace is automatically removed from each line.
+
+**true** (default): Remove trailing whitespace from each line.
+
+**false**: Keep trailing whitespace in each line.
+
 ## Features
 
 * (`>= 1.8`) Edit the targeted sign with [`/sign ui`](#sign-ui) in the native Minecraft sign editor ([except for Minecraft 1.16.1](#minecraft-1161-sign-editor-gui)).
   * No dependencies!
 * (`>= 1.10`) Change all the lines `<lines>` of the targeted sign to be `<text>` with [`/sign set <lines> [<text>]`](#sign-set-14-) or [`/sign <lines> [<text>]`](#sign-2-deltiks).
+* (`>= 1.15`) Edit all lines of a sign at once with `/sign all <text>` using pipe characters (`|`) as line separators.
+* (`>= 1.15`) Shift lines up or down with `/sign shift [<offset>]`.
+* (`>= 1.15`) Rotate floor signs to face specific directions with `/sign rotate [<direction>]`.
+* (`>= 1.15`) Replace sign materials while preserving text with `/sign replace`.
+* (`>= 1.15`) Use "lock" mode for paste, rotate, and replace operations to apply the same action to multiple signs.
 * (`>= 1.10`) [See the sign text before and after in chat.](#se-set-3-4construction)
 * Targeting a sign works as follows:
   * In `clicking: false` mode or in version `= 1.0`, the sign you are looking at is edited.
@@ -433,9 +459,25 @@ These features no longer apply to the latest version of this plugin:
 
 ![Screenshot of `/sign copy`](https://i.imgur.com/F5LCdsP.png)
 
-#### `/sign <tab>`
+#### `/sign all First line|Second line|Third line|Fourth line`
 
-![Screenshot of tab completion under `/sign`](https://i.imgur.com/l0QWG0R.png)
+![Example of editing all sign lines at once with pipe separators](https://i.imgur.com/example1.png)
+
+#### `/sign shift +1`
+
+![Example of shifting sign lines down by 1](https://i.imgur.com/example2.png)
+
+#### `/sign rotate north_east`
+
+![Example of rotating a sign to face north-east](https://i.imgur.com/example3.png)
+
+#### `/sign replace`
+
+![Example of replacing a sign with a different material](https://i.imgur.com/example4.png)
+
+#### `/sign paste lock`
+
+![Example of paste lock mode for multiple signs](https://i.imgur.com/example5.png)
 
 ## Advanced Customization
 

@@ -63,4 +63,14 @@ public abstract class SignEditInteractionModule {
     @IntoMap
     @StringKey("Wax")
     abstract SignEditInteraction bindWax(WaxSignEditInteraction interaction);
+    
+    @Binds
+    @IntoMap
+    @StringKey("Rotate")
+    abstract SignEditInteraction bindRotate(RotateSignEditInteraction interaction);
+    
+    @Binds
+    @IntoMap
+    @StringKey("Replace")
+    abstract SignEditInteraction bindReplace(ReplaceSignEditInteraction interaction);
 }

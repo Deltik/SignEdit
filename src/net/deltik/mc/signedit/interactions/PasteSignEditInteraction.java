@@ -23,6 +23,7 @@ import net.deltik.mc.signedit.*;
 import net.deltik.mc.signedit.shims.SideShim;
 import net.deltik.mc.signedit.shims.SignShim;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -32,6 +33,7 @@ public class PasteSignEditInteraction implements SignEditInteraction {
     private final Provider<SignText> signTextProvider;
     private final SignTextHistoryManager historyManager;
     private final ChatCommsModule.ChatCommsComponent.Builder commsBuilder;
+    private boolean locked = false;
 
     @Inject
     public PasteSignEditInteraction(
@@ -64,6 +66,19 @@ public class PasteSignEditInteraction implements SignEditInteraction {
         }
 
         comms.compareSignText(signText);
+    }
+
+    @Override
+    public void setLocked(boolean locked) {
+        this.locked = locked;
+    }
+
+    @Override
+    public String getActionHint(ChatComms comms) {
+        if (locked) {
+            return comms.t("paste_lock_mode_hint");
+        }
+        return comms.t("right_click_sign_to_apply_action_hint");
     }
 
     @Override

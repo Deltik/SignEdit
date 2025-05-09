@@ -50,4 +50,7 @@ public interface SignEditInteraction {
             }
         });
     }
+    
+    default void setLocked(boolean locked) {
+    }
 }

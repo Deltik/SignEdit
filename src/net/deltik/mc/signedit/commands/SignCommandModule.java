@@ -60,7 +60,11 @@ public abstract class SignCommandModule {
                 "redo",
                 "unwax",
                 "wax",
-                "version"
+                "version",
+                "all",
+                "shift",
+                "rotate",
+                "replace"
         ).collect(Collectors.toSet());
     }
 
@@ -133,4 +137,24 @@ public abstract class SignCommandModule {
     @IntoMap
     @StringKey("version")
     abstract InteractionCommand BindVersionSignSubcommand(VersionSignSubcommand command);
+
+    @Binds
+    @IntoMap
+    @StringKey("all")
+    abstract InteractionCommand BindAllSignSubcommand(AllSignSubcommand command);
+    
+    @Binds
+    @IntoMap
+    @StringKey("shift")
+    abstract InteractionCommand BindShiftSignSubcommand(ShiftSignSubcommand command);
+    
+    @Binds
+    @IntoMap
+    @StringKey("rotate")
+    abstract InteractionCommand BindRotateSignSubcommand(RotateSignSubcommand command);
+    
+    @Binds
+    @IntoMap
+    @StringKey("replace")
+    abstract InteractionCommand BindReplaceSignSubcommand(ReplaceSignSubcommand command);
 }

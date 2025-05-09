@@ -21,43 +21,52 @@ package net.deltik.mc.signedit.subcommands;
 
 import net.deltik.mc.signedit.ArgParser;
 import net.deltik.mc.signedit.Configuration;
-import net.deltik.mc.signedit.SignTextClipboardManager;
-import net.deltik.mc.signedit.exceptions.NullClipboardException;
+import net.deltik.mc.signedit.exceptions.EmptyMainHandException;
+import net.deltik.mc.signedit.exceptions.NoSignInMainHandException;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.List;
 import java.util.Map;
 
-public class PasteSignSubcommand extends SignSubcommand {
+public class ReplaceSignSubcommand extends SignSubcommand {
     private final Map<String, Provider<SignEditInteraction>> interactions;
     private final Player player;
-    private final SignTextClipboardManager clipboardManager;
     private final ArgParser argParser;
     private final Configuration config;
 
     @Inject
-    public PasteSignSubcommand(
+    public ReplaceSignSubcommand(
             Map<String, Provider<SignEditInteraction>> interactions,
             Player player,
-            SignTextClipboardManager clipboardManager,
             ArgParser argParser,
             Configuration config
     ) {
         super(player);
         this.interactions = interactions;
         this.player = player;
-        this.clipboardManager = clipboardManager;
         this.argParser = argParser;
         this.config = config;
     }
 
     @Override
     public SignEditInteraction execute() {
-        if (clipboardManager.getClipboard(player) == null) {
-            throw new NullClipboardException();
+        ItemStack mainHandItem = player.getInventory().getItemInMainHand();
+        
+        // Check if the player has an item in hand
+        if (mainHandItem == null || mainHandItem.getType() == Material.AIR) {
+            throw new EmptyMainHandException();
+        }
+        
+        // Check if the player has a sign in their main hand
+        Material material = mainHandItem.getType();
+        if (!material.toString().endsWith("_SIGN")) {
+            throw new NoSignInMainHandException();
         }
         
         List<String> remainder = argParser.getRemainder();
@@ -65,15 +74,17 @@ public class PasteSignSubcommand extends SignSubcommand {
         
         if (remainder.size() > 0 && "lock".equalsIgnoreCase(remainder.get(0))) {
             lockMode = true;
+            // Force clicking mode for lock
+            config.setClicking("true");
         }
 
-        SignEditInteraction pasteInteraction = interactions.get("Paste").get();
+        SignEditInteraction replaceInteraction = interactions.get("Replace").get();
         
         if (lockMode) {
             // Set locked state
-            pasteInteraction.setLocked(true);
+            replaceInteraction.setLocked(true);
         }
         
-        return pasteInteraction;
+        return replaceInteraction;
     }
 }

@@ -58,6 +58,26 @@ public class SignCommandTabCompleter implements TabCompleter {
             "cut"
     ).collect(Collectors.toSet());
 
+    protected static final Set<String> allSubcommandWithTabCompletion = Stream.of(
+            "all"
+    ).collect(Collectors.toSet());
+    
+    protected static final Set<String> shiftSubcommandWithTabCompletion = Stream.of(
+            "shift"
+    ).collect(Collectors.toSet());
+    
+    protected static final Set<String> pasteSubcommandWithTabCompletion = Stream.of(
+            "paste"
+    ).collect(Collectors.toSet());
+    
+    protected static final Set<String> rotateSubcommandWithTabCompletion = Stream.of(
+            "rotate"
+    ).collect(Collectors.toSet());
+    
+    protected static final Set<String> replaceSubcommandWithTabCompletion = Stream.of(
+            "replace"
+    ).collect(Collectors.toSet());
+
     @Inject
     public SignCommandTabCompleter(
             Configuration config,
@@ -84,6 +104,16 @@ public class SignCommandTabCompleter implements TabCompleter {
             completion.addAll(completeLines(player, args.clone()));
         } else if (args.length == 2 && subcommandsWithLineSelector.contains(rawSubcommand)) {
             completion.addAll(completeLines(player, args.clone()));
+        } else if (args.length == 2 && allSubcommandWithTabCompletion.contains(rawSubcommand)) {
+            completion.addAll(completeAllSubcommand(player));
+        } else if (args.length == 2 && shiftSubcommandWithTabCompletion.contains(rawSubcommand)) {
+            completion.addAll(completeShiftSubcommand());
+        } else if (args.length == 2 && pasteSubcommandWithTabCompletion.contains(rawSubcommand)) {
+            completion.addAll(completePasteSubcommand());
+        } else if (args.length == 2 && rotateSubcommandWithTabCompletion.contains(rawSubcommand)) {
+            completion.addAll(completeRotateSubcommand());
+        } else if (args.length == 2 && replaceSubcommandWithTabCompletion.contains(rawSubcommand)) {
+            completion.addAll(completeReplaceSubcommand());
         }
 
         ArgParser argParser = new ArgParser(config, args, subcommandNames);
@@ -261,5 +291,113 @@ public class SignCommandTabCompleter implements TabCompleter {
                     return signSubcommand.isPermitted();
                 }
         );
+    }
+
+    /**
+     * Offer suggestions for the all subcommand
+     */
+    private List<String> completeAllSubcommand(Player player) {
+        List<String> completion = new ArrayList<>();
+        
+        IBlockHitResult targetInfo = SignCommand.getLivingEntityTarget(player);
+        Block targetBlock = targetInfo.getHitBlock();
+        BlockState targetBlockState = null;
+        if (targetBlock != null) targetBlockState = targetBlock.getState();
+        
+        // If looking at a sign, suggest current content with pipes
+        if (targetBlockState instanceof Sign) {
+            Sign targetSign = (Sign) targetBlockState;
+            SignText signText = new SignText();
+            SideShim side = SideShim.fromRelativePosition(targetSign, player);
+            signText.setTargetSign(targetSign, side);
+            signText.importSign();
+            
+            StringBuilder pipeText = new StringBuilder();
+            for (int i = 0; i < 4; i++) {
+                if (i > 0) pipeText.append("|");
+                pipeText.append(signText.getLineParsed(i));
+            }
+            completion.add(pipeText.toString());
+        } else {
+            // If not looking at a sign, suggest empty pipe template
+            completion.add("|||");
+        }
+        
+        return completion;
+    }
+    
+    /**
+     * Offer suggestions for the shift subcommand
+     */
+    private List<String> completeShiftSubcommand() {
+        List<String> completion = new ArrayList<>();
+        
+        // Add shift offset suggestions
+        completion.add("+1");
+        completion.add("+2");
+        completion.add("+3");
+        completion.add("-1");
+        completion.add("-2");
+        completion.add("-3");
+        completion.add("1");
+        completion.add("2");
+        completion.add("3");
+        
+        return completion;
+    }
+    
+    /**
+     * Offer suggestions for the paste subcommand
+     */
+    private List<String> completePasteSubcommand() {
+        List<String> completion = new ArrayList<>();
+        completion.add("lock");
+        return completion;
+    }
+    
+    /**
+     * Offer suggestions for the rotate subcommand
+     */
+    private List<String> completeRotateSubcommand() {
+        List<String> completion = new ArrayList<>();
+        
+        // Add lock mode
+        completion.add("lock");
+        
+        // Add directions
+        completion.add("north");
+        completion.add("north_east");
+        completion.add("east");
+        completion.add("south_east");
+        completion.add("south");
+        completion.add("south_west");
+        completion.add("west");
+        completion.add("north_west");
+        
+        // Add absolute rotations
+        for (int i = 0; i < 16; i++) {
+            completion.add(String.valueOf(i));
+        }
+        
+        // Add relative rotations
+        completion.add("+1");
+        completion.add("+2");
+        completion.add("+4");
+        completion.add("+8");
+        completion.add("-1");
+        completion.add("-2");
+        completion.add("-4");
+        completion.add("-8");
+        
+        return completion;
+    }
+    
+    /**
+     * Offer suggestions for the replace subcommand
+     */
+    private List<String> completeReplaceSubcommand() {
+        List<String> completion = new ArrayList<>();
+        completion.add("lock");
+        return completion;
     }
 }
