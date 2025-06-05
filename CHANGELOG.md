@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.14.6 (UNRELEASED)
 
+### Fixed
+
+* `java.lang.NoSuchMethodException: java.lang.Object.getTileEntity()` when opening the native sign editor GUI on Paper 1.21.5 (#44)
+
 ### Under the Hood
 
 * Updated copyright year 2025

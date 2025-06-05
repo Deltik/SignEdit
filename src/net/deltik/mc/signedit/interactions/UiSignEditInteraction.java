@@ -209,7 +209,7 @@ public class UiSignEditInteraction implements SignEditInteraction {
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         try {
             setPlayerWhoMayEditSign(player, sign);
-        } catch (NoSuchFieldException ignored) {
+        } catch (ReflectiveOperationException ignored) {
             // Ignore PaperMC implementation detail
         }
 
