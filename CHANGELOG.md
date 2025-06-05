@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Under the Hood
 
 * Updated copyright year 2025
+* Although unnecessary, the reflection-based sign editor opener now takes into account CraftBukkit 1.21.5's retrieval of `net.minecraft.block.entity.SignBlockEntity`, the new name of `net.minecraft.tileentity.TileEntitySign`.
+  This plugin should be calling `org.bukkit.entity.Player#openSign(org.bukkit.block.Sign,org.bukkit.block.sign.Side)` on Bukkit 1.20+.
 
 ## v1.14.5 (2024-10-21)
 

@@ -302,7 +302,12 @@ public class UiSignEditInteraction implements SignEditInteraction {
 
     private static Object toRawTileEntity(BlockState blockState)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        return getDeclaredMethodRecursive(blockState.getClass(), "getTileEntity").invoke(blockState);
+        try {
+            return getDeclaredMethodRecursive(blockState.getClass(), "getTileEntity").invoke(blockState);
+        } catch (NoSuchMethodException e) {
+            // CraftBukkit 1.21.5+ compatibility: TileEntitySign renamed to SignBlockEntity
+            return getDeclaredMethodRecursive(blockState.getClass(), "getBlockEntity").invoke(blockState);
+        }
     }
 
     /**
