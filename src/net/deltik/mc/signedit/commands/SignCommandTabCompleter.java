@@ -19,13 +19,16 @@
 
 package net.deltik.mc.signedit.commands;
 
-import net.deltik.mc.signedit.*;
+import net.deltik.mc.signedit.ArgParser;
+import net.deltik.mc.signedit.Configuration;
+import net.deltik.mc.signedit.LineSelectorParser;
+import net.deltik.mc.signedit.SignText;
 import net.deltik.mc.signedit.interactions.InteractionCommand;
 import net.deltik.mc.signedit.shims.IBlockHitResult;
 import net.deltik.mc.signedit.shims.SideShim;
-import net.deltik.mc.signedit.subcommands.HelpSignSubcommand;
-import net.deltik.mc.signedit.subcommands.SignSubcommandComponent;
-import net.deltik.mc.signedit.subcommands.SubcommandName;
+import net.deltik.mc.signedit.subcommands.SignSubcommand;
+import net.deltik.mc.signedit.subcommands.SubcommandContext;
+import net.deltik.mc.signedit.subcommands.SubcommandRegistry;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
@@ -34,39 +37,20 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
-@Singleton
 public class SignCommandTabCompleter implements TabCompleter {
-    private final Set<String> subcommandNames;
+    private final SubcommandRegistry registry;
     private final Configuration config;
-    private final SignSubcommandComponent.Builder signSubcommandComponentBuilder;
-    protected static final Set<String> subcommandsWithLineSelector = Stream.of(
-            "set",
-            "clear",
-            "copy",
-            "cut"
-    ).collect(Collectors.toSet());
 
-    @Inject
-    public SignCommandTabCompleter(
-            Configuration config,
-            @SubcommandName Set<String> subcommandNames,
-            SignSubcommandComponent.Builder signSubcommandComponentBuilder
-    ) {
-        this.subcommandNames = subcommandNames;
+    public SignCommandTabCompleter(SubcommandRegistry registry, Configuration config) {
+        this.registry = registry;
         this.config = config;
-        this.signSubcommandComponentBuilder = signSubcommandComponentBuilder;
     }
 
     @Override
@@ -82,11 +66,11 @@ public class SignCommandTabCompleter implements TabCompleter {
         if (args.length == 1) {
             completion.addAll(completeSubcommand(player, rawSubcommand));
             completion.addAll(completeLines(player, args.clone()));
-        } else if (args.length == 2 && subcommandsWithLineSelector.contains(rawSubcommand)) {
+        } else if (args.length == 2 && supportsLineSelector(rawSubcommand)) {
             completion.addAll(completeLines(player, args.clone()));
         }
 
-        ArgParser argParser = new ArgParser(config, args, subcommandNames);
+        ArgParser argParser = new ArgParser(config, args, registry.getSubcommandNames());
         if (argParser.getRemainder().size() > 0) {
             String subcommandName = argParser.getSubcommand();
             if ("set".equals(subcommandName)) {
@@ -99,48 +83,20 @@ public class SignCommandTabCompleter implements TabCompleter {
         return completion;
     }
 
+    private boolean supportsLineSelector(String subcommandName) {
+        return registry.supportsLineSelector(subcommandName);
+    }
+
     private Collection<String> completeHelpPage(Player player, ArgParser argParser) {
         List<String> nothing = new ArrayList<>();
-        final int[] pageCount = {0};
 
-        class MockComms extends ChatComms {
-            public MockComms(CommandSender commandSender, Configuration config) {
-                super(commandSender, config);
-            }
-
-            @Override
-            public void tell(String message) {
-            }
-
-            @Override
-            public String t(String key, Object... messageArguments) {
-                if (key.equals("usage_page_numbering")) {
-                    pageCount[0] = (int) messageArguments[1];
-                }
-                return super.t(key, messageArguments);
-            }
+        SubcommandContext context = registry.createContext(player, argParser.getArgs());
+        SignSubcommand signSubcommand = (SignSubcommand) registry.createSubcommand("help", context);
+        if (signSubcommand == null) {
+            return nothing;
         }
-        MockComms mockComms = new MockComms(player, config);
 
-        HelpSignSubcommand signSubcommand = (HelpSignSubcommand) getSignSubcommand(player, argParser);
-        try {
-            Field commsBuilderField = signSubcommand.getClass().getDeclaredField("commsBuilder");
-            commsBuilderField.setAccessible(true);
-            commsBuilderField.set(signSubcommand, new ChatCommsModule.ChatCommsComponent.Builder() {
-                @Override
-                public ChatCommsModule.ChatCommsComponent build() {
-                    return () -> mockComms;
-                }
-
-                @Override
-                public ChatCommsModule.ChatCommsComponent.Builder commandSender(CommandSender commandSender) {
-                    return this;
-                }
-            });
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException("FIXME: Reflection shenanigans");
-        }
-        signSubcommand.execute();
+        List<String> completions = signSubcommand.getTabCompletions(argParser);
 
         List<String> remainder = argParser.getRemainder();
         String startMatch = "";
@@ -150,22 +106,15 @@ public class SignCommandTabCompleter implements TabCompleter {
         }
 
         String finalStartMatch = startMatch;
-
-        return IntStream
-                .rangeClosed(1, pageCount[0])
-                .mapToObj(i -> ((Integer) i).toString())
+        return completions.stream()
                 .filter(item -> item.startsWith(finalStartMatch))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
     protected InteractionCommand getSignSubcommand(Player player, ArgParser argParser) {
         String subcommandName = argParser.getSubcommand();
-        SignSubcommandComponent component = signSubcommandComponentBuilder
-                .player(player)
-                .commandArgs(new String[]{subcommandName})
-                .build();
-
-        return component.subcommandProviders().get(subcommandName).get();
+        SubcommandContext context = registry.createContext(player, new String[]{subcommandName});
+        return registry.createSubcommand(subcommandName, context);
     }
 
     private List<String> completeExistingLines(Player player, ArgParser argParser) {
@@ -199,14 +148,13 @@ public class SignCommandTabCompleter implements TabCompleter {
      * Offer suggestions for the subcommand
      */
     private List<String> completeSubcommand(Player player, String arg) {
-        Set<String> candidateSubcommands = subcommandNames;
-        candidateSubcommands = candidateSubcommands
+        Set<String> candidateSubcommands = registry.getSubcommandNames()
                 .stream()
                 .filter(name -> name.startsWith(arg))
                 .filter(name -> {
-                    ArgParser argParser = new ArgParser(config, new String[]{name}, subcommandNames);
+                    ArgParser argParser = new ArgParser(config, new String[]{name}, registry.getSubcommandNames());
                     InteractionCommand signSubcommand = getSignSubcommand(player, argParser);
-                    return signSubcommand.isPermitted();
+                    return signSubcommand != null && signSubcommand.isPermitted();
                 })
                 .collect(Collectors.toSet());
         return new ArrayList<>(candidateSubcommands);
@@ -214,14 +162,12 @@ public class SignCommandTabCompleter implements TabCompleter {
 
     /**
      * Offer suggestions for the line number selector
-     * <p>
-     * FIXME: This code is still ugly, but not as bad as before...
      */
     private List<String> completeLines(Player player, String[] args) {
         List<String> completion = new ArrayList<>();
         if (!playerIsAllowedToUseLineSelectors(player)) return completion;
 
-        ArgParser argParser = new ArgParser(config, args, subcommandNames);
+        ArgParser argParser = new ArgParser(config, args, registry.getSubcommandNames());
         int minLine = config.getMinLine();
         int maxLine = config.getMaxLine();
         Pattern lineSelector = Pattern.compile("^[" + minLine + "-" + maxLine + ",\\-]+$");
@@ -232,14 +178,14 @@ public class SignCommandTabCompleter implements TabCompleter {
                 if (args[i].endsWith("-") || args[i].endsWith(",")) {
                     args[i] = args[i].substring(0, args[i].length() - 1);
                 }
-                argParser = new ArgParser(config, args, subcommandNames);
+                argParser = new ArgParser(config, args, registry.getSubcommandNames());
                 break;
             }
         }
         // /sign version
-        if (!subcommandsWithLineSelector.contains(argParser.getSubcommand()) && args.length > 0 && !args[0].isEmpty() ||
+        if (!supportsLineSelector(argParser.getSubcommand()) && args.length > 0 && !args[0].isEmpty() ||
                 // /sign set
-                args.length == 1 && subcommandsWithLineSelector.contains(args[0].toLowerCase()) ||
+                args.length == 1 && supportsLineSelector(args[0].toLowerCase()) ||
                 // /sign 2-3 NewText
                 args.length == 2 && lineSelector.matcher(args[0]).matches() ||
                 // /sign set bad
@@ -254,12 +200,12 @@ public class SignCommandTabCompleter implements TabCompleter {
     }
 
     private boolean playerIsAllowedToUseLineSelectors(Player player) {
-        return subcommandsWithLineSelector.stream().anyMatch(
-                name -> {
-                    ArgParser argParser = new ArgParser(config, new String[]{name}, subcommandNames);
+        return registry.getSubcommandNames().stream()
+                .filter(this::supportsLineSelector)
+                .anyMatch(name -> {
+                    ArgParser argParser = new ArgParser(config, new String[]{name}, registry.getSubcommandNames());
                     InteractionCommand signSubcommand = getSignSubcommand(player, argParser);
-                    return signSubcommand.isPermitted();
-                }
-        );
+                    return signSubcommand != null && signSubcommand.isPermitted();
+                });
     }
 }

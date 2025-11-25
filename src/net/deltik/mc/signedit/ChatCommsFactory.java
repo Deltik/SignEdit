@@ -19,13 +19,22 @@
 
 package net.deltik.mc.signedit;
 
-import javax.inject.Qualifier;
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import org.bukkit.command.CommandSender;
 
-@Qualifier
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-public @interface ArgParserArgs {
+/**
+ * Factory for creating {@link ChatComms} instances.
+ * Replaces the Dagger-based ChatCommsModule.ChatCommsComponent.Builder.
+ */
+public class ChatCommsFactory {
+    private final Configuration config;
+    private final UserComms userComms;
+
+    public ChatCommsFactory(Configuration config, UserComms userComms) {
+        this.config = config;
+        this.userComms = userComms;
+    }
+
+    public ChatComms create(CommandSender commandSender) {
+        return new ChatComms(commandSender, config, userComms.getClassLoader());
+    }
 }

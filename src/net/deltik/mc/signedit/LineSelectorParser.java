@@ -21,14 +21,11 @@ package net.deltik.mc.signedit;
 
 import net.deltik.mc.signedit.exceptions.*;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Singleton
 public class LineSelectorParser {
     public static final int[] NO_LINES_SELECTED = new int[0];
     public static final int[] ALL_LINES_SELECTED = new int[]{0, 1, 2, 3};
@@ -36,7 +33,6 @@ public class LineSelectorParser {
     public static final String GROUP_SEPARATOR = ",";
     private final Configuration config;
 
-    @Inject
     public LineSelectorParser(Configuration config) {
         this.config = config;
     }

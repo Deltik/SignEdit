@@ -21,8 +21,5 @@ package net.deltik.mc.signedit.listeners;
 
 import org.bukkit.event.Listener;
 
-import javax.inject.Singleton;
-
-@Singleton
 public abstract class SignEditListener implements Listener {
 }

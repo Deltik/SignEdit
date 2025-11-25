@@ -21,7 +21,6 @@ package net.deltik.mc.signedit;
 
 import org.bukkit.plugin.Plugin;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,7 +43,6 @@ public class UserComms {
     private final File originalsDir;
     private String originalsSource;
 
-    @Inject
     public UserComms(Plugin plugin) {
         this(plugin.getDataFolder());
         String path = plugin.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();

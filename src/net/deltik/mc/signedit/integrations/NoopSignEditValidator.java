@@ -24,10 +24,7 @@ import net.deltik.mc.signedit.shims.SignShim;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.SignChangeEvent;
 
-import javax.inject.Inject;
-
 public class NoopSignEditValidator implements SignEditValidator {
-    @Inject
     public NoopSignEditValidator() {
     }
 

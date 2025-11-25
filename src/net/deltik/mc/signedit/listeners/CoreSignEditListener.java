@@ -49,31 +49,24 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-
 public class CoreSignEditListener extends SignEditListener {
     private final SignTextClipboardManager clipboardManager;
     private final SignTextHistoryManager historyManager;
     private final SignEditInteractionManager interactionManager;
-    private final Provider<ChatCommsModule.ChatCommsComponent.Builder> commsBuilderProvider;
-    private final SignCommand signCommand;
+    private final ChatCommsFactory chatCommsFactory;
     private final SignEditValidator signEditValidator;
 
-    @Inject
     public CoreSignEditListener(
             SignTextClipboardManager clipboardManager,
             SignTextHistoryManager historyManager,
             SignEditInteractionManager interactionManager,
-            Provider<ChatCommsModule.ChatCommsComponent.Builder> commsBuilderProvider,
-            SignCommand signCommand,
+            ChatCommsFactory chatCommsFactory,
             SignEditValidator signEditValidator
     ) {
         this.clipboardManager = clipboardManager;
         this.historyManager = historyManager;
         this.interactionManager = interactionManager;
-        this.commsBuilderProvider = commsBuilderProvider;
-        this.signCommand = signCommand;
+        this.chatCommsFactory = chatCommsFactory;
         this.signEditValidator = signEditValidator;
     }
 
@@ -123,7 +116,7 @@ public class CoreSignEditListener extends SignEditListener {
                 overrideNativeBehavior(event, signAdapter);
             }
         } catch (Throwable e) {
-            ChatComms comms = commsBuilderProvider.get().commandSender(player).build().comms();
+            ChatComms comms = chatCommsFactory.create(player);
             comms.reportException(e);
         }
     }
@@ -151,10 +144,9 @@ public class CoreSignEditListener extends SignEditListener {
 
             maybeSignEditInteraction = new UiSignEditInteraction(
                     interactionManager,
-                    commsBuilderProvider.get(),
+                    chatCommsFactory,
                     signText,
-                    historyManager,
-                    signCommand
+                    historyManager
             );
         }
 
@@ -189,7 +181,7 @@ public class CoreSignEditListener extends SignEditListener {
             if (!player.hasPermission("signedit." + SignCommand.COMMAND_NAME + ".wax")) return null;
 
             signText.setShouldBeEditable(false);
-            return new WaxSignEditInteraction(signText, commsBuilderProvider.get());
+            return new WaxSignEditInteraction(signText, chatCommsFactory);
         }
 
         SideShim side = SideShim.fromRelativePosition(signAdapter.getImplementation(), player);
@@ -215,10 +207,9 @@ public class CoreSignEditListener extends SignEditListener {
 
         return new UiSignEditInteraction(
                 interactionManager,
-                commsBuilderProvider.get(),
+                chatCommsFactory,
                 signText,
-                historyManager,
-                signCommand
+                historyManager
         );
     }
 

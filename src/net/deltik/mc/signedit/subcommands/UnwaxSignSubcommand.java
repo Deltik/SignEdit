@@ -19,34 +19,20 @@
 
 package net.deltik.mc.signedit.subcommands;
 
-import net.deltik.mc.signedit.SignText;
+import net.deltik.mc.signedit.interactions.InteractionFactory;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
 import net.deltik.mc.signedit.shims.SignHelpers;
-import org.bukkit.entity.Player;
-
-import javax.inject.Inject;
-import javax.inject.Provider;
-import java.util.Map;
 
 public class UnwaxSignSubcommand extends SignSubcommand {
-    private final Map<String, Provider<SignEditInteraction>> interactions;
-    private final SignText signText;
-
-    @Inject
-    public UnwaxSignSubcommand(
-            Map<String, Provider<SignEditInteraction>> interactions,
-            Player player,
-            SignText signText
-    ) {
-        super(player);
-        this.interactions = interactions;
-        this.signText = signText;
+    public UnwaxSignSubcommand(SubcommandContext context) {
+        super(context);
     }
 
     @Override
     public SignEditInteraction execute() {
-        signText.setShouldBeEditable(true);
-        return interactions.get("Wax").get();
+        context().signText().setShouldBeEditable(true);
+        return context().services().interactionFactory()
+                .create(InteractionFactory.INTERACTION_WAX, context());
     }
 
     @Override

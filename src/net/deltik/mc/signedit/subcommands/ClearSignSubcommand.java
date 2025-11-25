@@ -19,45 +19,30 @@
 
 package net.deltik.mc.signedit.subcommands;
 
-import net.deltik.mc.signedit.ArgParser;
 import net.deltik.mc.signedit.LineSelectorParser;
 import net.deltik.mc.signedit.SignText;
+import net.deltik.mc.signedit.interactions.InteractionFactory;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
-import org.bukkit.entity.Player;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-import java.util.Map;
-
+@SignSubcommandInfo(name = "clear", supportsLineSelector = true)
 public class ClearSignSubcommand extends SignSubcommand {
-    private final Map<String, Provider<SignEditInteraction>> interactions;
-    private final ArgParser argParser;
-    private final SignText signText;
-
-    @Inject
-    public ClearSignSubcommand(
-            Map<String, Provider<SignEditInteraction>> interactions,
-            Player player,
-            ArgParser argParser,
-            SignText signText
-    ) {
-        super(player);
-        this.interactions = interactions;
-        this.argParser = argParser;
-        this.signText = signText;
+    public ClearSignSubcommand(SubcommandContext context) {
+        super(context);
     }
 
     @Override
     public SignEditInteraction execute() {
-        int[] selectedLines = argParser.getLinesSelection();
+        int[] selectedLines = argParser().getLinesSelection();
         if (selectedLines.length <= 0) {
             selectedLines = LineSelectorParser.ALL_LINES_SELECTED;
         }
 
+        SignText signText = context().signText();
         for (int selectedLine : selectedLines) {
             signText.setLine(selectedLine, "");
         }
 
-        return interactions.get("Set").get();
+        return context().services().interactionFactory()
+                .create(InteractionFactory.INTERACTION_SET, context());
     }
 }

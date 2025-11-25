@@ -20,28 +20,25 @@
 package net.deltik.mc.signedit.interactions;
 
 import net.deltik.mc.signedit.ChatComms;
-import net.deltik.mc.signedit.ChatCommsModule;
+import net.deltik.mc.signedit.ChatCommsFactory;
 import net.deltik.mc.signedit.SignText;
 import net.deltik.mc.signedit.SignTextHistoryManager;
 import net.deltik.mc.signedit.shims.SideShim;
 import net.deltik.mc.signedit.shims.SignShim;
 import org.bukkit.entity.Player;
 
-import javax.inject.Inject;
-
 public class SetSignEditInteraction implements SignEditInteraction {
     private final SignText signText;
-    private final ChatCommsModule.ChatCommsComponent.Builder commsBuilder;
+    private final ChatCommsFactory chatCommsFactory;
     private final SignTextHistoryManager historyManager;
 
-    @Inject
     public SetSignEditInteraction(
             SignText signText,
-            ChatCommsModule.ChatCommsComponent.Builder commsBuilder,
+            ChatCommsFactory chatCommsFactory,
             SignTextHistoryManager historyManager
     ) {
         this.signText = signText;
-        this.commsBuilder = commsBuilder;
+        this.chatCommsFactory = chatCommsFactory;
         this.historyManager = historyManager;
     }
 
@@ -54,7 +51,7 @@ public class SetSignEditInteraction implements SignEditInteraction {
     public void interact(Player player, SignShim sign, SideShim side) {
         signText.setTargetSign(sign, side);
 
-        ChatComms comms = commsBuilder.commandSender(player).build().comms();
+        ChatComms comms = chatCommsFactory.create(player);
 
         signText.applySignAutoWax(player, comms, signText::applySign);
         if (signText.signTextChanged()) {

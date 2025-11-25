@@ -19,13 +19,24 @@
 
 package net.deltik.mc.signedit.subcommands;
 
-import javax.inject.Qualifier;
-import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-@Qualifier
-@Documented
+/**
+ * Marks a class as a SignEdit subcommand and provides metadata for discovery and tab completion.
+ */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SubcommandName {
+@Target(ElementType.TYPE)
+public @interface SignSubcommandInfo {
+    /**
+     * The name of the subcommand (e.g., "set", "clear", "help").
+     */
+    String name();
+
+    /**
+     * Whether this subcommand supports line selection (e.g., "/sign 1-3 set text").
+     */
+    boolean supportsLineSelector() default false;
 }

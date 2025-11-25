@@ -21,54 +21,115 @@ package net.deltik.mc.signedit;
 
 import net.deltik.mc.signedit.commands.SignCommand;
 import net.deltik.mc.signedit.commands.SignCommandTabCompleter;
+import net.deltik.mc.signedit.integrations.SignEditValidator;
+import net.deltik.mc.signedit.integrations.SignEditValidatorModule;
+import net.deltik.mc.signedit.interactions.InteractionFactory;
+import net.deltik.mc.signedit.interactions.SignEditInteractionManager;
+import net.deltik.mc.signedit.listeners.BookUiSignEditListener;
+import net.deltik.mc.signedit.listeners.CoreSignEditListener;
 import net.deltik.mc.signedit.listeners.SignEditListener;
+import net.deltik.mc.signedit.subcommands.SubcommandRegistry;
+import net.deltik.mc.signedit.subcommands.UiSignSubcommand;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.HashSet;
 import java.util.Set;
 
 public class SignEditPlugin extends JavaPlugin {
-    @Inject
-    public Configuration config;
-    @Inject
-    public ConfigurationWatcher configWatcher;
-    @Inject
-    UserComms userComms;
+    // Singletons - initialized once in onEnable()
+    private Configuration config;
+    private ConfigurationWatcher configWatcher;
+    private UserComms userComms;
+    private CraftBukkitReflector reflector;
+    private SignTextHistoryManager historyManager;
+    private SignTextClipboardManager clipboardManager;
+    private SignEditInteractionManager interactionManager;
+    private ChatCommsFactory chatCommsFactory;
+    private LineSelectorParser lineSelectorParser;
+    private SignEditValidator signEditValidator;
+    private InteractionFactory interactionFactory;
+    private SignEditPluginServices services;
+    private SubcommandRegistry registry;
 
-    @Inject
-    public Provider<Set<SignEditListener>> listenersProvider;
-
-    @Inject
-    public SignCommand signCommand;
-    @Inject
-    public SignCommandTabCompleter signCommandTabCompleter;
+    private SignCommand signCommand;
+    private SignCommandTabCompleter signCommandTabCompleter;
 
     @Override
     public void onEnable() {
-        DaggerSignEditPluginComponent.builder().plugin(this).build().injectSignEditPlugin(this);
+        initializeServices();
+        registerCommands();
+        reregisterListeners();
+        deployUserComms();
+        configWatcher.start();
+    }
 
+    private void initializeServices() {
+        // Configuration
+        config = new Configuration(this);
+        configWatcher = new ConfigurationWatcher(config, this::reregisterListeners);
+        userComms = new UserComms(this);
+        reflector = new CraftBukkitReflector();
+
+        // Managers
+        historyManager = new SignTextHistoryManager(config);
+        clipboardManager = new SignTextClipboardManager();
+        interactionManager = new SignEditInteractionManager();
+
+        // Factories and parsers
+        chatCommsFactory = new ChatCommsFactory(config, userComms);
+        interactionManager.setChatCommsFactory(chatCommsFactory);
+        lineSelectorParser = new LineSelectorParser(config);
+        signEditValidator = SignEditValidatorModule.provideSignEditValidator();
+        interactionFactory = new InteractionFactory();
+
+        // Services container
+        services = new SignEditPluginServices(
+                this,
+                config,
+                userComms,
+                historyManager,
+                clipboardManager,
+                interactionManager,
+                reflector,
+                chatCommsFactory,
+                lineSelectorParser,
+                signEditValidator,
+                interactionFactory
+        );
+
+        // Registry and command
+        registry = new SubcommandRegistry(services);
+        signCommand = new SignCommand(
+                config,
+                interactionManager,
+                chatCommsFactory,
+                registry
+        );
+        signCommandTabCompleter = new SignCommandTabCompleter(registry, config);
+    }
+
+    private void registerCommands() {
         for (String alias : new String[]{"sign", "signedit", "editsign", "se"}) {
             PluginCommand pluginCommand = this.getCommand(alias);
-            pluginCommand.setExecutor(signCommand);
-            pluginCommand.setTabCompleter(signCommandTabCompleter);
+            if (pluginCommand != null) {
+                pluginCommand.setExecutor(signCommand);
+                pluginCommand.setTabCompleter(signCommandTabCompleter);
+            }
         }
+    }
 
-        reregisterListeners();
-
+    private void deployUserComms() {
         try {
             userComms.deploy();
         } catch (IOException e) {
             getLogger().warning("Cannot enable user-defined locales due to error:");
             getLogger().warning(getStackTrace(e));
         }
-
-        configWatcher.start();
     }
 
     @Override
@@ -85,10 +146,31 @@ public class SignEditPlugin extends JavaPlugin {
     public void reregisterListeners() {
         HandlerList.unregisterAll(this);
 
-        Set<SignEditListener> listeners = listenersProvider.get();
+        Set<SignEditListener> listeners = createListeners();
         for (SignEditListener listener : listeners) {
             getServer().getPluginManager().registerEvents(listener, this);
         }
+    }
+
+    private Set<SignEditListener> createListeners() {
+        Set<SignEditListener> listeners = new HashSet<>();
+
+        // Core listener is always registered
+        listeners.add(new CoreSignEditListener(
+                clipboardManager,
+                historyManager,
+                interactionManager,
+                chatCommsFactory,
+                signEditValidator
+        ));
+
+        // Book UI listener is only registered when using EditableBook UI mode
+        String implementationName = UiSignSubcommand.getImplementationName(config, reflector);
+        if (InteractionFactory.UI_EDITABLE_BOOK.equals(implementationName)) {
+            listeners.add(new BookUiSignEditListener(interactionManager));
+        }
+
+        return listeners;
     }
 
     /**
@@ -102,5 +184,18 @@ public class SignEditPlugin extends JavaPlugin {
         final PrintWriter pw = new PrintWriter(sw, true);
         throwable.printStackTrace(pw);
         return sw.getBuffer().toString();
+    }
+
+    // Getters for testing
+    public Configuration getConfig_() {
+        return config;
+    }
+
+    public SignEditPluginServices getServices() {
+        return services;
+    }
+
+    public SubcommandRegistry getRegistry() {
+        return registry;
     }
 }

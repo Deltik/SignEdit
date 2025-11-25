@@ -20,7 +20,7 @@
 package net.deltik.mc.signedit.interactions;
 
 import net.deltik.mc.signedit.ChatComms;
-import net.deltik.mc.signedit.ChatCommsModule;
+import net.deltik.mc.signedit.ChatCommsFactory;
 import net.deltik.mc.signedit.SignText;
 import net.deltik.mc.signedit.SignTextHistoryManager;
 import net.deltik.mc.signedit.shims.SideShim;
@@ -36,29 +36,26 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.plugin.Plugin;
 
-import javax.inject.Inject;
-
 public class BookUiSignEditInteraction implements SignEditInteraction {
     private final Plugin plugin;
     private final SignEditInteractionManager interactionManager;
-    private final ChatCommsModule.ChatCommsComponent.Builder commsBuilder;
+    private final ChatCommsFactory chatCommsFactory;
     private final SignText signText;
     private final SignTextHistoryManager historyManager;
     protected ItemStack originalItem;
     protected int originalItemIndex;
     protected Player player;
 
-    @Inject
     public BookUiSignEditInteraction(
             Plugin plugin,
             SignEditInteractionManager interactionManager,
-            ChatCommsModule.ChatCommsComponent.Builder commsBuilder,
+            ChatCommsFactory chatCommsFactory,
             SignText signText,
             SignTextHistoryManager historyManager
     ) {
         this.plugin = plugin;
         this.interactionManager = interactionManager;
-        this.commsBuilder = commsBuilder;
+        this.chatCommsFactory = chatCommsFactory;
         this.signText = signText;
         this.historyManager = historyManager;
     }
@@ -80,7 +77,7 @@ public class BookUiSignEditInteraction implements SignEditInteraction {
             return;
         }
 
-        ChatComms comms = commsBuilder.commandSender(player).build().comms();
+        ChatComms comms = chatCommsFactory.create(player);
         comms.tell(comms.t("right_click_air_to_open_sign_editor"));
     }
 
@@ -94,7 +91,7 @@ public class BookUiSignEditInteraction implements SignEditInteraction {
 
     protected void openSignEditor(Player player) {
         this.player = player;
-        ChatComms comms = commsBuilder.commandSender(player).build().comms();
+        ChatComms comms = chatCommsFactory.create(player);
         PlayerInventory inventory = player.getInventory();
         ItemStack book = new ItemStack(Material.WRITABLE_BOOK, 1);
         BookMeta bookMeta = (BookMeta) book.getItemMeta();
@@ -144,7 +141,7 @@ public class BookUiSignEditInteraction implements SignEditInteraction {
             }
             signText.setLine(i, newLine);
         }
-        ChatComms comms = commsBuilder.commandSender(player).build().comms();
+        ChatComms comms = chatCommsFactory.create(player);
 
         signText.applySignAutoWax(player, comms, signText::applySign);
         if (signText.signTextChanged()) {

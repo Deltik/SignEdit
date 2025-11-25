@@ -20,10 +20,9 @@
 package net.deltik.mc.signedit.interactions;
 
 import net.deltik.mc.signedit.ChatComms;
-import net.deltik.mc.signedit.ChatCommsModule;
+import net.deltik.mc.signedit.ChatCommsFactory;
 import net.deltik.mc.signedit.SignText;
 import net.deltik.mc.signedit.SignTextHistoryManager;
-import net.deltik.mc.signedit.commands.SignCommand;
 import net.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
 import net.deltik.mc.signedit.exceptions.SignEditorInvocationException;
 import net.deltik.mc.signedit.shims.ISignSide;
@@ -32,14 +31,11 @@ import net.deltik.mc.signedit.shims.SignHelpers;
 import net.deltik.mc.signedit.shims.SignShim;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.SignChangeEvent;
 
-import javax.inject.Inject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -53,27 +49,23 @@ import static net.deltik.mc.signedit.CraftBukkitReflector.*;
 
 public class UiSignEditInteraction implements SignEditInteraction {
     private final SignEditInteractionManager interactionManager;
-    private final ChatCommsModule.ChatCommsComponent.Builder commsBuilder;
+    private final ChatCommsFactory chatCommsFactory;
     private final SignText signText;
     private final SignTextHistoryManager historyManager;
-    private final SignCommand signCommand;
     private boolean needsRewax;
 
     protected Player player;
 
-    @Inject
     public UiSignEditInteraction(
             SignEditInteractionManager interactionManager,
-            ChatCommsModule.ChatCommsComponent.Builder commsBuilder,
+            ChatCommsFactory chatCommsFactory,
             SignText signText,
-            SignTextHistoryManager historyManager,
-            SignCommand signCommand
+            SignTextHistoryManager historyManager
     ) {
         this.interactionManager = interactionManager;
-        this.commsBuilder = commsBuilder;
+        this.chatCommsFactory = chatCommsFactory;
         this.signText = signText;
         this.historyManager = historyManager;
-        this.signCommand = signCommand;
     }
 
     @Override
@@ -88,18 +80,19 @@ public class UiSignEditInteraction implements SignEditInteraction {
             Player player = signChangeEvent.getPlayer();
             if (interactionManager.isInteractionPending(player)) {
                 if (signText.getTargetSignSide() == null) {
-                    signCommand.onCommand(player, new Command(SignCommand.COMMAND_NAME) {
-                        @Override
-                        public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-                            return false;
-                        }
-                    }, "", new String[]{"cancel"});
+                    // Cancel the pending interaction directly (equivalent to /sign cancel)
+                    SignEditInteraction interaction = interactionManager.removePendingInteraction(player);
+                    ChatComms comms = chatCommsFactory.create(player);
+                    if (interaction != null) {
+                        interaction.cleanup();
+                        comms.tell(comms.t("cancelled_pending_action"));
+                    }
                     return;
                 }
 
                 runEarlyEventTask(signChangeEvent);
                 if (this.needsRewax) {
-                    ChatComms comms = commsBuilder.commandSender(player).build().comms();
+                    ChatComms comms = chatCommsFactory.create(player);
                     boolean isRewaxed = SignHelpers.bypassWaxAfter(signText.getTargetSign(), player, comms);
                     if (isRewaxed) this.needsRewax = false;
                 }
@@ -131,7 +124,7 @@ public class UiSignEditInteraction implements SignEditInteraction {
             historyManager.getHistory(player).push(signText);
         }
 
-        ChatComms comms = commsBuilder.commandSender(player).build().comms();
+        ChatComms comms = chatCommsFactory.create(player);
         comms.compareSignText(signText);
     }
 

@@ -20,35 +20,19 @@
 package net.deltik.mc.signedit.subcommands;
 
 import net.deltik.mc.signedit.ChatComms;
-import net.deltik.mc.signedit.ChatCommsModule;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
-import net.deltik.mc.signedit.interactions.SignEditInteractionManager;
-import org.bukkit.entity.Player;
-
-import javax.inject.Inject;
 
 public class CancelSignSubcommand extends SignSubcommand {
-    private final SignEditInteractionManager interactionManager;
-    private final Player player;
-    private final ChatCommsModule.ChatCommsComponent.Builder commsBuilder;
-
-    @Inject
-    public CancelSignSubcommand(
-            SignEditInteractionManager interactionManager,
-            Player player,
-            ChatCommsModule.ChatCommsComponent.Builder commsBuilder
-    ) {
-        super(player);
-        this.interactionManager = interactionManager;
-        this.player = player;
-        this.commsBuilder = commsBuilder;
+    public CancelSignSubcommand(SubcommandContext context) {
+        super(context);
     }
 
     @Override
     public SignEditInteraction execute() {
-        ChatComms comms = commsBuilder.commandSender(player).build().comms();
+        ChatComms comms = context().services().chatCommsFactory().create(player());
 
-        SignEditInteraction interaction = interactionManager.removePendingInteraction(player);
+        SignEditInteraction interaction = context().services().interactionManager()
+                .removePendingInteraction(player());
         if (interaction == null) {
             comms.tell(comms.t("no_pending_action_to_cancel"));
         } else {

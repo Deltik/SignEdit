@@ -26,7 +26,6 @@ import net.deltik.mc.signedit.shims.SideShim;
 import net.deltik.mc.signedit.shims.SignShim;
 import org.bukkit.entity.Player;
 
-import javax.inject.Inject;
 import java.util.Arrays;
 
 import static net.deltik.mc.signedit.LineSelectorParser.ALL_LINES_SELECTED;
@@ -38,23 +37,22 @@ public class CutSignEditInteraction implements SignEditInteraction {
     private final SignText clipboard;
     private final SignTextClipboardManager clipboardManager;
     private final SignTextHistoryManager historyManager;
-    private final ChatCommsModule.ChatCommsComponent.Builder commsBuilder;
+    private final ChatCommsFactory chatCommsFactory;
 
-    @Inject
     public CutSignEditInteraction(
             ArgParser argParser,
             SignText signText,
             SignEditValidator validator,
             SignTextClipboardManager clipboardManager,
             SignTextHistoryManager historyManager,
-            ChatCommsModule.ChatCommsComponent.Builder commsBuilder
-            ) {
+            ChatCommsFactory chatCommsFactory
+    ) {
         this.argParser = argParser;
         this.sourceSign = signText;
         this.clipboard = new SignText(validator);
         this.clipboardManager = clipboardManager;
         this.historyManager = historyManager;
-        this.commsBuilder = commsBuilder;
+        this.chatCommsFactory = chatCommsFactory;
     }
 
     @Override
@@ -72,7 +70,7 @@ public class CutSignEditInteraction implements SignEditInteraction {
             sourceSign.setLineLiteral(selectedLine, "");
         }
 
-        ChatComms comms = commsBuilder.commandSender(player).build().comms();
+        ChatComms comms = chatCommsFactory.create(player);
 
         sourceSign.applySignAutoWax(player, comms, sourceSign::applySign);
         if (sourceSign.signTextChanged()) {

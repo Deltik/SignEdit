@@ -20,34 +20,32 @@
 package net.deltik.mc.signedit.interactions;
 
 import net.deltik.mc.signedit.ChatComms;
-import net.deltik.mc.signedit.ChatCommsModule;
+import net.deltik.mc.signedit.ChatCommsFactory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
 
-@Singleton
 public class SignEditInteractionManager {
-    protected final Provider<ChatCommsModule.ChatCommsComponent.Builder> commsBuilderProvider;
+    protected ChatCommsFactory chatCommsFactory;
     protected final Map<Player, SignEditInteraction> pendingInteractions = new HashMap<>();
 
-    @Inject
-    public SignEditInteractionManager(
-            Provider<ChatCommsModule.ChatCommsComponent.Builder> commsBuilderProvider
-    ) {
-        this.commsBuilderProvider = commsBuilderProvider;
+    public SignEditInteractionManager() {
+    }
+
+    public void setChatCommsFactory(ChatCommsFactory chatCommsFactory) {
+        this.chatCommsFactory = chatCommsFactory;
     }
 
     public void endInteraction(Player player, Event event) {
         try {
             removePendingInteraction(player).cleanup(event);
         } catch (Throwable e) {
-            ChatComms comms = commsBuilderProvider.get().commandSender(player).build().comms();
-            comms.reportException(e);
+            if (chatCommsFactory != null) {
+                ChatComms comms = chatCommsFactory.create(player);
+                comms.reportException(e);
+            }
         }
     }
 

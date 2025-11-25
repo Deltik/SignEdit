@@ -19,16 +19,16 @@
 
 package net.deltik.mc.signedit.commands;
 
-import net.deltik.mc.signedit.ArgParser;
 import net.deltik.mc.signedit.ChatComms;
-import net.deltik.mc.signedit.ChatCommsModule;
+import net.deltik.mc.signedit.ChatCommsFactory;
 import net.deltik.mc.signedit.Configuration;
 import net.deltik.mc.signedit.exceptions.LineSelectionException;
 import net.deltik.mc.signedit.interactions.InteractionCommand;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
 import net.deltik.mc.signedit.interactions.SignEditInteractionManager;
 import net.deltik.mc.signedit.shims.*;
-import net.deltik.mc.signedit.subcommands.SignSubcommandComponent;
+import net.deltik.mc.signedit.subcommands.SubcommandContext;
+import net.deltik.mc.signedit.subcommands.SubcommandRegistry;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
@@ -39,34 +39,29 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.inject.Singleton;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Map;
 
-@Singleton
 public class SignCommand implements CommandExecutor {
     public static final String COMMAND_NAME = "sign";
     public static final String SUBCOMMAND_NAME_HELP = "help";
     private static final int MAX_DISTANCE = 20;
+
     private final Configuration configuration;
     private final SignEditInteractionManager interactionManager;
-    private final ChatCommsModule.ChatCommsComponent.Builder commsBuilder;
-    private final SignSubcommandComponent.Builder signSubcommandComponentBuilder;
+    private final ChatCommsFactory chatCommsFactory;
+    private final SubcommandRegistry registry;
 
-    @Inject
     public SignCommand(
             Configuration configuration,
             SignEditInteractionManager interactionManager,
-            ChatCommsModule.ChatCommsComponent.Builder commsBuilder,
-            SignSubcommandComponent.Builder signSubcommandComponent
+            ChatCommsFactory chatCommsFactory,
+            SubcommandRegistry registry
     ) {
-        this.interactionManager = interactionManager;
-        this.commsBuilder = commsBuilder;
         this.configuration = configuration;
-        this.signSubcommandComponentBuilder = signSubcommandComponent;
+        this.interactionManager = interactionManager;
+        this.chatCommsFactory = chatCommsFactory;
+        this.registry = registry;
     }
 
     @Override
@@ -74,30 +69,25 @@ public class SignCommand implements CommandExecutor {
         if (!(commandSender instanceof Player)) return true;
         Player player = (Player) commandSender;
 
-        ChatComms comms = commsBuilder.commandSender(player).build().comms();
+        ChatComms comms = chatCommsFactory.create(player);
+        SubcommandContext context = registry.createContext(player, args);
+        String subcommandName = context.argParser().getSubcommand();
 
-        SignSubcommandComponent signSubcommandComponent = signSubcommandComponentBuilder
-                .player(player)
-                .commandArgs(args)
-                .build();
-
-        Map<String, Provider<InteractionCommand>> signSubcommandMap = signSubcommandComponent.subcommandProviders();
-        ArgParser argParser = signSubcommandComponent.argParser();
-        String subcommandName = argParser.getSubcommand();
-
-        if (!signSubcommandMap.containsKey(subcommandName)) {
+        if (!registry.hasSubcommand(subcommandName)) {
             subcommandName = SUBCOMMAND_NAME_HELP;
         }
 
-        Provider<? extends InteractionCommand> signSubcommandProvider = signSubcommandMap.get(subcommandName);
-
-        LineSelectionException selectedLinesError = argParser.getLinesSelectionError();
+        LineSelectionException selectedLinesError = context.argParser().getLinesSelectionError();
         if (selectedLinesError != null && !subcommandName.equals(SUBCOMMAND_NAME_HELP)) {
             comms.reportException(selectedLinesError);
             return true;
         }
 
-        InteractionCommand signSubcommand = signSubcommandProvider.get();
+        InteractionCommand signSubcommand = registry.createSubcommand(subcommandName, context);
+        if (signSubcommand == null) {
+            comms.informForbidden(command.getName(), subcommandName);
+            return true;
+        }
 
         if (!signSubcommand.isPermitted()) {
             comms.informForbidden(command.getName(), subcommandName);

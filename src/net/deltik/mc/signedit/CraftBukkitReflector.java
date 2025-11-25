@@ -22,7 +22,6 @@ package net.deltik.mc.signedit;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
-import javax.inject.Inject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -30,7 +29,6 @@ import java.util.Arrays;
 public class CraftBukkitReflector {
     public String BUKKIT_SERVER_VERSION;
 
-    @Inject
     public CraftBukkitReflector() {
         BUKKIT_SERVER_VERSION = getBukkitServerVersion();
     }

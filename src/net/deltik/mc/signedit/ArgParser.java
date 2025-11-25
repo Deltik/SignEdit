@@ -22,9 +22,7 @@ package net.deltik.mc.signedit;
 import net.deltik.mc.signedit.commands.SignCommand;
 import net.deltik.mc.signedit.exceptions.LineSelectionException;
 import net.deltik.mc.signedit.exceptions.NumberParseLineSelectionException;
-import net.deltik.mc.signedit.subcommands.SubcommandName;
 
-import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,19 +33,16 @@ import static net.deltik.mc.signedit.LineSelectorParser.NO_LINES_SELECTED;
 public class ArgParser {
     private final Configuration config;
     private final Set<String> subcommandNames;
+    private final String[] args;
 
     String subcommand;
     int[] selectedLines = NO_LINES_SELECTED;
     LineSelectionException selectedLinesError;
     List<String> remainder;
 
-    @Inject
-    public ArgParser(
-            Configuration config,
-            @ArgParserArgs String[] args,
-            @SubcommandName Set<String> subcommandNames
-    ) {
+    public ArgParser(Configuration config, String[] args, Set<String> subcommandNames) {
         this.config = config;
+        this.args = args;
         this.subcommandNames = subcommandNames;
         parseArgs(args);
     }
@@ -66,6 +61,10 @@ public class ArgParser {
 
     public List<String> getRemainder() {
         return remainder;
+    }
+
+    public String[] getArgs() {
+        return args;
     }
 
     private void parseArgs(String[] args) {

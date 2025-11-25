@@ -19,33 +19,20 @@
 
 package net.deltik.mc.signedit.subcommands;
 
-import net.deltik.mc.signedit.*;
+import net.deltik.mc.signedit.ChatComms;
+import net.deltik.mc.signedit.SignText;
+import net.deltik.mc.signedit.SignTextHistory;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
-import org.bukkit.entity.Player;
-
-import javax.inject.Inject;
 
 public class RedoSignSubcommand extends SignSubcommand {
-    private final Player player;
-    private final ChatCommsModule.ChatCommsComponent.Builder commsBuilder;
-    private final SignTextHistoryManager historyManager;
-
-    @Inject
-    public RedoSignSubcommand(
-            Player player,
-            ChatCommsModule.ChatCommsComponent.Builder commsBuilder,
-            SignTextHistoryManager historyManager
-    ) {
-        super(player);
-        this.player = player;
-        this.commsBuilder = commsBuilder;
-        this.historyManager = historyManager;
+    public RedoSignSubcommand(SubcommandContext context) {
+        super(context);
     }
 
     @Override
     public SignEditInteraction execute() {
-        SignTextHistory history = historyManager.getHistory(player);
-        ChatComms comms = commsBuilder.commandSender(player).build().comms();
+        SignTextHistory history = context().services().historyManager().getHistory(player());
+        ChatComms comms = context().services().chatCommsFactory().create(player());
         SignText redoneSignText = history.redo(comms);
         comms.compareSignText(redoneSignText);
         return null;

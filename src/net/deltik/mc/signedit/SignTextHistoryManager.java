@@ -21,16 +21,12 @@ package net.deltik.mc.signedit;
 
 import org.bukkit.entity.Player;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
 
-@Singleton
 public class SignTextHistoryManager {
     private final Map<Player, SignTextHistory> playerHistoryMap = new HashMap<>();
 
-    @Inject
     public SignTextHistoryManager() {
     }
 
