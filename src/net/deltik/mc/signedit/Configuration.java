@@ -23,8 +23,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +32,6 @@ import java.util.*;
 
 import static org.bukkit.Bukkit.getLogger;
 
-@Singleton
 public class Configuration {
     private final File configFile;
     private FileConfiguration bukkitConfig;
@@ -75,7 +72,6 @@ public class Configuration {
         return null;
     }
 
-    @Inject
     public Configuration(Plugin plugin) {
         this("plugins//" + plugin.getName() + "//config.yml");
     }

@@ -19,27 +19,18 @@
 
 package net.deltik.mc.signedit.subcommands;
 
+import net.deltik.mc.signedit.interactions.InteractionFactory;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
-import org.bukkit.entity.Player;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-import java.util.Map;
-
+@SignSubcommandInfo(name = "cut", supportsLineSelector = true)
 public class CutSignSubcommand extends SignSubcommand {
-    private final Map<String, Provider<SignEditInteraction>> interactions;
-
-    @Inject
-    public CutSignSubcommand(
-            Player player,
-            Map<String, Provider<SignEditInteraction>> interactions
-    ) {
-        super(player);
-        this.interactions = interactions;
+    public CutSignSubcommand(SubcommandContext context) {
+        super(context);
     }
 
     @Override
     public SignEditInteraction execute() {
-        return interactions.get("Cut").get();
+        return context().services().interactionFactory()
+                .create(InteractionFactory.INTERACTION_CUT, context());
     }
 }

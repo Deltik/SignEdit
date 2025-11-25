@@ -21,8 +21,6 @@ package net.deltik.mc.signedit;
 
 import org.bukkit.plugin.Plugin;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
@@ -31,7 +29,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.bukkit.Bukkit.getLogger;
 
-@Singleton
 public class ConfigurationWatcher extends Thread {
     private final Configuration config;
     private final WatchService watcher;
@@ -41,7 +38,6 @@ public class ConfigurationWatcher extends Thread {
     private Path configPath;
     private FileTime lastModifiedTime;
 
-    @Inject
     public ConfigurationWatcher(Plugin plugin, Configuration config) {
         this.plugin = (SignEditPlugin) plugin;
         this.config = config;

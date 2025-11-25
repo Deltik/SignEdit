@@ -36,7 +36,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.SignChangeEvent;
 import org.jetbrains.annotations.Nullable;
 
-import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -63,7 +62,6 @@ public class SignText {
         this(new NoopSignEditValidator());
     }
 
-    @Inject
     public SignText(SignEditValidator validator) {
         this.validator = validator;
     }

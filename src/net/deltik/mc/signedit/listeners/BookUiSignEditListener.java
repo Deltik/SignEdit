@@ -31,17 +31,10 @@ import org.bukkit.event.player.PlayerEditBookEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-@Singleton
 public class BookUiSignEditListener extends SignEditListener {
     private final SignEditInteractionManager interactionManager;
 
-    @Inject
-    public BookUiSignEditListener(
-            SignEditInteractionManager interactionManager
-    ) {
+    public BookUiSignEditListener(SignEditInteractionManager interactionManager) {
         this.interactionManager = interactionManager;
     }
 

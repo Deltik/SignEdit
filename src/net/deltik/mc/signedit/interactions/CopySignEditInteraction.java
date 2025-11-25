@@ -25,7 +25,6 @@ import net.deltik.mc.signedit.shims.SideShim;
 import net.deltik.mc.signedit.shims.SignShim;
 import org.bukkit.entity.Player;
 
-import javax.inject.Inject;
 import java.util.Arrays;
 
 import static net.deltik.mc.signedit.LineSelectorParser.ALL_LINES_SELECTED;
@@ -35,19 +34,18 @@ public class CopySignEditInteraction implements SignEditInteraction {
     private final ArgParser argParser;
     private final SignText signText;
     private final SignTextClipboardManager clipboardManager;
-    private final ChatCommsModule.ChatCommsComponent.Builder commsBuilder;
+    private final ChatCommsFactory chatCommsFactory;
 
-    @Inject
     public CopySignEditInteraction(
             ArgParser argParser,
             SignText signText,
             SignTextClipboardManager clipboardManager,
-            ChatCommsModule.ChatCommsComponent.Builder commsBuilder
+            ChatCommsFactory chatCommsFactory
     ) {
         this.argParser = argParser;
         this.signText = signText;
         this.clipboardManager = clipboardManager;
-        this.commsBuilder = commsBuilder;
+        this.chatCommsFactory = chatCommsFactory;
     }
 
     @Override
@@ -63,7 +61,7 @@ public class CopySignEditInteraction implements SignEditInteraction {
 
         clipboardManager.setClipboard(player, signText);
 
-        ChatComms comms = commsBuilder.commandSender(player).build().comms();
+        ChatComms comms = chatCommsFactory.create(player);
         comms.tell(comms.t("lines_copied_section"));
         comms.dumpLines(signText.getLines());
     }

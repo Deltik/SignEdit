@@ -19,38 +19,22 @@
 
 package net.deltik.mc.signedit.subcommands;
 
-import net.deltik.mc.signedit.SignTextClipboardManager;
 import net.deltik.mc.signedit.exceptions.NullClipboardException;
+import net.deltik.mc.signedit.interactions.InteractionFactory;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
-import org.bukkit.entity.Player;
-
-import javax.inject.Inject;
-import javax.inject.Provider;
-import java.util.Map;
 
 public class PasteSignSubcommand extends SignSubcommand {
-    private final Map<String, Provider<SignEditInteraction>> interactions;
-    private final Player player;
-    private final SignTextClipboardManager clipboardManager;
-
-    @Inject
-    public PasteSignSubcommand(
-            Map<String, Provider<SignEditInteraction>> interactions,
-            Player player,
-            SignTextClipboardManager clipboardManager
-    ) {
-        super(player);
-        this.interactions = interactions;
-        this.player = player;
-        this.clipboardManager = clipboardManager;
+    public PasteSignSubcommand(SubcommandContext context) {
+        super(context);
     }
 
     @Override
     public SignEditInteraction execute() {
-        if (clipboardManager.getClipboard(player) == null) {
+        if (context().services().clipboardManager().getClipboard(player()) == null) {
             throw new NullClipboardException();
         }
 
-        return interactions.get("Paste").get();
+        return context().services().interactionFactory()
+                .create(InteractionFactory.INTERACTION_PASTE, context());
     }
 }

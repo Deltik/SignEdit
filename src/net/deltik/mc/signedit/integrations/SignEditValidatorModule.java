@@ -19,45 +19,38 @@
 
 package net.deltik.mc.signedit.integrations;
 
-import dagger.Binds;
-import dagger.Module;
-import dagger.Provides;
-import dagger.multibindings.IntoMap;
-import dagger.multibindings.StringKey;
-import net.deltik.mc.signedit.Configuration;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
-
-import javax.inject.Provider;
-import java.util.Map;
-
-@Module
-public abstract class SignEditValidatorModule {
-    @Provides
-    static PluginManager providePluginManager(Plugin plugin) {
-        return plugin.getServer().getPluginManager();
+/**
+ * Factory for creating SignEditValidator instances.
+ * Replaces Dagger module with simple static factory methods.
+ */
+public class SignEditValidatorModule {
+    private SignEditValidatorModule() {
+        // Utility class
     }
 
-    @Provides
-    static SignEditValidator provideSignEditValidator(
-            Configuration config,
-            Map<String, Provider<SignEditValidator>> validatorProviders
-    ) {
-        return validatorProviders.get(config.getEditValidation().toLowerCase()).get();
+    /**
+     * Creates the default SignEditValidator (StandardSignEditValidator).
+     * This is used when no configuration is available or for simple cases.
+     */
+    public static SignEditValidator provideSignEditValidator() {
+        return new StandardSignEditValidator();
     }
 
-    @Binds
-    @IntoMap
-    @StringKey("standard")
-    abstract SignEditValidator bindStandard(StandardSignEditValidator integration);
-
-    @Binds
-    @IntoMap
-    @StringKey("extra")
-    abstract SignEditValidator bindExtra(BreakReplaceSignEditValidator integration);
-
-    @Binds
-    @IntoMap
-    @StringKey("none")
-    abstract SignEditValidator bindNone(NoopSignEditValidator integration);
+    /**
+     * Creates a SignEditValidator based on configuration.
+     *
+     * @param validationType The type of validation: "standard", "extra", or "none"
+     * @return The appropriate SignEditValidator implementation
+     */
+    public static SignEditValidator provideSignEditValidator(String validationType) {
+        switch (validationType.toLowerCase()) {
+            case "extra":
+                return new BreakReplaceSignEditValidator();
+            case "none":
+                return new NoopSignEditValidator();
+            case "standard":
+            default:
+                return new StandardSignEditValidator();
+        }
+    }
 }

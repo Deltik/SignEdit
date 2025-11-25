@@ -38,12 +38,10 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 
-import javax.inject.Inject;
 import java.util.HashSet;
 import java.util.Set;
 
 public class BreakReplaceSignEditValidator extends StandardSignEditValidator {
-    @Inject
     public BreakReplaceSignEditValidator(PluginManager pluginManager) {
         super(pluginManager);
     }

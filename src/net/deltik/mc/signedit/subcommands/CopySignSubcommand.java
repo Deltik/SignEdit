@@ -19,27 +19,18 @@
 
 package net.deltik.mc.signedit.subcommands;
 
+import net.deltik.mc.signedit.interactions.InteractionFactory;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
-import org.bukkit.entity.Player;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-import java.util.Map;
-
+@SignSubcommandInfo(name = "copy", supportsLineSelector = true)
 public class CopySignSubcommand extends SignSubcommand {
-    private final Map<String, Provider<SignEditInteraction>> interactions;
-
-    @Inject
-    public CopySignSubcommand(
-            Player player,
-            Map<String, Provider<SignEditInteraction>> interactions
-    ) {
-        super(player);
-        this.interactions = interactions;
+    public CopySignSubcommand(SubcommandContext context) {
+        super(context);
     }
 
     @Override
     public SignEditInteraction execute() {
-        return interactions.get("Copy").get();
+        return context().services().interactionFactory()
+                .create(InteractionFactory.INTERACTION_COPY, context());
     }
 }

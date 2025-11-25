@@ -30,7 +30,6 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 
-import javax.inject.Inject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -39,7 +38,6 @@ import java.util.Arrays;
 public class StandardSignEditValidator implements SignEditValidator {
     protected final PluginManager pluginManager;
 
-    @Inject
     public StandardSignEditValidator(
             PluginManager pluginManager
     ) {

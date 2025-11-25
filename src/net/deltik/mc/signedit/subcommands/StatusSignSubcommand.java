@@ -19,39 +19,19 @@
 
 package net.deltik.mc.signedit.subcommands;
 
-import net.deltik.mc.signedit.*;
+import net.deltik.mc.signedit.ChatComms;
+import net.deltik.mc.signedit.SignText;
+import net.deltik.mc.signedit.SignTextHistory;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
-import net.deltik.mc.signedit.interactions.SignEditInteractionManager;
-import org.bukkit.entity.Player;
-
-import javax.inject.Inject;
 
 public class StatusSignSubcommand extends SignSubcommand {
-    private final Player player;
-    private final ChatCommsModule.ChatCommsComponent.Builder commsBuilder;
-    private final SignEditInteractionManager interactionManager;
-    private final SignTextClipboardManager clipboardManager;
-    private final SignTextHistoryManager historyManager;
-
-    @Inject
-    public StatusSignSubcommand(
-            Player player,
-            ChatCommsModule.ChatCommsComponent.Builder commsBuilder,
-            SignEditInteractionManager interactionManager,
-            SignTextClipboardManager clipboardManager,
-            SignTextHistoryManager historyManager
-    ) {
-        super(player);
-        this.player = player;
-        this.commsBuilder = commsBuilder;
-        this.interactionManager = interactionManager;
-        this.clipboardManager = clipboardManager;
-        this.historyManager = historyManager;
+    public StatusSignSubcommand(SubcommandContext context) {
+        super(context);
     }
 
     @Override
     public SignEditInteraction execute() {
-        ChatComms comms = commsBuilder.commandSender(player).build().comms();
+        ChatComms comms = context().services().chatCommsFactory().create(player());
 
         reportHistory(comms);
         reportPendingAction(comms);
@@ -61,17 +41,18 @@ public class StatusSignSubcommand extends SignSubcommand {
     }
 
     private void reportPendingAction(ChatComms comms) {
-        if (!interactionManager.isInteractionPending(player)) {
+        if (!context().services().interactionManager().isInteractionPending(player())) {
             comms.tell(comms.t("pending_action_section", comms.t("no_pending_action")));
         } else {
-            SignEditInteraction interaction = interactionManager.getPendingInteraction(player);
+            SignEditInteraction interaction = context().services().interactionManager()
+                    .getPendingInteraction(player());
             comms.tell(comms.t("pending_action_section", comms.t(interaction.getName())));
             comms.tell(interaction.getActionHint(comms));
         }
     }
 
     private void reportHistory(ChatComms comms) {
-        SignTextHistory history = historyManager.getHistory(player);
+        SignTextHistory history = context().services().historyManager().getHistory(player());
         int undosRemaining = 0;
         int redosRemaining = 0;
 
@@ -86,7 +67,7 @@ public class StatusSignSubcommand extends SignSubcommand {
     }
 
     private void reportClipboard(ChatComms comms) {
-        SignText clipboard = clipboardManager.getClipboard(player);
+        SignText clipboard = context().services().clipboardManager().getClipboard(player());
         if (clipboard == null) {
             comms.tell(comms.t("clipboard_contents_section", comms.t("empty_clipboard")));
         } else {

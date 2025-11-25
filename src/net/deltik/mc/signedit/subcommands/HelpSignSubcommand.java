@@ -19,18 +19,11 @@
 
 package net.deltik.mc.signedit.subcommands;
 
-import net.deltik.mc.signedit.ArgParser;
 import net.deltik.mc.signedit.ChatComms;
-import net.deltik.mc.signedit.ChatCommsModule;
 import net.deltik.mc.signedit.commands.SignCommand;
 import net.deltik.mc.signedit.interactions.InteractionCommand;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginDescriptionFile;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -44,85 +37,19 @@ public class HelpSignSubcommand extends SignSubcommand {
     public static final int MAX_LINES = 10;
     private static final Pattern WORD_PATTERN = Pattern.compile("([0-9a-zA-Z]+)");
 
-    private final String signCommandUsage;
-    private final ChatCommsModule.ChatCommsComponent.Builder commsBuilder;
-    private final SignSubcommandComponent.Builder signSubcommandComponentBuilder;
-    private final ArgParser args;
-    private final Player player;
-
     private ChatComms comms;
 
-    @Inject
-    public HelpSignSubcommand(
-            Plugin self,
-            ChatCommsModule.ChatCommsComponent.Builder commsBuilder,
-            SignSubcommandComponent.Builder signSubcommandComponent,
-            ArgParser args,
-            Player player
-    ) {
-        this(self.getDescription(),
-                commsBuilder,
-                signSubcommandComponent,
-                args,
-                player);
-    }
-
-    public HelpSignSubcommand(
-            PluginDescriptionFile about,
-            ChatCommsModule.ChatCommsComponent.Builder commsBuilder,
-            SignSubcommandComponent.Builder signSubcommandComponent,
-            ArgParser args,
-            Player player
-    ) {
-        this((String) about.getCommands().get(SignCommand.COMMAND_NAME).get("usage"),
-                commsBuilder,
-                signSubcommandComponent,
-                args,
-                player);
-    }
-
-    public HelpSignSubcommand(
-            String signCommandUsage,
-            ChatCommsModule.ChatCommsComponent.Builder commsBuilder,
-            SignSubcommandComponent.Builder signSubcommandComponent,
-            ArgParser args,
-            Player player
-    ) {
-        super(player);
-        this.signCommandUsage = signCommandUsage;
-        this.commsBuilder = commsBuilder;
-        this.signSubcommandComponentBuilder = signSubcommandComponent;
-        this.args = args;
-        this.player = player;
-    }
-
-    @Deprecated
-    public HelpSignSubcommand(
-            Plugin self,
-            ChatCommsModule.ChatCommsComponent.Builder commsBuilder,
-            ArgParser args,
-            Player player
-    ) {
-        this(self, commsBuilder, null, args, player);
-    }
-
-    @Deprecated
-    public HelpSignSubcommand(
-            String signCommandUsage,
-            ChatCommsModule.ChatCommsComponent.Builder commsBuilder,
-            ArgParser args,
-            Player player
-    ) {
-        this(signCommandUsage, commsBuilder, null, args, player);
+    public HelpSignSubcommand(SubcommandContext context) {
+        super(context);
     }
 
     @Override
     public SignEditInteraction execute() {
-        this.comms = commsBuilder.commandSender(player).build().comms();
+        this.comms = context().services().chatCommsFactory().create(player());
         List<String[]> allowedCommands = getAllowedCommands();
 
         if (allowedCommands.size() == 0) {
-            comms.informForbidden(SignCommand.COMMAND_NAME, args.getSubcommand());
+            comms.informForbidden(SignCommand.COMMAND_NAME, argParser().getSubcommand());
             return null;
         }
 
@@ -147,7 +74,7 @@ public class HelpSignSubcommand extends SignSubcommand {
                 comms.t("usage_page_heading",
                         comms.t("usage_page_info",
                                 SignCommand.COMMAND_NAME,
-                                args.getSubcommand(),
+                                argParser().getSubcommand(),
                                 pageNumbering
                         )
                 )
@@ -163,7 +90,7 @@ public class HelpSignSubcommand extends SignSubcommand {
     }
 
     private int readInputPageNumber() {
-        List<String> argsRemainder = args.getRemainder();
+        List<String> argsRemainder = argParser().getRemainder();
         if (argsRemainder.size() == 0) return 1;
 
         String maybePageNumber = argsRemainder.remove(0);
@@ -208,6 +135,7 @@ public class HelpSignSubcommand extends SignSubcommand {
 
     protected List<String[]> getAllowedCommands() {
         List<String[]> allowedCommands = new ArrayList<>();
+        String signCommandUsage = getSignCommandUsage();
 
         BufferedReader reader = new BufferedReader(new StringReader(signCommandUsage));
         try {
@@ -222,24 +150,18 @@ public class HelpSignSubcommand extends SignSubcommand {
                 Matcher matcher = WORD_PATTERN.matcher(segments[1]);
                 while (matcher.find()) {
                     String subcommandName = matcher.group(1);
-                    if (signSubcommandComponentBuilder == null) {
+                    InteractionCommand subcommand = context().createSubcommandForPermissionCheck(subcommandName);
+                    if (subcommand == null) {
+                        // Fallback to simple permission check
                         if (
-                                player.hasPermission("signedit.use") ||
-                                player.hasPermission("signedit." + SignCommand.COMMAND_NAME + "." + subcommandName)
+                                player().hasPermission("signedit.use") ||
+                                player().hasPermission("signedit." + SignCommand.COMMAND_NAME + "." + subcommandName)
                         ) {
                             allowedCommands.add(segments);
                         }
                         continue;
                     }
-                    Provider<InteractionCommand> signSubcommandProvider = signSubcommandComponentBuilder
-                            .player(player)
-                            .commandArgs(new String[]{SignCommand.COMMAND_NAME})
-                            .build()
-                            .subcommandProviders()
-                            .get(subcommandName);
-                    if (signSubcommandProvider == null) continue;
-                    InteractionCommand signSubcommand = signSubcommandProvider.get();
-                    if (signSubcommand.isPermitted()) {
+                    if (subcommand.isPermitted()) {
                         allowedCommands.add(segments);
                     }
                 }
@@ -249,5 +171,25 @@ public class HelpSignSubcommand extends SignSubcommand {
         }
 
         return allowedCommands;
+    }
+
+    @SuppressWarnings("unchecked")
+    private String getSignCommandUsage() {
+        return (String) context().services().plugin().getDescription()
+                .getCommands().get(SignCommand.COMMAND_NAME).get("usage");
+    }
+
+    @Override
+    public List<String> getTabCompletions(net.deltik.mc.signedit.ArgParser argParser) {
+        // Help command completes with page numbers
+        List<String[]> allowedCommands = getAllowedCommands();
+        int linesRemaining = MAX_LINES - 2; // Account for header lines
+        int pageCount = (allowedCommands.size() - 1) / linesRemaining + 1;
+
+        List<String> completions = new ArrayList<>();
+        for (int i = 1; i <= pageCount; i++) {
+            completions.add(String.valueOf(i));
+        }
+        return completions;
     }
 }

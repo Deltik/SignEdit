@@ -23,7 +23,6 @@ import net.deltik.mc.signedit.exceptions.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -53,7 +52,6 @@ public class ChatComms {
     private ResourceBundle phrases;
     private MessageFormat messageFormatter;
 
-    @Inject
     public ChatComms(CommandSender commandSender, Configuration config, UserComms userComms) {
         this(commandSender, config, userComms.getClassLoader());
     }

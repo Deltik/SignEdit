@@ -22,41 +22,40 @@ package net.deltik.mc.signedit.interactions;
 import net.deltik.mc.signedit.*;
 import net.deltik.mc.signedit.shims.SideShim;
 import net.deltik.mc.signedit.shims.SignShim;
+import net.deltik.mc.signedit.subcommands.SubcommandContext;
 import org.bukkit.entity.Player;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
+import java.util.function.Supplier;
 
 public class PasteSignEditInteraction implements SignEditInteraction {
     private final SignTextClipboardManager clipboardManager;
-    private final Provider<SignText> signTextProvider;
+    private final Supplier<SignText> signTextSupplier;
     private final SignTextHistoryManager historyManager;
-    private final ChatCommsModule.ChatCommsComponent.Builder commsBuilder;
+    private final ChatCommsFactory chatCommsFactory;
 
-    @Inject
     public PasteSignEditInteraction(
             SignTextClipboardManager clipboardManager,
-            Provider<SignText> signTextProvider,
+            SubcommandContext context,
             SignTextHistoryManager historyManager,
-            ChatCommsModule.ChatCommsComponent.Builder commsBuilder
+            ChatCommsFactory chatCommsFactory
     ) {
         this.clipboardManager = clipboardManager;
-        this.signTextProvider = signTextProvider;
+        this.signTextSupplier = context::createSignText;
         this.historyManager = historyManager;
-        this.commsBuilder = commsBuilder;
+        this.chatCommsFactory = chatCommsFactory;
     }
 
     @Override
     public void interact(Player player, SignShim sign, SideShim side) {
         SignText clipboard = clipboardManager.getClipboard(player);
-        SignText signText = signTextProvider.get();
+        SignText signText = signTextSupplier.get();
         signText.setTargetSign(sign, side);
 
         for (int i = 0; i < clipboard.getLines().length; i++) {
             signText.setLineLiteral(i, clipboard.getLine(i));
         }
 
-        ChatComms comms = commsBuilder.commandSender(player).build().comms();
+        ChatComms comms = chatCommsFactory.create(player);
 
         signText.applySignAutoWax(player, comms, signText::applySign);
         if (signText.signTextChanged()) {

@@ -21,13 +21,8 @@ package net.deltik.mc.signedit.subcommands;
 
 import net.deltik.mc.signedit.Configuration;
 import net.deltik.mc.signedit.CraftBukkitReflector;
+import net.deltik.mc.signedit.interactions.InteractionFactory;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
-import net.deltik.mc.signedit.interactions.SignEditInteractionModule;
-import org.bukkit.entity.Player;
-
-import javax.inject.Inject;
-import javax.inject.Provider;
-import java.util.Map;
 
 public class UiSignSubcommand extends SignSubcommand {
     /**
@@ -36,41 +31,32 @@ public class UiSignSubcommand extends SignSubcommand {
      */
     private static final String QUIRKY_BUKKIT_SERVER_VERSION = "v1_16_R1";
 
-    private final Configuration config;
-    private final Map<String, Provider<SignEditInteraction>> interactions;
-    private final CraftBukkitReflector reflector;
-
-    @Inject
-    public UiSignSubcommand(
-            Player player,
-            Configuration config,
-            Map<String, Provider<SignEditInteraction>> interactions,
-            CraftBukkitReflector reflector
-    ) {
-        super(player);
-        this.config = config;
-        this.interactions = interactions;
-        this.reflector = reflector;
+    public UiSignSubcommand(SubcommandContext context) {
+        super(context);
     }
 
     @Override
     public SignEditInteraction execute() {
-        return interactions.get(getImplementationName(config, reflector)).get();
+        Configuration config = context().services().config();
+        CraftBukkitReflector reflector = context().services().reflector();
+        String interactionName = getImplementationName(config, reflector);
+        return context().services().interactionFactory()
+                .create(interactionName, context());
     }
 
     public static String getImplementationName(Configuration config, CraftBukkitReflector reflector) {
         String value = config.getSignUi().toLowerCase();
 
         if ("editablebook".equals(value)) {
-            return SignEditInteractionModule.UI_EDITABLE_BOOK;
+            return InteractionFactory.UI_EDITABLE_BOOK;
         } else if ("native".equals(value)) {
-            return SignEditInteractionModule.UI_NATIVE;
+            return InteractionFactory.UI_NATIVE;
         }
 
         // Auto mode
         if (QUIRKY_BUKKIT_SERVER_VERSION.compareTo(reflector.BUKKIT_SERVER_VERSION) == 0) {
-            return SignEditInteractionModule.UI_EDITABLE_BOOK;
+            return InteractionFactory.UI_EDITABLE_BOOK;
         }
-        return SignEditInteractionModule.UI_NATIVE;
+        return InteractionFactory.UI_NATIVE;
     }
 }

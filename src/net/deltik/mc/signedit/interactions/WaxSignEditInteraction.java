@@ -20,7 +20,7 @@
 package net.deltik.mc.signedit.interactions;
 
 import net.deltik.mc.signedit.ChatComms;
-import net.deltik.mc.signedit.ChatCommsModule;
+import net.deltik.mc.signedit.ChatCommsFactory;
 import net.deltik.mc.signedit.SignText;
 import net.deltik.mc.signedit.exceptions.BlockStateNotPlacedException;
 import net.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
@@ -37,26 +37,23 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.inject.Inject;
-
 public class WaxSignEditInteraction implements SignEditInteraction {
     private final SignText signText;
-    private final ChatCommsModule.ChatCommsComponent.Builder commsBuilder;
+    private final ChatCommsFactory chatCommsFactory;
 
-    @Inject
     public WaxSignEditInteraction(
             SignText signText,
-            ChatCommsModule.ChatCommsComponent.Builder commsBuilder
+            ChatCommsFactory chatCommsFactory
     ) {
         this.signText = signText;
-        this.commsBuilder = commsBuilder;
+        this.chatCommsFactory = chatCommsFactory;
     }
 
     @Override
     public void interact(Player player, SignShim sign, SideShim side) {
         signText.setTargetSign(sign, side);
 
-        ChatComms comms = commsBuilder.commandSender(player).build().comms();
+        ChatComms comms = chatCommsFactory.create(player);
 
         Sign signImplementation = sign.getImplementation();
         BlockState realSign = signImplementation.getBlock().getState();

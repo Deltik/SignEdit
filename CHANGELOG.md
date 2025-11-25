@@ -7,6 +7,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.14.7 (UNRELEASED)
+
+### Under the Hood
+
+* Removed the Dagger 2 dependency injection framework in favor of simpler manual dependency wiring.
+
+  This reduces the plugin JAR size by ~98KB (~38%) while maintaining the same separation of concerns through explicit service containers (`SignEditPluginServices`, `SubcommandContext`).
+
 ## v1.14.6 (2025-06-05)
 
 ### Fixed
