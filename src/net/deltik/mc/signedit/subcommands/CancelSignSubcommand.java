@@ -22,6 +22,7 @@ package net.deltik.mc.signedit.subcommands;
 import net.deltik.mc.signedit.ChatComms;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
 
+@SignSubcommandInfo(name = "cancel")
 public class CancelSignSubcommand extends SignSubcommand {
     public CancelSignSubcommand(SubcommandContext context) {
         super(context);

@@ -29,10 +29,12 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@SignSubcommandInfo(name = "help")
 public class HelpSignSubcommand extends SignSubcommand {
     public static final int MAX_LINES = 10;
     private static final Pattern WORD_PATTERN = Pattern.compile("([0-9a-zA-Z]+)");
@@ -181,10 +183,14 @@ public class HelpSignSubcommand extends SignSubcommand {
 
     @Override
     public List<String> getTabCompletions(net.deltik.mc.signedit.ArgParser argParser) {
-        // Help command completes with page numbers
+        // Help command completes with page numbers only when there are multiple pages
         List<String[]> allowedCommands = getAllowedCommands();
         int linesRemaining = MAX_LINES - 2; // Account for header lines
         int pageCount = (allowedCommands.size() - 1) / linesRemaining + 1;
+
+        if (pageCount <= 1) {
+            return Collections.emptyList();
+        }
 
         List<String> completions = new ArrayList<>();
         for (int i = 1; i <= pageCount; i++) {

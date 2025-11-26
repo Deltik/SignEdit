@@ -24,6 +24,7 @@ import net.deltik.mc.signedit.CraftBukkitReflector;
 import net.deltik.mc.signedit.interactions.InteractionFactory;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
 
+@SignSubcommandInfo(name = "ui")
 public class UiSignSubcommand extends SignSubcommand {
     /**
      * Bug reported for Minecraft 1.16.1: https://bugs.mojang.com/browse/MC-192263

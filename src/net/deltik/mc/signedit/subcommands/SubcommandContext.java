@@ -87,9 +87,7 @@ public class SubcommandContext {
      * Each call creates a new instance, as SignText is mutable and per-interaction.
      */
     public SignText createSignText() {
-        SignText signText = new SignText();
-        signText.setSignEditValidator(services.signEditValidator());
-        return signText;
+        return new SignText(services.signEditValidator());
     }
 
     /**

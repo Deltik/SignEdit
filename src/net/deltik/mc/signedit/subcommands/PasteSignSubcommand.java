@@ -23,6 +23,7 @@ import net.deltik.mc.signedit.exceptions.NullClipboardException;
 import net.deltik.mc.signedit.interactions.InteractionFactory;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
 
+@SignSubcommandInfo(name = "paste")
 public class PasteSignSubcommand extends SignSubcommand {
     public PasteSignSubcommand(SubcommandContext context) {
         super(context);

@@ -19,7 +19,7 @@
 
 package net.deltik.mc.signedit;
 
-import net.deltik.mc.signedit.commands.SignCommandModule;
+import net.deltik.mc.signedit.subcommands.GeneratedSubcommandClasses;
 import net.deltik.mc.signedit.exceptions.NumberParseLineSelectionException;
 import net.deltik.mc.signedit.exceptions.OutOfBoundsLineSelectionException;
 import net.deltik.mc.signedit.exceptions.RangeOrderLineSelectionException;
@@ -50,7 +50,7 @@ public class ArgParserTest {
         when(config.getLineStartsAt()).thenReturn(lineStartsAt);
         when(config.getMinLine()).thenCallRealMethod();
         when(config.getMaxLine()).thenCallRealMethod();
-        Set<String> subcommandNames = SignCommandModule.provideSubcommandNames();
+        Set<String> subcommandNames = GeneratedSubcommandClasses.getSubcommandNames();
 
         String[] argsSplit = args.split(" ");
         if (args.equals("")) argsSplit = new String[]{};

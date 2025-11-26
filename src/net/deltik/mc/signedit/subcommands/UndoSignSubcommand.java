@@ -24,6 +24,7 @@ import net.deltik.mc.signedit.SignText;
 import net.deltik.mc.signedit.SignTextHistory;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
 
+@SignSubcommandInfo(name = "undo")
 public class UndoSignSubcommand extends SignSubcommand {
     public UndoSignSubcommand(SubcommandContext context) {
         super(context);
