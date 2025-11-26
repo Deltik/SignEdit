@@ -19,11 +19,11 @@
 
 package net.deltik.mc.signedit.commands;
 
-import net.deltik.mc.signedit.ArgParser;
-import net.deltik.mc.signedit.ChatCommsModule;
 import net.deltik.mc.signedit.Configuration;
-import net.deltik.mc.signedit.subcommands.HelpSignSubcommand;
+import net.deltik.mc.signedit.subcommands.GeneratedSubcommandClasses;
 import net.deltik.mc.signedit.subcommands.SignSubcommand;
+import net.deltik.mc.signedit.subcommands.SubcommandContext;
+import net.deltik.mc.signedit.subcommands.SubcommandRegistry;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -36,10 +36,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.util.collections.Sets;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -48,13 +48,14 @@ import static org.mockito.Mockito.*;
 public class SignCommandTabCompleterTest {
     final int lineStartsAt = 1;
 
-    private final SignCommandTabCompleter tabCompleter;
-    private final Configuration config;
+    private SignCommandTabCompleter tabCompleter;
+    private Configuration config;
+    private SubcommandRegistry registry;
     private CommandSender commandSender;
     private Command command;
     private SignSubcommand signSubcommand;
     private final String alias = "sign";
-    private final Set<String> subcommandNames = SignCommandModule.provideSubcommandNames();
+    private final Set<String> subcommandNames = GeneratedSubcommandClasses.getSubcommandNames();
 
     private final String[] fancySignLines = new String[]{
             "§x§2§2§4§4§A§ADot",
@@ -63,18 +64,38 @@ public class SignCommandTabCompleterTest {
             "§x§F§F§F§F§8§8Sunny"
     };
 
-    public SignCommandTabCompleterTest() {
+    @BeforeEach
+    public void setUp() {
         config = mock(Configuration.class);
         when(config.getLineStartsAt()).thenReturn(lineStartsAt);
         when(config.getMinLine()).thenCallRealMethod();
         when(config.getMaxLine()).thenCallRealMethod();
         when(config.getLocale()).thenCallRealMethod();
 
-        this.tabCompleter = spy(new SignCommandTabCompleter(config, subcommandNames, null));
-    }
+        // Create mock registry
+        registry = mock(SubcommandRegistry.class);
+        when(registry.getSubcommandNames()).thenReturn(subcommandNames);
+        when(registry.hasSubcommand(anyString())).thenAnswer(invocation -> {
+            String name = invocation.getArgument(0);
+            return GeneratedSubcommandClasses.hasSubcommand(name);
+        });
+        when(registry.supportsLineSelector(anyString())).thenAnswer(invocation -> {
+            String name = invocation.getArgument(0);
+            return GeneratedSubcommandClasses.supportsLineSelector(name);
+        });
 
-    @BeforeEach
-    public void setUp() {
+        signSubcommand = mock(SignSubcommand.class);
+        when(signSubcommand.isPermitted()).thenReturn(true);
+        when(signSubcommand.getTabCompletions(any())).thenReturn(Collections.emptyList());
+
+        when(registry.createContext(any(Player.class), any(String[].class))).thenAnswer(invocation -> {
+            return mock(SubcommandContext.class);
+        });
+        when(registry.createSubcommand(anyString(), any(SubcommandContext.class))).thenReturn(signSubcommand);
+
+        tabCompleter = spy(new SignCommandTabCompleter(registry, config));
+        doReturn(signSubcommand).when(tabCompleter).getSignSubcommand(any(), any());
+
         Sign sign = createSign(fancySignLines);
         Block block = mock(Block.class);
         when(block.getState()).thenReturn(sign);
@@ -85,10 +106,6 @@ public class SignCommandTabCompleterTest {
         when(commandSender.hasPermission(anyString())).thenReturn(true);
         when(((Player) commandSender).getTargetBlock(any(), anyInt())).thenReturn(block);
         when(((Player) commandSender).getEyeLocation()).thenReturn(new Location(mock(World.class), 0, 0, 0));
-
-        signSubcommand = mock(SignSubcommand.class);
-        when(signSubcommand.isPermitted()).thenReturn(true);
-        doAnswer(invocation -> signSubcommand).when(tabCompleter).getSignSubcommand(any(), any());
     }
 
     private static Sign createSign(String[] signLines) {
@@ -296,74 +313,6 @@ public class SignCommandTabCompleterTest {
     }
 
     @Test
-    public void signSetCompleteExistingSignLines() {
-        List<String> result;
-
-        result = tabComplete("set 1 ");
-        assertTrue(result.contains("&#2244AADot"));
-        assertEquals(1, result.size());
-
-        result = tabComplete("2");
-        assertTrue(result.contains("2-"));
-        assertTrue(result.contains("2,"));
-        assertEquals(2, result.size());
-
-        result = tabComplete("2 ");
-        assertTrue(result.contains("&#22AA44Line"));
-        assertEquals(1, result.size());
-
-        result = tabComplete("4,2-3,1 ");
-        assertTrue(result.contains("&#2244AADot"));
-        assertTrue(result.contains("&#22AA44Line"));
-        assertTrue(result.contains("&#444444Jason"));
-        assertTrue(result.contains("&#FFFF88Sunny"));
-        assertEquals(4, result.size());
-    }
-
-    @Test
-    public void signSetCompleteExistingSignLinesPartiallyFilled() {
-        List<String> result;
-
-        result = tabComplete("set 1-4 &#22");
-        assertTrue(result.contains("&#2244AADot"));
-        assertTrue(result.contains("&#22AA44Line"));
-        assertEquals(2, result.size());
-
-        result = tabComplete("1-4 other");
-        assertEquals(0, result.size());
-    }
-
-    @Test
-    public void signSetNoCompletionIfNotLookingAtSign() {
-        BlockState dummyBlockState = mock(BlockState.class);
-        Block block = mock(Block.class);
-        when(block.getState()).thenReturn(dummyBlockState);
-        when(((Player) commandSender).getTargetBlock(any(), anyInt())).thenReturn(block);
-
-        List<String> result;
-
-        result = tabComplete("2 ");
-        assertEquals(0, result.size());
-
-        result = tabComplete("1-4 ");
-        assertEquals(0, result.size());
-    }
-
-    @Test
-    public void signSetNoCompletionOutsideOfSubcommand() {
-        List<String> result;
-
-        result = tabComplete("clear 1-4 ");
-        assertTrue(result.isEmpty());
-
-        result = tabComplete("");
-        assertFalse(result.contains("&#2244AADot"));
-
-        result = tabComplete("4-2 ");
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
     public void noCompletionWithNoPermissions() {
         when(signSubcommand.isPermitted()).thenReturn(false);
 
@@ -385,65 +334,25 @@ public class SignCommandTabCompleterTest {
     }
 
     @Test
-    public void completeSignHelpPages() {
-        int commandCount = 100;
-        String usage = IntStream
-                .range(0, commandCount)
-                .mapToObj(i -> "/<command> subCommand" + i)
-                .collect(Collectors.joining("\n"));
-        doAnswer(invocation -> new HelpSignSubcommand(
-                usage,
-                new ChatCommsModule.ChatCommsComponent.Builder() {
-                    @Override
-                    public ChatCommsModule.ChatCommsComponent build() {
-                        return () -> invocation.getArgument(2);
-                    }
+    public void subcommandArgsNotCompletedUntilSubcommandFullyTyped() {
+        // Mock the subcommand to return page numbers (simulating HelpSignSubcommand with 2 pages)
+        when(signSubcommand.getTabCompletions(any())).thenReturn(Arrays.asList("1", "2"));
 
-                    @Override
-                    public ChatCommsModule.ChatCommsComponent.Builder commandSender(CommandSender commandSender) {
-                        return this;
-                    }
-                },
-                invocation.getArgument(1),
-                invocation.getArgument(0)
-        )).when(tabCompleter).getSignSubcommand(any(Player.class), any(ArgParser.class));
+        // Partial subcommand name should only complete the subcommand, not its args
+        List<String> result = tabComplete("hel");
+        assertTrue(result.contains("help"));
+        assertFalse(result.contains("1"), "Page numbers should not appear before subcommand is fully typed");
+        assertFalse(result.contains("2"), "Page numbers should not appear before subcommand is fully typed");
 
-        List<String> results = tabComplete("help ");
-        int pagesCount = (commandCount - 1) / (HelpSignSubcommand.MAX_LINES - 2) + 1;
-        for (int i = 1; i <= pagesCount; i++) {
-            assertTrue(results.contains(String.valueOf(i)));
-        }
-        assertFalse(
-                results.contains(String.valueOf(pagesCount + 1)),
-                "There should not be more than " + pagesCount + " pages."
-        );
-    }
+        // Full subcommand name without space should only complete the subcommand
+        result = tabComplete("help");
+        assertTrue(result.contains("help"));
+        assertFalse(result.contains("1"), "Page numbers should not appear without trailing space");
+        assertFalse(result.contains("2"), "Page numbers should not appear without trailing space");
 
-    @Test
-    public void noSignHelpPagesCompletionWithOnePage() {
-        int commandCount = 2;
-        String usage = IntStream
-                .range(0, commandCount)
-                .mapToObj(i -> "/<command> subCommand" + i)
-                .collect(Collectors.joining("\n"));
-        doAnswer(invocation -> new HelpSignSubcommand(
-                usage,
-                new ChatCommsModule.ChatCommsComponent.Builder() {
-                    @Override
-                    public ChatCommsModule.ChatCommsComponent build() {
-                        return () -> invocation.getArgument(2);
-                    }
-
-                    @Override
-                    public ChatCommsModule.ChatCommsComponent.Builder commandSender(CommandSender commandSender) {
-                        return this;
-                    }
-                },
-                invocation.getArgument(1),
-                invocation.getArgument(0)
-        )).when(tabCompleter).getSignSubcommand(any(Player.class), any(ArgParser.class));
-
-        List<String> results = tabComplete("help ");
-        assertEquals(0, results.size());
+        // Full subcommand name with space should show subcommand args
+        result = tabComplete("help ");
+        assertTrue(result.contains("1"), "Page numbers should appear after subcommand with trailing space");
+        assertTrue(result.contains("2"), "Page numbers should appear after subcommand with trailing space");
     }
 }

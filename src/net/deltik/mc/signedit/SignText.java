@@ -28,7 +28,6 @@ import net.deltik.mc.signedit.shims.ISignSide;
 import net.deltik.mc.signedit.shims.SideShim;
 import net.deltik.mc.signedit.shims.SignHelpers;
 import net.deltik.mc.signedit.shims.SignShim;
-import net.deltik.mc.signedit.subcommands.PerSubcommand;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -41,7 +40,6 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@PerSubcommand
 public class SignText {
     private static final String REGEX_1_HEX = "[0-9a-fA-F]";
     private static final String REGEX_AMP_HEX = "&(" + REGEX_1_HEX + ")";

@@ -24,6 +24,8 @@ import net.deltik.mc.signedit.interactions.InteractionFactory;
 import net.deltik.mc.signedit.interactions.SignEditInteractionManager;
 import org.bukkit.plugin.Plugin;
 
+import java.util.function.Supplier;
+
 /**
  * Container for singleton services used throughout the plugin.
  * This replaces Dagger's component for providing shared dependencies.
@@ -38,7 +40,7 @@ public class SignEditPluginServices {
     private final CraftBukkitReflector reflector;
     private final ChatCommsFactory chatCommsFactory;
     private final LineSelectorParser lineSelectorParser;
-    private final SignEditValidator signEditValidator;
+    private final Supplier<SignEditValidator> signEditValidatorSupplier;
     private final InteractionFactory interactionFactory;
 
     public SignEditPluginServices(
@@ -51,7 +53,7 @@ public class SignEditPluginServices {
             CraftBukkitReflector reflector,
             ChatCommsFactory chatCommsFactory,
             LineSelectorParser lineSelectorParser,
-            SignEditValidator signEditValidator,
+            Supplier<SignEditValidator> signEditValidatorSupplier,
             InteractionFactory interactionFactory
     ) {
         this.plugin = plugin;
@@ -63,7 +65,7 @@ public class SignEditPluginServices {
         this.reflector = reflector;
         this.chatCommsFactory = chatCommsFactory;
         this.lineSelectorParser = lineSelectorParser;
-        this.signEditValidator = signEditValidator;
+        this.signEditValidatorSupplier = signEditValidatorSupplier;
         this.interactionFactory = interactionFactory;
     }
 
@@ -104,7 +106,7 @@ public class SignEditPluginServices {
     }
 
     public SignEditValidator signEditValidator() {
-        return signEditValidator;
+        return signEditValidatorSupplier.get();
     }
 
     public InteractionFactory interactionFactory() {

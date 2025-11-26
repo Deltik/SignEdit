@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Removed the Dagger 2 dependency injection framework in favor of simpler manual dependency wiring.
 
   This reduces the plugin JAR size by ~98KB (~38%) while maintaining the same separation of concerns through explicit service containers (`SignEditPluginServices`, `SubcommandContext`).
+* Added compile-time annotation processing for `@SignSubcommandInfo` to validate subcommand metadata and improve tab completion accuracy with argument hints.
 
 ## v1.14.6 (2025-06-05)
 

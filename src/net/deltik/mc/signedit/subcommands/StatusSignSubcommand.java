@@ -24,6 +24,7 @@ import net.deltik.mc.signedit.SignText;
 import net.deltik.mc.signedit.SignTextHistory;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
 
+@SignSubcommandInfo(name = "status")
 public class StatusSignSubcommand extends SignSubcommand {
     public StatusSignSubcommand(SubcommandContext context) {
         super(context);

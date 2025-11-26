@@ -20,9 +20,7 @@
 package net.deltik.mc.signedit.subcommands;
 
 import net.deltik.mc.signedit.*;
-import net.deltik.mc.signedit.commands.SignCommandModule;
 import net.deltik.mc.signedit.interactions.InteractionCommand;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.InvalidDescriptionException;
 import org.bukkit.plugin.Plugin;
@@ -32,8 +30,12 @@ import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
 import java.util.*;
+import java.util.function.BiFunction;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class HelpSignSubcommandTest {
@@ -41,6 +43,8 @@ public class HelpSignSubcommandTest {
     ChatComms comms;
     Configuration config;
     Player player;
+    SignEditPluginServices services;
+    ChatCommsFactory chatCommsFactory;
 
     @BeforeEach
     public void setUp() throws InvalidDescriptionException {
@@ -56,6 +60,15 @@ public class HelpSignSubcommandTest {
         config = mock(Configuration.class);
         when(config.getLocale()).thenReturn(new Locale("en"));
         comms = new ChatComms(player, config);
+
+        // Create mock services
+        chatCommsFactory = mock(ChatCommsFactory.class);
+        when(chatCommsFactory.create(any(Player.class))).thenReturn(comms);
+
+        services = mock(SignEditPluginServices.class);
+        when(services.plugin()).thenReturn(plugin);
+        when(services.config()).thenReturn(config);
+        when(services.chatCommsFactory()).thenReturn(chatCommsFactory);
     }
 
     private ArgParser argParse(String rawArgs) {
@@ -63,8 +76,13 @@ public class HelpSignSubcommandTest {
     }
 
     private ArgParser argParse(String[] rawArgs) {
-        Set<String> subcommandNames = SignCommandModule.provideSubcommandNames();
+        Set<String> subcommandNames = GeneratedSubcommandClasses.getSubcommandNames();
         return new ArgParser(config, rawArgs, subcommandNames);
+    }
+
+    private void spyComms() {
+        comms = spy(new ChatComms(player, config));
+        when(chatCommsFactory.create(any(Player.class))).thenReturn(comms);
     }
 
     private HelpSignSubcommand help(String args) {
@@ -72,17 +90,17 @@ public class HelpSignSubcommandTest {
     }
 
     private HelpSignSubcommand help(ArgParser argParser) {
-        return new HelpSignSubcommand(plugin, new ChatCommsModule.ChatCommsComponent.Builder() {
-            @Override
-            public ChatCommsModule.ChatCommsComponent build() {
-                return () -> comms;
-            }
-
-            @Override
-            public ChatCommsModule.ChatCommsComponent.Builder commandSender(CommandSender commandSender) {
-                return this;
-            }
-        }, argParser, player);
+        Set<String> subcommandNames = GeneratedSubcommandClasses.getSubcommandNames();
+        BiFunction<String, SubcommandContext, InteractionCommand> subcommandFactory = (name, ctx) -> {
+            // Capture permission result before stubbing to avoid Mockito confusion
+            boolean hasPermission = player.hasPermission("signedit.sign." + name);
+            InteractionCommand mockCmd = mock(InteractionCommand.class);
+            when(mockCmd.isPermitted()).thenReturn(hasPermission);
+            return mockCmd;
+        };
+        SubcommandContext context = new SubcommandContext(
+                player, argParser.getArgs(), services, subcommandNames, subcommandFactory);
+        return new HelpSignSubcommand(context);
     }
 
     @Test
@@ -121,11 +139,12 @@ public class HelpSignSubcommandTest {
     @Test
     public void signHelpExtraLineWithOnlineDocumentationDisabled() {
         comms = spy(comms);
+        when(chatCommsFactory.create(any(Player.class))).thenReturn(comms);
         help("").execute();
         verify(comms, times(HelpSignSubcommand.MAX_LINES - 2))
                 .t(eq("print_subcommand_usage"), any());
 
-        comms = spy(comms);
+        spyComms();
         doReturn("").when(comms).t(eq("online_documentation"), any());
         help("").execute();
         verify(comms, times(HelpSignSubcommand.MAX_LINES - 1))
@@ -150,7 +169,7 @@ public class HelpSignSubcommandTest {
     }
 
     private void signHelpPageTotal(int commandCount, int expected) {
-        comms = spy(comms);
+        spyComms();
         HelpSignSubcommand subcommand = help("");
         subcommand = spy(subcommand);
         List<String[]> items = Collections.nCopies(commandCount, "foo".split(" "));
@@ -178,7 +197,7 @@ public class HelpSignSubcommandTest {
     }
 
     private void signHelpPageTotalWithoutOnlineDocumentation(int commandCount, int expected) {
-        comms = spy(comms);
+        spyComms();
         doReturn("").when(comms).t(eq("online_documentation"), any());
         HelpSignSubcommand subcommand = help("");
         subcommand = spy(subcommand);
@@ -191,7 +210,7 @@ public class HelpSignSubcommandTest {
 
     @Test
     public void signHelpDoesNotPaginateIfCommandsFitOnOnePage() {
-        comms = spy(comms);
+        spyComms();
         HelpSignSubcommand subcommand = help("");
         subcommand = spy(subcommand);
         List<String[]> items = Collections.nCopies(3, "foo".split(" "));
@@ -203,7 +222,7 @@ public class HelpSignSubcommandTest {
 
     @Test
     public void signHelpPaginationPage1() {
-        comms = spy(comms);
+        spyComms();
         HelpSignSubcommand subcommand = help("");
         subcommand = spy(subcommand);
         List<String[]> items = new ArrayList<>();
@@ -220,7 +239,7 @@ public class HelpSignSubcommandTest {
 
     @Test
     public void signHelpPaginationPage2() {
-        comms = spy(comms);
+        spyComms();
         HelpSignSubcommand subcommand = help("2");
         subcommand = spy(subcommand);
         List<String[]> items = new ArrayList<>();
@@ -238,7 +257,7 @@ public class HelpSignSubcommandTest {
 
     @Test
     public void signHelpPaginationPage2WithoutOnlineDocumentation() {
-        comms = spy(comms);
+        spyComms();
         doReturn("").when(comms).t(eq("online_documentation"), any());
         HelpSignSubcommand subcommand = help("2");
         subcommand = spy(subcommand);
@@ -257,7 +276,7 @@ public class HelpSignSubcommandTest {
 
     @Test
     public void signHelpCurrentPageNeverLessThan1() {
-        comms = spy(comms);
+        spyComms();
         HelpSignSubcommand subcommand = help("0");
         subcommand = spy(subcommand);
         List<String[]> items = Collections.nCopies(100, "foo".split(" "));
@@ -269,7 +288,7 @@ public class HelpSignSubcommandTest {
 
     @Test
     public void signHelpCurrentPageNeverGreaterThanMax() {
-        comms = spy(comms);
+        spyComms();
         HelpSignSubcommand subcommand = help("31");
         subcommand = spy(subcommand);
         List<String[]> items = Collections.nCopies(100, "foo".split(" "));
@@ -281,7 +300,7 @@ public class HelpSignSubcommandTest {
 
     @Test
     public void signHelpInvalidPageGoesToPage1() {
-        comms = spy(comms);
+        spyComms();
         HelpSignSubcommand subcommand = help("garbage");
         subcommand = spy(subcommand);
         List<String[]> items = Collections.nCopies(100, "foo".split(" "));
@@ -289,5 +308,48 @@ public class HelpSignSubcommandTest {
 
         subcommand.execute();
         verify(comms).t(eq("usage_page_numbering"), eq(1), eq(13));
+    }
+
+    @Test
+    public void tabCompletionReturnsPageNumbers() {
+        HelpSignSubcommand subcommand = help("");
+        subcommand = spy(subcommand);
+        // 100 commands with 8 lines per page (MAX_LINES - 2) = 13 pages
+        List<String[]> items = Collections.nCopies(100, "foo".split(" "));
+        doReturn(items).when(subcommand).getAllowedCommands();
+
+        List<String> completions = subcommand.getTabCompletions(argParse("help"));
+
+        assertEquals(13, completions.size());
+        for (int i = 1; i <= 13; i++) {
+            assertTrue(completions.contains(String.valueOf(i)));
+        }
+        assertFalse(completions.contains("14"));
+    }
+
+    @Test
+    public void tabCompletionReturnsEmptyWhenOnePage() {
+        HelpSignSubcommand subcommand = help("");
+        subcommand = spy(subcommand);
+        // 3 commands fits on one page; no pagination needed
+        List<String[]> items = Collections.nCopies(3, "foo".split(" "));
+        doReturn(items).when(subcommand).getAllowedCommands();
+
+        List<String> completions = subcommand.getTabCompletions(argParse("help"));
+
+        // No page number completion when everything fits on one page
+        assertEquals(0, completions.size());
+    }
+
+    @Test
+    public void tabCompletionReturnsEmptyWhenNoCommands() {
+        HelpSignSubcommand subcommand = help("");
+        subcommand = spy(subcommand);
+        doReturn(Collections.emptyList()).when(subcommand).getAllowedCommands();
+
+        List<String> completions = subcommand.getTabCompletions(argParse("help"));
+
+        // No page number completion when there are no commands
+        assertEquals(0, completions.size());
     }
 }

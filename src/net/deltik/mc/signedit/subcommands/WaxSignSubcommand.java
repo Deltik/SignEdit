@@ -23,6 +23,7 @@ import net.deltik.mc.signedit.interactions.InteractionFactory;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
 import net.deltik.mc.signedit.shims.SignHelpers;
 
+@SignSubcommandInfo(name = "wax")
 public class WaxSignSubcommand extends SignSubcommand {
     public WaxSignSubcommand(SubcommandContext context) {
         super(context);

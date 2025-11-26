@@ -23,16 +23,16 @@ import net.deltik.mc.signedit.SignEditPluginServices;
 import net.deltik.mc.signedit.interactions.InteractionCommand;
 import org.bukkit.entity.Player;
 
+import java.lang.reflect.Constructor;
 import java.util.*;
 
 /**
  * Registry for SignEdit subcommands.
- * Replaces the Dagger-based SignSubcommandComponent and SignCommandModule.
+ * Uses {@link GeneratedSubcommandClasses} (generated at compile time) to discover subcommands.
  */
 public class SubcommandRegistry {
     private final SignEditPluginServices services;
     private final Map<String, SubcommandFactory> factories = new LinkedHashMap<>();
-    private final Map<String, SignSubcommandInfo> metadata = new HashMap<>();
 
     @FunctionalInterface
     public interface SubcommandFactory {
@@ -41,49 +41,50 @@ public class SubcommandRegistry {
 
     public SubcommandRegistry(SignEditPluginServices services) {
         this.services = services;
-        registerBuiltInSubcommands();
+        registerFromGeneratedClasses();
     }
 
-    private void registerBuiltInSubcommands() {
-        register("help", HelpSignSubcommand.class, HelpSignSubcommand::new);
-        register("set", SetSignSubcommand.class, SetSignSubcommand::new);
-        register("clear", ClearSignSubcommand.class, ClearSignSubcommand::new);
-        register("ui", UiSignSubcommand.class, UiSignSubcommand::new);
-        register("cancel", CancelSignSubcommand.class, CancelSignSubcommand::new);
-        register("status", StatusSignSubcommand.class, StatusSignSubcommand::new);
-        register("copy", CopySignSubcommand.class, CopySignSubcommand::new);
-        register("cut", CutSignSubcommand.class, CutSignSubcommand::new);
-        register("paste", PasteSignSubcommand.class, PasteSignSubcommand::new);
-        register("undo", UndoSignSubcommand.class, UndoSignSubcommand::new);
-        register("redo", RedoSignSubcommand.class, RedoSignSubcommand::new);
-        register("unwax", UnwaxSignSubcommand.class, UnwaxSignSubcommand::new);
-        register("wax", WaxSignSubcommand.class, WaxSignSubcommand::new);
-        register("version", VersionSignSubcommand.class, VersionSignSubcommand::new);
-    }
-
-    private void register(String name, Class<? extends SignSubcommand> clazz, SubcommandFactory factory) {
-        factories.put(name, factory);
-        SignSubcommandInfo info = clazz.getAnnotation(SignSubcommandInfo.class);
-        if (info != null) {
-            metadata.put(name, info);
+    /**
+     * Register all subcommands discovered by the annotation processor.
+     */
+    private void registerFromGeneratedClasses() {
+        for (Map.Entry<String, Class<? extends SignSubcommand>> entry :
+                GeneratedSubcommandClasses.getSubcommandClasses().entrySet()) {
+            String name = entry.getKey();
+            Class<? extends SignSubcommand> clazz = entry.getValue();
+            factories.put(name, createFactoryForClass(clazz));
         }
     }
 
+    /**
+     * Creates a factory that instantiates the subcommand class with a SubcommandContext.
+     */
+    private SubcommandFactory createFactoryForClass(Class<? extends SignSubcommand> clazz) {
+        return context -> {
+            try {
+                Constructor<? extends SignSubcommand> constructor =
+                        clazz.getConstructor(SubcommandContext.class);
+                return constructor.newInstance(context);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to instantiate subcommand: " + clazz.getName(), e);
+            }
+        };
+    }
+
+    /**
+     * Returns the set of all subcommand names.
+     * This delegates to the generated class for consistency.
+     */
     public Set<String> getSubcommandNames() {
-        return Collections.unmodifiableSet(factories.keySet());
+        return GeneratedSubcommandClasses.getSubcommandNames();
     }
 
     public boolean hasSubcommand(String name) {
-        return factories.containsKey(name);
-    }
-
-    public SignSubcommandInfo getMetadata(String name) {
-        return metadata.get(name);
+        return GeneratedSubcommandClasses.hasSubcommand(name);
     }
 
     public boolean supportsLineSelector(String name) {
-        SignSubcommandInfo info = metadata.get(name);
-        return info != null && info.supportsLineSelector();
+        return GeneratedSubcommandClasses.supportsLineSelector(name);
     }
 
     /**

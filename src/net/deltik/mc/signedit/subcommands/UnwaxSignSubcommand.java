@@ -23,6 +23,7 @@ import net.deltik.mc.signedit.interactions.InteractionFactory;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
 import net.deltik.mc.signedit.shims.SignHelpers;
 
+@SignSubcommandInfo(name = "unwax")
 public class UnwaxSignSubcommand extends SignSubcommand {
     public UnwaxSignSubcommand(SubcommandContext context) {
         super(context);

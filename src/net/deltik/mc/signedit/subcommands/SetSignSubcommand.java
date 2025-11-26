@@ -19,10 +19,22 @@
 
 package net.deltik.mc.signedit.subcommands;
 
+import net.deltik.mc.signedit.ArgParser;
 import net.deltik.mc.signedit.SignText;
+import net.deltik.mc.signedit.commands.SignCommand;
 import net.deltik.mc.signedit.exceptions.MissingLineSelectionException;
 import net.deltik.mc.signedit.interactions.InteractionFactory;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
+import net.deltik.mc.signedit.shims.IBlockHitResult;
+import net.deltik.mc.signedit.shims.SideShim;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Sign;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @SignSubcommandInfo(name = "set", supportsLineSelector = true)
 public class SetSignSubcommand extends SignSubcommand {
@@ -46,5 +58,32 @@ public class SetSignSubcommand extends SignSubcommand {
 
         return context().services().interactionFactory()
                 .create(InteractionFactory.INTERACTION_SET, context());
+    }
+
+    @Override
+    public List<String> getTabCompletions(ArgParser argParser) {
+        IBlockHitResult targetInfo = SignCommand.getLivingEntityTarget(player());
+        Block targetBlock = targetInfo.getHitBlock();
+        BlockState targetBlockState = null;
+        if (targetBlock != null) targetBlockState = targetBlock.getState();
+        if (!(targetBlockState instanceof Sign)) {
+            return Collections.emptyList();
+        }
+
+        Sign targetSign = (Sign) targetBlockState;
+        SignText signText = new SignText();
+        SideShim side = SideShim.fromRelativePosition(targetSign, player());
+        signText.setTargetSign(targetSign, side);
+        signText.importSign();
+
+        List<String> qualifyingLines = new ArrayList<>();
+        for (int selectedLine : argParser.getLinesSelection()) {
+            qualifyingLines.add(signText.getLineParsed(selectedLine));
+        }
+
+        String prefix = String.join(" ", argParser.getRemainder());
+        return qualifyingLines.stream()
+                .filter(line -> line.startsWith(prefix))
+                .collect(Collectors.toList());
     }
 }

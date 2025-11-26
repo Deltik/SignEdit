@@ -21,7 +21,6 @@ package net.deltik.mc.signedit;
 
 import net.deltik.mc.signedit.commands.SignCommand;
 import net.deltik.mc.signedit.commands.SignCommandTabCompleter;
-import net.deltik.mc.signedit.integrations.SignEditValidator;
 import net.deltik.mc.signedit.integrations.SignEditValidatorModule;
 import net.deltik.mc.signedit.interactions.InteractionFactory;
 import net.deltik.mc.signedit.interactions.SignEditInteractionManager;
@@ -51,7 +50,6 @@ public class SignEditPlugin extends JavaPlugin {
     private SignEditInteractionManager interactionManager;
     private ChatCommsFactory chatCommsFactory;
     private LineSelectorParser lineSelectorParser;
-    private SignEditValidator signEditValidator;
     private InteractionFactory interactionFactory;
     private SignEditPluginServices services;
     private SubcommandRegistry registry;
@@ -71,12 +69,12 @@ public class SignEditPlugin extends JavaPlugin {
     private void initializeServices() {
         // Configuration
         config = new Configuration(this);
-        configWatcher = new ConfigurationWatcher(config, this::reregisterListeners);
+        configWatcher = new ConfigurationWatcher(this, config);
         userComms = new UserComms(this);
         reflector = new CraftBukkitReflector();
 
         // Managers
-        historyManager = new SignTextHistoryManager(config);
+        historyManager = new SignTextHistoryManager();
         clipboardManager = new SignTextClipboardManager();
         interactionManager = new SignEditInteractionManager();
 
@@ -84,7 +82,6 @@ public class SignEditPlugin extends JavaPlugin {
         chatCommsFactory = new ChatCommsFactory(config, userComms);
         interactionManager.setChatCommsFactory(chatCommsFactory);
         lineSelectorParser = new LineSelectorParser(config);
-        signEditValidator = SignEditValidatorModule.provideSignEditValidator();
         interactionFactory = new InteractionFactory();
 
         // Services container
@@ -98,7 +95,10 @@ public class SignEditPlugin extends JavaPlugin {
                 reflector,
                 chatCommsFactory,
                 lineSelectorParser,
-                signEditValidator,
+                () -> SignEditValidatorModule.provideSignEditValidator(
+                        config.getEditValidation(),
+                        getServer().getPluginManager()
+                ),
                 interactionFactory
         );
 
@@ -161,7 +161,7 @@ public class SignEditPlugin extends JavaPlugin {
                 historyManager,
                 interactionManager,
                 chatCommsFactory,
-                signEditValidator
+                services.signEditValidator()
         ));
 
         // Book UI listener is only registered when using EditableBook UI mode

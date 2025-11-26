@@ -24,6 +24,7 @@ import net.deltik.mc.signedit.SignText;
 import net.deltik.mc.signedit.SignTextHistory;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
 
+@SignSubcommandInfo(name = "redo")
 public class RedoSignSubcommand extends SignSubcommand {
     public RedoSignSubcommand(SubcommandContext context) {
         super(context);

@@ -72,6 +72,17 @@ dependencies {
 }
 
 sourceSets {
+    processor {
+        java {
+            srcDirs = ['src']
+            include 'net/deltik/mc/signedit/subcommands/SignSubcommandProcessor.java'
+            include 'net/deltik/mc/signedit/subcommands/SignSubcommandInfo.java'
+        }
+        resources {
+            srcDirs = ['processor-resources']
+        }
+    }
+
     main {
         java {
             srcDirs = ['src']
@@ -87,6 +98,35 @@ sourceSets {
         }
         resources {
             srcDirs = ['test/resources']
+        }
+    }
+}
+
+compileProcessorJava {
+    options.compilerArgs += ['-proc:none']
+}
+
+compileJava {
+    dependsOn processProcessorResources
+    options.annotationProcessorPath = files(
+            sourceSets.processor.output.classesDirs,
+            sourceSets.processor.output.resourcesDir
+    )
+}
+
+compileTestJava {
+    dependsOn compileJava
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+        showStandardStreams = false
+        afterSuite { desc, result ->
+            if (!desc.parent) {
+                println "\nTest results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} passed, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped)"
+            }
         }
     }
 }

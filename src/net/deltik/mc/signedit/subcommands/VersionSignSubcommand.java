@@ -22,6 +22,7 @@ package net.deltik.mc.signedit.subcommands;
 import net.deltik.mc.signedit.ChatComms;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
 
+@SignSubcommandInfo(name = "version")
 public class VersionSignSubcommand extends SignSubcommand {
     public VersionSignSubcommand(SubcommandContext context) {
         super(context);

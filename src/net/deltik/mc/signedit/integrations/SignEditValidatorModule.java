@@ -19,6 +19,8 @@
 
 package net.deltik.mc.signedit.integrations;
 
+import org.bukkit.plugin.PluginManager;
+
 /**
  * Factory for creating SignEditValidator instances.
  * Replaces Dagger module with simple static factory methods.
@@ -29,28 +31,21 @@ public class SignEditValidatorModule {
     }
 
     /**
-     * Creates the default SignEditValidator (StandardSignEditValidator).
-     * This is used when no configuration is available or for simple cases.
-     */
-    public static SignEditValidator provideSignEditValidator() {
-        return new StandardSignEditValidator();
-    }
-
-    /**
      * Creates a SignEditValidator based on configuration.
      *
      * @param validationType The type of validation: "standard", "extra", or "none"
+     * @param pluginManager  The Bukkit PluginManager for event dispatching
      * @return The appropriate SignEditValidator implementation
      */
-    public static SignEditValidator provideSignEditValidator(String validationType) {
+    public static SignEditValidator provideSignEditValidator(String validationType, PluginManager pluginManager) {
         switch (validationType.toLowerCase()) {
             case "extra":
-                return new BreakReplaceSignEditValidator();
+                return new BreakReplaceSignEditValidator(pluginManager);
             case "none":
                 return new NoopSignEditValidator();
             case "standard":
             default:
-                return new StandardSignEditValidator();
+                return new StandardSignEditValidator(pluginManager);
         }
     }
 }

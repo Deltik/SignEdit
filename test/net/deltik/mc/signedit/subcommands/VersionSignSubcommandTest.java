@@ -20,18 +20,20 @@
 package net.deltik.mc.signedit.subcommands;
 
 import net.deltik.mc.signedit.ChatComms;
-import net.deltik.mc.signedit.ChatCommsModule;
+import net.deltik.mc.signedit.ChatCommsFactory;
 import net.deltik.mc.signedit.Configuration;
 import net.deltik.mc.signedit.SignEditPlugin;
+import net.deltik.mc.signedit.SignEditPluginServices;
 import net.deltik.mc.signedit.interactions.InteractionCommand;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.junit.jupiter.api.Test;
 
 import java.util.Locale;
+import java.util.Set;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.*;
 
@@ -47,24 +49,20 @@ public class VersionSignSubcommandTest {
         Plugin plugin = mock(SignEditPlugin.class);
         when(plugin.getDescription()).thenReturn(pluginDescriptionFile);
         when(pluginDescriptionFile.getVersion()).thenReturn(expected);
-        InteractionCommand subcommand = new VersionSignSubcommand(
-                plugin,
-                new ChatCommsModule.ChatCommsComponent.Builder() {
-                    ChatComms comms;
 
-                    @Override
-                    public ChatCommsModule.ChatCommsComponent build() {
-                        return () -> comms;
-                    }
+        ChatComms comms = new ChatComms(player, config);
+        ChatCommsFactory chatCommsFactory = mock(ChatCommsFactory.class);
+        when(chatCommsFactory.create(any(Player.class))).thenReturn(comms);
 
-                    @Override
-                    public ChatCommsModule.ChatCommsComponent.Builder commandSender(CommandSender commandSender) {
-                        this.comms = new ChatComms(player, config);
-                        return this;
-                    }
-                },
-                player
-        );
+        SignEditPluginServices services = mock(SignEditPluginServices.class);
+        when(services.plugin()).thenReturn(plugin);
+        when(services.chatCommsFactory()).thenReturn(chatCommsFactory);
+
+        Set<String> subcommandNames = GeneratedSubcommandClasses.getSubcommandNames();
+        SubcommandContext context = new SubcommandContext(
+                player, new String[]{"version"}, services, subcommandNames, null);
+
+        InteractionCommand subcommand = new VersionSignSubcommand(context);
         subcommand.execute();
 
         verify(player).sendMessage(contains(expected));

@@ -22,16 +22,10 @@ package net.deltik.mc.signedit.commands;
 import net.deltik.mc.signedit.ArgParser;
 import net.deltik.mc.signedit.Configuration;
 import net.deltik.mc.signedit.LineSelectorParser;
-import net.deltik.mc.signedit.SignText;
 import net.deltik.mc.signedit.interactions.InteractionCommand;
-import net.deltik.mc.signedit.shims.IBlockHitResult;
-import net.deltik.mc.signedit.shims.SideShim;
 import net.deltik.mc.signedit.subcommands.SignSubcommand;
 import net.deltik.mc.signedit.subcommands.SubcommandContext;
 import net.deltik.mc.signedit.subcommands.SubcommandRegistry;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -71,13 +65,8 @@ public class SignCommandTabCompleter implements TabCompleter {
         }
 
         ArgParser argParser = new ArgParser(config, args, registry.getSubcommandNames());
-        if (argParser.getRemainder().size() > 0) {
-            String subcommandName = argParser.getSubcommand();
-            if ("set".equals(subcommandName)) {
-                completion.addAll(completeExistingLines(player, argParser));
-            } else if ("help".equalsIgnoreCase(rawSubcommand)) {
-                completion.addAll(completeHelpPage(player, argParser));
-            }
+        if (args.length > 1 && argParser.getRemainder().size() > 0) {
+            completion.addAll(completeSubcommandArgs(player, argParser));
         }
 
         return completion;
@@ -87,61 +76,23 @@ public class SignCommandTabCompleter implements TabCompleter {
         return registry.supportsLineSelector(subcommandName);
     }
 
-    private Collection<String> completeHelpPage(Player player, ArgParser argParser) {
-        List<String> nothing = new ArrayList<>();
-
+    /**
+     * Delegate to the subcommand's {@link SignSubcommand#getTabCompletions} for subcommand-specific argument completion.
+     */
+    private Collection<String> completeSubcommandArgs(Player player, ArgParser argParser) {
+        String subcommandName = argParser.getSubcommand();
         SubcommandContext context = registry.createContext(player, argParser.getArgs());
-        SignSubcommand signSubcommand = (SignSubcommand) registry.createSubcommand("help", context);
+        SignSubcommand signSubcommand = (SignSubcommand) registry.createSubcommand(subcommandName, context);
         if (signSubcommand == null) {
-            return nothing;
+            return new ArrayList<>();
         }
-
-        List<String> completions = signSubcommand.getTabCompletions(argParser);
-
-        List<String> remainder = argParser.getRemainder();
-        String startMatch = "";
-        if (remainder.size() > 1) return nothing;
-        else if (remainder.size() == 1) {
-            startMatch = remainder.get(0);
-        }
-
-        String finalStartMatch = startMatch;
-        return completions.stream()
-                .filter(item -> item.startsWith(finalStartMatch))
-                .collect(Collectors.toList());
+        return signSubcommand.getTabCompletions(argParser);
     }
 
     protected InteractionCommand getSignSubcommand(Player player, ArgParser argParser) {
         String subcommandName = argParser.getSubcommand();
         SubcommandContext context = registry.createContext(player, new String[]{subcommandName});
         return registry.createSubcommand(subcommandName, context);
-    }
-
-    private List<String> completeExistingLines(Player player, ArgParser argParser) {
-        List<String> nothing = new ArrayList<>();
-
-        IBlockHitResult targetInfo = SignCommand.getLivingEntityTarget(player);
-        Block targetBlock = targetInfo.getHitBlock();
-        BlockState targetBlockState = null;
-        if (targetBlock != null) targetBlockState = targetBlock.getState();
-        if (!(targetBlockState instanceof Sign)) {
-            return nothing;
-        }
-
-        Sign targetSign = (Sign) targetBlockState;
-        SignText signText = new SignText();
-        SideShim side = SideShim.fromRelativePosition(targetSign, player);
-        signText.setTargetSign(targetSign, side);
-        signText.importSign();
-        List<String> qualifyingLines = new ArrayList<>();
-        for (int selectedLine : argParser.getLinesSelection()) {
-            qualifyingLines.add(signText.getLineParsed(selectedLine));
-        }
-        return qualifyingLines.stream()
-                .filter(
-                        line -> line.startsWith(String.join(" ", argParser.getRemainder()))
-                )
-                .collect(Collectors.toList());
     }
 
     /**
