@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.14.7 (UNRELEASED)
 
+### Added
+
+* `/sign cut` now shows the unexpected differences when another plugin overrides the line removals.
+
+  ![`/sign cut` with SignEdit for Bukkit v1.14.7](https://i.imgur.com/kilZyoY.png)
+
 ### Fixed
 
 * When using `/sign set` or `/sign clear`, sign text modifications were not applied due to a state tracking bug. This bug did not affect native sign text edits with `/sign ui`.
