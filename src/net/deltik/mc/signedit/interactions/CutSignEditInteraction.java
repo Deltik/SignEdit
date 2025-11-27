@@ -65,6 +65,27 @@ public class CutSignEditInteraction extends SignEditInteraction {
 
         comms.tell(comms.t("lines_cut_section"));
         comms.dumpLines(clipboard.getLines());
+
+        // Check if any cut lines were externally modified (not cleared as expected)
+        String[] afterLines = signText().getAfterLines();
+        boolean hasExternalMod = false;
+        for (int selectedLine : selectedLines) {
+            if (!afterLines[selectedLine].isEmpty()) {
+                hasExternalMod = true;
+                break;
+            }
+        }
+
+        if (hasExternalMod) {
+            comms.tell(comms.t("after_section", comms.t("section_decorator", comms.t("modified_by_another_plugin"))));
+            for (int selectedLine : selectedLines) {
+                String afterLine = afterLines[selectedLine];
+                if (!afterLine.isEmpty()) {
+                    int displayLine = config().getLineStartsAt() + selectedLine;
+                    comms.tell(comms.t("print_line", comms.t("secondary"), displayLine, afterLine));
+                }
+            }
+        }
     }
 
     @Override
