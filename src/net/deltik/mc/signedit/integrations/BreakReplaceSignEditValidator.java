@@ -47,11 +47,11 @@ public class BreakReplaceSignEditValidator extends StandardSignEditValidator {
     }
 
     @Override
-    public void validate(SignShim proposedSign, SideShim side, Player player) {
+    public String[] validate(SignShim proposedSign, SideShim side, Player player) {
         Sign signImplementation = proposedSign.getImplementation();
         validateBlockBreak(signImplementation, player);
         validateBlockPlace(signImplementation, player);
-        super.validate(proposedSign, side, player);
+        return super.validate(proposedSign, side, player);
     }
 
     @Override

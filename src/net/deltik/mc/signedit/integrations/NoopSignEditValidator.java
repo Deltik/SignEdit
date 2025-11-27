@@ -29,7 +29,8 @@ public class NoopSignEditValidator implements SignEditValidator {
     }
 
     @Override
-    public void validate(SignShim proposedSign, SideShim signSide, Player player) {
+    public String[] validate(SignShim proposedSign, SideShim signSide, Player player) {
+        return proposedSign.getSide(signSide).getLines();
     }
 
     @Override

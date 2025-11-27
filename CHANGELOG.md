@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.14.7 (UNRELEASED)
 
+### Fixed
+
+* When using `/sign set` or `/sign clear`, sign text modifications were not applied due to a state tracking bug. This bug did not affect native sign text edits with `/sign ui`.
+
 ### Under the Hood
 
 * Removed the Dagger 2 dependency injection framework in favor of simpler manual dependency wiring.

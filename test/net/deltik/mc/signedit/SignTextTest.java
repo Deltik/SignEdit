@@ -23,8 +23,10 @@ import net.deltik.mc.signedit.exceptions.BlockStateNotPlacedException;
 import net.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
 import net.deltik.mc.signedit.integrations.BreakReplaceSignEditValidator;
 import net.deltik.mc.signedit.integrations.NoopSignEditValidator;
+import net.deltik.mc.signedit.integrations.SignEditValidator;
 import net.deltik.mc.signedit.integrations.StandardSignEditValidator;
 import net.deltik.mc.signedit.shims.SideShim;
+import net.deltik.mc.signedit.shims.SignShim;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.block.data.BlockData;
@@ -540,6 +542,35 @@ public class SignTextTest {
 
         assertEquals("CHANGED", signText.getStagedLine(1));
         assertEquals("OTHER", signText.getAfterLine(1));
+    }
+
+    @Test
+    public void externalModificationFromValidatorIsAppliedToSign() {
+        Sign sign = createSign();
+        SignEditValidator modifyingValidator = new SignEditValidator() {
+            @Override
+            public String[] validate(SignShim proposedSign, SideShim side, Player player) {
+                String[] lines = proposedSign.getSide(side).getLines().clone();
+                lines[1] = "MODIFIED_BY_PLUGIN";
+                return lines;
+            }
+
+            @Override
+            public void validate(SignChangeEvent signChangeEvent) {
+            }
+        };
+        signText = new SignText(modifyingValidator);
+
+        signText.setTargetSign(sign, SideShim.FRONT);
+        signText.setLineLiteral(1, "ORIGINAL");
+        signText.applySign(player);
+
+        // Staged lines should reflect what we originally set
+        assertEquals("ORIGINAL", signText.getStagedLine(1));
+        // After lines should reflect the external modification
+        assertEquals("MODIFIED_BY_PLUGIN", signText.getAfterLine(1));
+        // The sign should have the external modification applied
+        assertEquals("MODIFIED_BY_PLUGIN", sign.getLine(1));
     }
 
     @Test
