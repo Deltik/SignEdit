@@ -45,7 +45,7 @@ public class StandardSignEditValidator implements SignEditValidator {
     }
 
     @Override
-    public void validate(SignShim proposedSign, SideShim side, Player player) {
+    public String[] validate(SignShim proposedSign, SideShim side, Player player) {
         SignChangeEvent signChangeEvent;
         try {
             Constructor<?> constructor = Arrays.stream(SignChangeEvent.class.getConstructors())
@@ -79,7 +79,12 @@ public class StandardSignEditValidator implements SignEditValidator {
         }
 
         pluginManager.callEvent(signChangeEvent);
-        validate(signChangeEvent);
+
+        if (signChangeEvent.isCancelled()) {
+            throw new ForbiddenSignEditException();
+        }
+
+        return signChangeEvent.getLines();
     }
 
     /**

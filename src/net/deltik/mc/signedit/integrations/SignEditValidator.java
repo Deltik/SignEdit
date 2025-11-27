@@ -19,6 +19,7 @@
 
 package net.deltik.mc.signedit.integrations;
 
+import net.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
 import net.deltik.mc.signedit.shims.SideShim;
 import net.deltik.mc.signedit.shims.SignShim;
 import org.bukkit.block.Sign;
@@ -34,8 +35,10 @@ public interface SignEditValidator {
      * @param proposedSign A changed sign that has not had {@link Sign#update()} called yet
      * @param side         The side of the sign that has staged changes
      * @param player       The player that is trying to edit the sign
+     * @return The validated lines, potentially modified by other plugins
+     * @throws ForbiddenSignEditException if the edit was cancelled by another plugin
      */
-    void validate(SignShim proposedSign, SideShim side, Player player);
+    String[] validate(SignShim proposedSign, SideShim side, Player player);
 
     /**
      * Import sign changes from a {@link SignChangeEvent} and ensure that they pass checks before saving

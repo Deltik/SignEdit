@@ -126,7 +126,12 @@ public class SignText {
 
         stagedLines = getTargetSignSide().getLines().clone();
 
-        validator.validate(this.targetSign, this.targetSignSide, player);
+        String[] validatedLines = validator.validate(this.targetSign, this.targetSignSide, player);
+        for (int i = 0; i < validatedLines.length; i++) {
+            if (!Objects.equals(validatedLines[i], stagedLines[i])) {
+                getTargetSignSide().setLine(i, validatedLines[i]);
+            }
+        }
         target.update();
 
         afterLines = getTargetSignSide().getLines().clone();
