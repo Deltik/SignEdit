@@ -19,29 +19,74 @@
 
 package net.deltik.mc.signedit.interactions;
 
-import net.deltik.mc.signedit.ChatComms;
+import net.deltik.mc.signedit.*;
 import net.deltik.mc.signedit.shims.SideShim;
 import net.deltik.mc.signedit.shims.SignShim;
+import net.deltik.mc.signedit.subcommands.SubcommandContext;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
-public interface SignEditInteraction {
-    void interact(Player player, SignShim sign, SideShim side);
+public abstract class SignEditInteraction {
+    private final SubcommandContext context;
 
-    default String getName() {
+    protected SignEditInteraction(SubcommandContext context) {
+        this.context = context;
+    }
+
+    protected SubcommandContext context() {
+        return context;
+    }
+
+    // Convenience accessors for commonly used services
+    protected SignText signText() {
+        return context.signText();
+    }
+
+    protected ArgParser argParser() {
+        return context.argParser();
+    }
+
+    protected ChatCommsFactory chatCommsFactory() {
+        return context.services().chatCommsFactory();
+    }
+
+    protected SignTextHistoryManager historyManager() {
+        return context.services().historyManager();
+    }
+
+    protected SignTextClipboardManager clipboardManager() {
+        return context.services().clipboardManager();
+    }
+
+    protected SignEditInteractionManager interactionManager() {
+        return context.services().interactionManager();
+    }
+
+    protected Configuration config() {
+        return context.services().config();
+    }
+
+    protected Plugin plugin() {
+        return context.services().plugin();
+    }
+
+    public abstract void interact(Player player, SignShim sign, SideShim side);
+
+    public String getName() {
         return this.getClass().getSimpleName();
     }
 
-    default String getActionHint(ChatComms comms) {
+    public String getActionHint(ChatComms comms) {
         return comms.t("right_click_sign_to_apply_action_hint");
     }
 
-    default void cleanup(Event event) {
+    public void cleanup(Event event) {
     }
 
-    default void cleanup() {
+    public void cleanup() {
         cleanup(new Event() {
             @NotNull
             @Override

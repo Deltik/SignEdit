@@ -21,8 +21,8 @@ package net.deltik.mc.signedit.subcommands;
 
 import net.deltik.mc.signedit.LineSelectorParser;
 import net.deltik.mc.signedit.SignText;
-import net.deltik.mc.signedit.interactions.InteractionFactory;
-import net.deltik.mc.signedit.interactions.SignEditInteraction;
+import net.deltik.mc.signedit.interactions.SetSignEditInteraction;
+import org.jetbrains.annotations.NotNull;
 
 @SignSubcommandInfo(name = "clear", supportsLineSelector = true)
 public class ClearSignSubcommand extends SignSubcommand {
@@ -30,8 +30,9 @@ public class ClearSignSubcommand extends SignSubcommand {
         super(context);
     }
 
+    @NotNull
     @Override
-    public SignEditInteraction execute() {
+    public SubcommandResult execute() {
         int[] selectedLines = argParser().getLinesSelection();
         if (selectedLines.length <= 0) {
             selectedLines = LineSelectorParser.ALL_LINES_SELECTED;
@@ -42,7 +43,6 @@ public class ClearSignSubcommand extends SignSubcommand {
             signText.setLine(selectedLine, "");
         }
 
-        return context().services().interactionFactory()
-                .create(InteractionFactory.INTERACTION_SET, context());
+        return SubcommandResult.requestInteraction(SetSignEditInteraction.class);
     }
 }

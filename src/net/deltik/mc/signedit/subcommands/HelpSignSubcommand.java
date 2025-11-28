@@ -22,7 +22,7 @@ package net.deltik.mc.signedit.subcommands;
 import net.deltik.mc.signedit.ChatComms;
 import net.deltik.mc.signedit.commands.SignCommand;
 import net.deltik.mc.signedit.interactions.InteractionCommand;
-import net.deltik.mc.signedit.interactions.SignEditInteraction;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -45,14 +45,15 @@ public class HelpSignSubcommand extends SignSubcommand {
         super(context);
     }
 
+    @NotNull
     @Override
-    public SignEditInteraction execute() {
+    public SubcommandResult execute() {
         this.comms = context().services().chatCommsFactory().create(player());
         List<String[]> allowedCommands = getAllowedCommands();
 
         if (allowedCommands.size() == 0) {
             comms.informForbidden(SignCommand.COMMAND_NAME, argParser().getSubcommand());
-            return null;
+            return SubcommandResult.noInteraction();
         }
 
         int linesRemaining = MAX_LINES;
@@ -88,7 +89,7 @@ public class HelpSignSubcommand extends SignSubcommand {
                 .limit(linesRemaining)
                 .forEach(this::showSubcommandSyntax);
 
-        return null;
+        return SubcommandResult.noInteraction();
     }
 
     private int readInputPageNumber() {

@@ -20,15 +20,13 @@
 package net.deltik.mc.signedit.interactions;
 
 import net.deltik.mc.signedit.ChatComms;
-import net.deltik.mc.signedit.ChatCommsFactory;
-import net.deltik.mc.signedit.SignText;
-import net.deltik.mc.signedit.SignTextHistoryManager;
 import net.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
 import net.deltik.mc.signedit.exceptions.SignEditorInvocationException;
 import net.deltik.mc.signedit.shims.ISignSide;
 import net.deltik.mc.signedit.shims.SideShim;
 import net.deltik.mc.signedit.shims.SignHelpers;
 import net.deltik.mc.signedit.shims.SignShim;
+import net.deltik.mc.signedit.subcommands.SubcommandContext;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
@@ -47,25 +45,13 @@ import java.util.stream.IntStream;
 
 import static net.deltik.mc.signedit.CraftBukkitReflector.*;
 
-public class UiSignEditInteraction implements SignEditInteraction {
-    private final SignEditInteractionManager interactionManager;
-    private final ChatCommsFactory chatCommsFactory;
-    private final SignText signText;
-    private final SignTextHistoryManager historyManager;
+public class UiSignEditInteraction extends SignEditInteraction {
     private boolean needsRewax;
 
     protected Player player;
 
-    public UiSignEditInteraction(
-            SignEditInteractionManager interactionManager,
-            ChatCommsFactory chatCommsFactory,
-            SignText signText,
-            SignTextHistoryManager historyManager
-    ) {
-        this.interactionManager = interactionManager;
-        this.chatCommsFactory = chatCommsFactory;
-        this.signText = signText;
-        this.historyManager = historyManager;
+    public UiSignEditInteraction(SubcommandContext context) {
+        super(context);
     }
 
     @Override
@@ -78,11 +64,11 @@ public class UiSignEditInteraction implements SignEditInteraction {
         if (event instanceof SignChangeEvent) {
             SignChangeEvent signChangeEvent = (SignChangeEvent) event;
             Player player = signChangeEvent.getPlayer();
-            if (interactionManager.isInteractionPending(player)) {
-                if (signText.getTargetSignSide() == null) {
+            if (interactionManager().isInteractionPending(player)) {
+                if (signText().getTargetSignSide() == null) {
                     // Cancel the pending interaction directly (equivalent to /sign cancel)
-                    SignEditInteraction interaction = interactionManager.removePendingInteraction(player);
-                    ChatComms comms = chatCommsFactory.create(player);
+                    SignEditInteraction interaction = interactionManager().removePendingInteraction(player);
+                    ChatComms comms = chatCommsFactory().create(player);
                     if (interaction != null) {
                         interaction.cleanup();
                         comms.tell(comms.t("cancelled_pending_action"));
@@ -92,8 +78,8 @@ public class UiSignEditInteraction implements SignEditInteraction {
 
                 runEarlyEventTask(signChangeEvent);
                 if (this.needsRewax) {
-                    ChatComms comms = chatCommsFactory.create(player);
-                    boolean isRewaxed = SignHelpers.bypassWaxAfter(signText.getTargetSign(), player, comms);
+                    ChatComms comms = chatCommsFactory().create(player);
+                    boolean isRewaxed = SignHelpers.bypassWaxAfter(signText().getTargetSign(), player, comms);
                     if (isRewaxed) this.needsRewax = false;
                 }
             } else {
@@ -102,15 +88,15 @@ public class UiSignEditInteraction implements SignEditInteraction {
             return;
         }
 
-        assert signText.getTargetSign() != null;
-        assert signText.getTargetSignSide() != null;
+        assert signText().getTargetSign() != null;
+        assert signText().getTargetSignSide() != null;
         if (player != null) {
-            formatSignForSave(player, signText.getTargetSign(), signText.getSide());
+            formatSignForSave(player, signText().getTargetSign(), signText().getSide());
         }
     }
 
     protected void runEarlyEventTask(SignChangeEvent event) {
-        signText.importPendingSignChangeEvent(event);
+        signText().importPendingSignChangeEvent(event);
     }
 
     protected void runLateEventTask(SignChangeEvent event) {
@@ -118,20 +104,20 @@ public class UiSignEditInteraction implements SignEditInteraction {
             throw new ForbiddenSignEditException();
         }
 
-        signText.importAuthoritativeSignChangeEvent(event);
+        signText().importAuthoritativeSignChangeEvent(event);
 
-        if (signText.signTextChanged()) {
-            historyManager.getHistory(player).push(signText);
+        if (signText().signTextChanged()) {
+            historyManager().getHistory(player).push(signText());
         }
 
-        ChatComms comms = chatCommsFactory.create(player);
-        comms.compareSignText(signText);
+        ChatComms comms = chatCommsFactory().create(player);
+        comms.compareSignText(signText());
     }
 
     public void load(Player player, Sign sign, SideShim side) {
         this.player = player;
-        signText.setTargetSign(sign, side);
-        signText.importSign();
+        signText().setTargetSign(sign, side);
+        signText().importSign();
         this.needsRewax = SignHelpers.bypassWaxBefore(sign, player);
         formatSignForEdit(player, sign, side);
     }
@@ -140,7 +126,7 @@ public class UiSignEditInteraction implements SignEditInteraction {
     public void interact(Player player, SignShim sign, SideShim side) {
         Sign signImpl = sign.getImplementation();
         load(player, signImpl, side);
-        interactionManager.setPendingInteraction(player, this);
+        interactionManager().setPendingInteraction(player, this);
 
         try {
             openSignEditor(player, signImpl, side);
@@ -315,18 +301,18 @@ public class UiSignEditInteraction implements SignEditInteraction {
     private void formatSignForEdit(Player player, Sign sign, SideShim side) {
         SignShim signShim = new SignShim(sign);
         ISignSide signSide = signShim.getSide(side);
-        IntStream.range(0, 4).forEach(i -> signSide.setLine(i, signText.getLineParsed(i)));
+        IntStream.range(0, 4).forEach(i -> signSide.setLine(i, signText().getLineParsed(i)));
         try {
             sendSignUpdate(player, sign, signSide);
         } finally {
-            IntStream.range(0, 4).forEach(i -> signSide.setLine(i, signText.getLine(i)));
+            IntStream.range(0, 4).forEach(i -> signSide.setLine(i, signText().getLine(i)));
         }
     }
 
     private void formatSignForSave(Player player, Sign sign, SideShim side) {
         SignShim signShim = new SignShim(sign);
         ISignSide signSide = signShim.getSide(side);
-        IntStream.range(0, 4).forEach(i -> signSide.setLine(i, signText.getLine(i)));
+        IntStream.range(0, 4).forEach(i -> signSide.setLine(i, signText().getLine(i)));
         sendSignUpdate(player, sign, signSide);
     }
 

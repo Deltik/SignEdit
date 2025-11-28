@@ -29,6 +29,7 @@ import net.deltik.mc.signedit.interactions.SignEditInteractionManager;
 import net.deltik.mc.signedit.shims.*;
 import net.deltik.mc.signedit.subcommands.SubcommandContext;
 import net.deltik.mc.signedit.subcommands.SubcommandRegistry;
+import net.deltik.mc.signedit.subcommands.SubcommandResult;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
@@ -95,8 +96,13 @@ public class SignCommand implements CommandExecutor {
         }
 
         try {
-            SignEditInteraction interaction = signSubcommand.execute();
-            autointeract(player, interaction, comms);
+            SubcommandResult result = signSubcommand.execute();
+            if (result.requiresInteraction()) {
+                SubcommandResult.RequestInteraction request = (SubcommandResult.RequestInteraction) result;
+                SignEditInteraction interaction = context.services().interactionFactory()
+                        .create(request.getInteractionClass(), context);
+                autointeract(player, interaction, comms);
+            }
         } catch (Throwable e) {
             comms.reportException(e);
         }
@@ -105,7 +111,6 @@ public class SignCommand implements CommandExecutor {
     }
 
     private void autointeract(Player player, SignEditInteraction interaction, ChatComms comms) {
-        if (interaction == null) return;
 
         IBlockHitResult targetInfo = getLivingEntityTarget(player);
         Block targetBlock = targetInfo.getHitBlock();

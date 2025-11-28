@@ -20,13 +20,12 @@
 package net.deltik.mc.signedit.interactions;
 
 import net.deltik.mc.signedit.ChatComms;
-import net.deltik.mc.signedit.ChatCommsFactory;
-import net.deltik.mc.signedit.SignText;
 import net.deltik.mc.signedit.exceptions.BlockStateNotPlacedException;
 import net.deltik.mc.signedit.exceptions.ForbiddenSignEditException;
 import net.deltik.mc.signedit.shims.SideShim;
 import net.deltik.mc.signedit.shims.SignHelpers;
 import net.deltik.mc.signedit.shims.SignShim;
+import net.deltik.mc.signedit.subcommands.SubcommandContext;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -37,23 +36,16 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class WaxSignEditInteraction implements SignEditInteraction {
-    private final SignText signText;
-    private final ChatCommsFactory chatCommsFactory;
-
-    public WaxSignEditInteraction(
-            SignText signText,
-            ChatCommsFactory chatCommsFactory
-    ) {
-        this.signText = signText;
-        this.chatCommsFactory = chatCommsFactory;
+public class WaxSignEditInteraction extends SignEditInteraction {
+    public WaxSignEditInteraction(SubcommandContext context) {
+        super(context);
     }
 
     @Override
     public void interact(Player player, SignShim sign, SideShim side) {
-        signText.setTargetSign(sign, side);
+        signText().setTargetSign(sign, side);
 
-        ChatComms comms = chatCommsFactory.create(player);
+        ChatComms comms = chatCommsFactory().create(player);
 
         Sign signImplementation = sign.getImplementation();
         BlockState realSign = signImplementation.getBlock().getState();
@@ -61,7 +53,7 @@ public class WaxSignEditInteraction implements SignEditInteraction {
             throw new BlockStateNotPlacedException();
         }
 
-        boolean stagedEditable = Boolean.TRUE.equals(signText.shouldBeEditable());
+        boolean stagedEditable = Boolean.TRUE.equals(signText().shouldBeEditable());
         boolean realEditable = SignHelpers.isEditable((Sign) realSign);
 
         if (stagedEditable == realEditable) {
@@ -69,7 +61,7 @@ public class WaxSignEditInteraction implements SignEditInteraction {
             return;
         }
 
-        signText.applySign(player);
+        signText().applySign(player);
 
         realSign = signImplementation.getBlock().getState();
         realEditable = SignHelpers.isEditable((Sign) realSign);
@@ -87,7 +79,7 @@ public class WaxSignEditInteraction implements SignEditInteraction {
 
     @Override
     public String getName() {
-        if (Boolean.TRUE.equals(signText.shouldBeEditable())) {
+        if (Boolean.TRUE.equals(signText().shouldBeEditable())) {
             return "unwax_sign";
         } else {
             return "wax_sign";

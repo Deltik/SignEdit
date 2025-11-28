@@ -19,11 +19,12 @@
 
 package net.deltik.mc.signedit.interactions;
 
-import net.deltik.mc.signedit.*;
-import net.deltik.mc.signedit.integrations.SignEditValidator;
+import net.deltik.mc.signedit.ChatComms;
+import net.deltik.mc.signedit.SignText;
 import net.deltik.mc.signedit.shims.ISignSide;
 import net.deltik.mc.signedit.shims.SideShim;
 import net.deltik.mc.signedit.shims.SignShim;
+import net.deltik.mc.signedit.subcommands.SubcommandContext;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
@@ -31,52 +32,36 @@ import java.util.Arrays;
 import static net.deltik.mc.signedit.LineSelectorParser.ALL_LINES_SELECTED;
 import static net.deltik.mc.signedit.LineSelectorParser.NO_LINES_SELECTED;
 
-public class CutSignEditInteraction implements SignEditInteraction {
-    private final ArgParser argParser;
-    private final SignText sourceSign;
+public class CutSignEditInteraction extends SignEditInteraction {
     private final SignText clipboard;
-    private final SignTextClipboardManager clipboardManager;
-    private final SignTextHistoryManager historyManager;
-    private final ChatCommsFactory chatCommsFactory;
 
-    public CutSignEditInteraction(
-            ArgParser argParser,
-            SignText signText,
-            SignEditValidator validator,
-            SignTextClipboardManager clipboardManager,
-            SignTextHistoryManager historyManager,
-            ChatCommsFactory chatCommsFactory
-    ) {
-        this.argParser = argParser;
-        this.sourceSign = signText;
-        this.clipboard = new SignText(validator);
-        this.clipboardManager = clipboardManager;
-        this.historyManager = historyManager;
-        this.chatCommsFactory = chatCommsFactory;
+    public CutSignEditInteraction(SubcommandContext context) {
+        super(context);
+        this.clipboard = context.createSignText();
     }
 
     @Override
     public void interact(Player player, SignShim sign, SideShim side) {
-        int[] selectedLines = argParser.getLinesSelection();
+        int[] selectedLines = argParser().getLinesSelection();
         if (Arrays.equals(selectedLines, NO_LINES_SELECTED)) {
             selectedLines = ALL_LINES_SELECTED;
         }
 
-        sourceSign.setTargetSign(sign, side);
+        signText().setTargetSign(sign, side);
 
         ISignSide signSide = sign.getSide(side);
         for (int selectedLine : selectedLines) {
             clipboard.setLineLiteral(selectedLine, signSide.getLine(selectedLine));
-            sourceSign.setLineLiteral(selectedLine, "");
+            signText().setLineLiteral(selectedLine, "");
         }
 
-        ChatComms comms = chatCommsFactory.create(player);
+        ChatComms comms = chatCommsFactory().create(player);
 
-        sourceSign.applySignAutoWax(player, comms, sourceSign::applySign);
-        if (sourceSign.signTextChanged()) {
-            historyManager.getHistory(player).push(sourceSign);
+        signText().applySignAutoWax(player, comms, signText()::applySign);
+        if (signText().signTextChanged()) {
+            historyManager().getHistory(player).push(signText());
         }
-        clipboardManager.setClipboard(player, clipboard);
+        clipboardManager().setClipboard(player, clipboard);
 
         comms.tell(comms.t("lines_cut_section"));
         comms.dumpLines(clipboard.getLines());

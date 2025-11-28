@@ -121,4 +121,29 @@ public class SubcommandContext {
         );
         return subcommandFactory.apply(name, minimalContext);
     }
+
+    /**
+     * Creates a minimal SubcommandContext for interactions triggered by listeners
+     * (e.g., click-to-edit) that don't go through the command system.
+     *
+     * @param player   The player triggering the interaction
+     * @param services The plugin services
+     * @param signText The SignText to use for the interaction
+     * @return A minimal SubcommandContext suitable for listener-created interactions
+     */
+    public static SubcommandContext forListener(
+            Player player,
+            SignEditPluginServices services,
+            SignText signText
+    ) {
+        SubcommandContext context = new SubcommandContext(
+                player,
+                new String[0],
+                services,
+                null,
+                null
+        );
+        context.signText = signText;
+        return context;
+    }
 }

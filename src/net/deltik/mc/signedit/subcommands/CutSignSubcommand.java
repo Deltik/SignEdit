@@ -19,8 +19,8 @@
 
 package net.deltik.mc.signedit.subcommands;
 
-import net.deltik.mc.signedit.interactions.InteractionFactory;
-import net.deltik.mc.signedit.interactions.SignEditInteraction;
+import net.deltik.mc.signedit.interactions.CutSignEditInteraction;
+import org.jetbrains.annotations.NotNull;
 
 @SignSubcommandInfo(name = "cut", supportsLineSelector = true)
 public class CutSignSubcommand extends SignSubcommand {
@@ -28,9 +28,9 @@ public class CutSignSubcommand extends SignSubcommand {
         super(context);
     }
 
+    @NotNull
     @Override
-    public SignEditInteraction execute() {
-        return context().services().interactionFactory()
-                .create(InteractionFactory.INTERACTION_CUT, context());
+    public SubcommandResult execute() {
+        return SubcommandResult.requestInteraction(CutSignEditInteraction.class);
     }
 }

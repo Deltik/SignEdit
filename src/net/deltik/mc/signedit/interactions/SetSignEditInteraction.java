@@ -20,26 +20,14 @@
 package net.deltik.mc.signedit.interactions;
 
 import net.deltik.mc.signedit.ChatComms;
-import net.deltik.mc.signedit.ChatCommsFactory;
-import net.deltik.mc.signedit.SignText;
-import net.deltik.mc.signedit.SignTextHistoryManager;
 import net.deltik.mc.signedit.shims.SideShim;
 import net.deltik.mc.signedit.shims.SignShim;
+import net.deltik.mc.signedit.subcommands.SubcommandContext;
 import org.bukkit.entity.Player;
 
-public class SetSignEditInteraction implements SignEditInteraction {
-    private final SignText signText;
-    private final ChatCommsFactory chatCommsFactory;
-    private final SignTextHistoryManager historyManager;
-
-    public SetSignEditInteraction(
-            SignText signText,
-            ChatCommsFactory chatCommsFactory,
-            SignTextHistoryManager historyManager
-    ) {
-        this.signText = signText;
-        this.chatCommsFactory = chatCommsFactory;
-        this.historyManager = historyManager;
+public class SetSignEditInteraction extends SignEditInteraction {
+    public SetSignEditInteraction(SubcommandContext context) {
+        super(context);
     }
 
     @Override
@@ -49,15 +37,15 @@ public class SetSignEditInteraction implements SignEditInteraction {
 
     @Override
     public void interact(Player player, SignShim sign, SideShim side) {
-        signText.setTargetSign(sign, side);
+        signText().setTargetSign(sign, side);
 
-        ChatComms comms = chatCommsFactory.create(player);
+        ChatComms comms = chatCommsFactory().create(player);
 
-        signText.applySignAutoWax(player, comms, signText::applySign);
-        if (signText.signTextChanged()) {
-            historyManager.getHistory(player).push(signText);
+        signText().applySignAutoWax(player, comms, signText()::applySign);
+        if (signText().signTextChanged()) {
+            historyManager().getHistory(player).push(signText());
         }
 
-        comms.compareSignText(signText);
+        comms.compareSignText(signText());
     }
 }

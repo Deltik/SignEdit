@@ -19,10 +19,11 @@
 
 package net.deltik.mc.signedit.interactions;
 
-import net.deltik.mc.signedit.*;
+import net.deltik.mc.signedit.ChatComms;
 import net.deltik.mc.signedit.shims.ISignSide;
 import net.deltik.mc.signedit.shims.SideShim;
 import net.deltik.mc.signedit.shims.SignShim;
+import net.deltik.mc.signedit.subcommands.SubcommandContext;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
@@ -30,40 +31,27 @@ import java.util.Arrays;
 import static net.deltik.mc.signedit.LineSelectorParser.ALL_LINES_SELECTED;
 import static net.deltik.mc.signedit.LineSelectorParser.NO_LINES_SELECTED;
 
-public class CopySignEditInteraction implements SignEditInteraction {
-    private final ArgParser argParser;
-    private final SignText signText;
-    private final SignTextClipboardManager clipboardManager;
-    private final ChatCommsFactory chatCommsFactory;
-
-    public CopySignEditInteraction(
-            ArgParser argParser,
-            SignText signText,
-            SignTextClipboardManager clipboardManager,
-            ChatCommsFactory chatCommsFactory
-    ) {
-        this.argParser = argParser;
-        this.signText = signText;
-        this.clipboardManager = clipboardManager;
-        this.chatCommsFactory = chatCommsFactory;
+public class CopySignEditInteraction extends SignEditInteraction {
+    public CopySignEditInteraction(SubcommandContext context) {
+        super(context);
     }
 
     @Override
     public void interact(Player player, SignShim sign, SideShim side) {
-        int[] selectedLines = argParser.getLinesSelection();
+        int[] selectedLines = argParser().getLinesSelection();
         if (Arrays.equals(selectedLines, NO_LINES_SELECTED)) {
             selectedLines = ALL_LINES_SELECTED;
         }
         ISignSide signSide = sign.getSide(side);
         for (int selectedLine : selectedLines) {
-            signText.setLineLiteral(selectedLine, signSide.getLine(selectedLine));
+            signText().setLineLiteral(selectedLine, signSide.getLine(selectedLine));
         }
 
-        clipboardManager.setClipboard(player, signText);
+        clipboardManager().setClipboard(player, signText());
 
-        ChatComms comms = chatCommsFactory.create(player);
+        ChatComms comms = chatCommsFactory().create(player);
         comms.tell(comms.t("lines_copied_section"));
-        comms.dumpLines(signText.getLines());
+        comms.dumpLines(signText().getLines());
     }
 
     @Override

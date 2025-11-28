@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
   This reduces the plugin JAR size by ~98KB (~38%) while maintaining the same separation of concerns through explicit service containers (`SignEditPluginServices`, `SubcommandContext`).
 * Added compile-time annotation processing for `@SignSubcommandInfo` to validate subcommand metadata and improve tab completion accuracy with argument hints.
+* Unified all `SignEditInteraction` constructors to accept `SubcommandContext`, reducing boilerplate through a shared abstract base class with convenience accessors for common services.
 
 ## v1.14.6 (2025-06-05)
 

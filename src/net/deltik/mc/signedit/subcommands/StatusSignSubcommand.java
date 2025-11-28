@@ -23,6 +23,7 @@ import net.deltik.mc.signedit.ChatComms;
 import net.deltik.mc.signedit.SignText;
 import net.deltik.mc.signedit.SignTextHistory;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
+import org.jetbrains.annotations.NotNull;
 
 @SignSubcommandInfo(name = "status")
 public class StatusSignSubcommand extends SignSubcommand {
@@ -30,15 +31,16 @@ public class StatusSignSubcommand extends SignSubcommand {
         super(context);
     }
 
+    @NotNull
     @Override
-    public SignEditInteraction execute() {
+    public SubcommandResult execute() {
         ChatComms comms = context().services().chatCommsFactory().create(player());
 
         reportHistory(comms);
         reportPendingAction(comms);
         reportClipboard(comms);
 
-        return null;
+        return SubcommandResult.noInteraction();
     }
 
     private void reportPendingAction(ChatComms comms) {

@@ -19,17 +19,18 @@
 
 package net.deltik.mc.signedit.listeners;
 
-import net.deltik.mc.signedit.*;
+import net.deltik.mc.signedit.ChatComms;
+import net.deltik.mc.signedit.SignEditPluginServices;
+import net.deltik.mc.signedit.SignText;
 import net.deltik.mc.signedit.commands.SignCommand;
 import net.deltik.mc.signedit.exceptions.BlockStateNotPlacedException;
-import net.deltik.mc.signedit.integrations.SignEditValidator;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
-import net.deltik.mc.signedit.interactions.SignEditInteractionManager;
 import net.deltik.mc.signedit.interactions.UiSignEditInteraction;
 import net.deltik.mc.signedit.interactions.WaxSignEditInteraction;
 import net.deltik.mc.signedit.shims.SideShim;
 import net.deltik.mc.signedit.shims.SignHelpers;
 import net.deltik.mc.signedit.shims.SignShim;
+import net.deltik.mc.signedit.subcommands.SubcommandContext;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -50,24 +51,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class CoreSignEditListener extends SignEditListener {
-    private final SignTextClipboardManager clipboardManager;
-    private final SignTextHistoryManager historyManager;
-    private final SignEditInteractionManager interactionManager;
-    private final ChatCommsFactory chatCommsFactory;
-    private final SignEditValidator signEditValidator;
+    private final SignEditPluginServices services;
 
-    public CoreSignEditListener(
-            SignTextClipboardManager clipboardManager,
-            SignTextHistoryManager historyManager,
-            SignEditInteractionManager interactionManager,
-            ChatCommsFactory chatCommsFactory,
-            SignEditValidator signEditValidator
-    ) {
-        this.clipboardManager = clipboardManager;
-        this.historyManager = historyManager;
-        this.interactionManager = interactionManager;
-        this.chatCommsFactory = chatCommsFactory;
-        this.signEditValidator = signEditValidator;
+    public CoreSignEditListener(SignEditPluginServices services) {
+        this.services = services;
     }
 
     /**
@@ -107,16 +94,16 @@ public class CoreSignEditListener extends SignEditListener {
         if (!sign.getWorld().equals(player.getWorld())) return;
 
         try {
-            if (interactionManager.isInteractionPending(player)) {
+            if (services.interactionManager().isInteractionPending(player)) {
                 event.setCancelled(true);
-                SignEditInteraction interaction = interactionManager.removePendingInteraction(player);
+                SignEditInteraction interaction = services.interactionManager().removePendingInteraction(player);
                 SideShim side = SideShim.fromRelativePosition(sign, player);
                 interaction.interact(player, signAdapter, side);
             } else if (SignHelpers.isEditable(sign)) {
                 overrideNativeBehavior(event, signAdapter);
             }
         } catch (Throwable e) {
-            ChatComms comms = chatCommsFactory.create(player);
+            ChatComms comms = services.chatCommsFactory().create(player);
             comms.reportException(e);
         }
     }
@@ -133,7 +120,7 @@ public class CoreSignEditListener extends SignEditListener {
             return;
         }
 
-        SignText signText = new SignText(signEditValidator);
+        SignText signText = new SignText(services.signEditValidator());
         SignEditInteraction maybeSignEditInteraction = null;
 
         Material eventItemMaterial = event.getMaterial();
@@ -142,12 +129,8 @@ public class CoreSignEditListener extends SignEditListener {
         } else if (!event.useInteractedBlock().equals(Event.Result.DENY)) {
             if (!player.hasPermission("signedit." + SignCommand.COMMAND_NAME + ".ui")) return;
 
-            maybeSignEditInteraction = new UiSignEditInteraction(
-                    interactionManager,
-                    chatCommsFactory,
-                    signText,
-                    historyManager
-            );
+            SubcommandContext context = SubcommandContext.forListener(player, services, signText);
+            maybeSignEditInteraction = new UiSignEditInteraction(context);
         }
 
         if (maybeSignEditInteraction != null) {
@@ -181,7 +164,8 @@ public class CoreSignEditListener extends SignEditListener {
             if (!player.hasPermission("signedit." + SignCommand.COMMAND_NAME + ".wax")) return null;
 
             signText.setShouldBeEditable(false);
-            return new WaxSignEditInteraction(signText, chatCommsFactory);
+            SubcommandContext context = SubcommandContext.forListener(player, services, signText);
+            return new WaxSignEditInteraction(context);
         }
 
         SideShim side = SideShim.fromRelativePosition(signAdapter.getImplementation(), player);
@@ -205,23 +189,19 @@ public class CoreSignEditListener extends SignEditListener {
 
         if (!player.hasPermission("signedit." + SignCommand.COMMAND_NAME + ".ui")) return null;
 
-        return new UiSignEditInteraction(
-                interactionManager,
-                chatCommsFactory,
-                signText,
-                historyManager
-        );
+        SubcommandContext context = SubcommandContext.forListener(player, services, signText);
+        return new UiSignEditInteraction(context);
     }
 
     @EventHandler
     public void onDisconnect(PlayerQuitEvent event) {
         Player player = event.getPlayer();
 
-        clipboardManager.forgetPlayer(player);
-        historyManager.forgetPlayer(player);
+        services.clipboardManager().forgetPlayer(player);
+        services.historyManager().forgetPlayer(player);
 
-        if (interactionManager.isInteractionPending(player)) {
-            interactionManager.endInteraction(player, event);
+        if (services.interactionManager().isInteractionPending(player)) {
+            services.interactionManager().endInteraction(player, event);
         }
     }
 
@@ -229,8 +209,8 @@ public class CoreSignEditListener extends SignEditListener {
     public void onSignChangeDoReformat(SignChangeEvent event) {
         Player player = event.getPlayer();
 
-        if (interactionManager.isInteractionPending(player)) {
-            interactionManager.getPendingInteraction(player).cleanup(event);
+        if (services.interactionManager().isInteractionPending(player)) {
+            services.interactionManager().getPendingInteraction(player).cleanup(event);
         }
     }
 
@@ -238,8 +218,8 @@ public class CoreSignEditListener extends SignEditListener {
     public void onSignChangeDoSaveResult(SignChangeEvent event) {
         Player player = event.getPlayer();
 
-        if (interactionManager.isInteractionPending(player)) {
-            interactionManager.endInteraction(player, event);
+        if (services.interactionManager().isInteractionPending(player)) {
+            services.interactionManager().endInteraction(player, event);
         }
     }
 }
