@@ -19,8 +19,12 @@
 
 package net.deltik.mc.signedit.interactions;
 
+import net.deltik.mc.signedit.subcommands.SubcommandResult;
+import org.jetbrains.annotations.NotNull;
+
 public interface InteractionCommand {
-    SignEditInteraction execute();
+    @NotNull
+    SubcommandResult execute();
 
     /**
      * @return Whether this interaction is permitted to execute

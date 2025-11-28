@@ -23,13 +23,13 @@ import net.deltik.mc.signedit.ArgParser;
 import net.deltik.mc.signedit.SignText;
 import net.deltik.mc.signedit.commands.SignCommand;
 import net.deltik.mc.signedit.exceptions.MissingLineSelectionException;
-import net.deltik.mc.signedit.interactions.InteractionFactory;
-import net.deltik.mc.signedit.interactions.SignEditInteraction;
+import net.deltik.mc.signedit.interactions.SetSignEditInteraction;
 import net.deltik.mc.signedit.shims.IBlockHitResult;
 import net.deltik.mc.signedit.shims.SideShim;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,8 +42,9 @@ public class SetSignSubcommand extends SignSubcommand {
         super(context);
     }
 
+    @NotNull
     @Override
-    public SignEditInteraction execute() {
+    public SubcommandResult execute() {
         int[] selectedLines = argParser().getLinesSelection();
         if (selectedLines.length <= 0) {
             throw new MissingLineSelectionException();
@@ -56,8 +57,7 @@ public class SetSignSubcommand extends SignSubcommand {
             signText.setLine(selectedLine, text);
         }
 
-        return context().services().interactionFactory()
-                .create(InteractionFactory.INTERACTION_SET, context());
+        return SubcommandResult.requestInteraction(SetSignEditInteraction.class);
     }
 
     @Override

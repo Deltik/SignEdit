@@ -37,7 +37,7 @@ public abstract class SignSubcommand extends Subcommand implements InteractionCo
     /**
      * Get the execution context for this subcommand.
      */
-    protected SubcommandContext context() {
+protected SubcommandContext context() {
         return context;
     }
 

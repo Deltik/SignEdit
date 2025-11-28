@@ -20,7 +20,7 @@
 package net.deltik.mc.signedit.subcommands;
 
 import net.deltik.mc.signedit.ChatComms;
-import net.deltik.mc.signedit.interactions.SignEditInteraction;
+import org.jetbrains.annotations.NotNull;
 
 @SignSubcommandInfo(name = "version")
 public class VersionSignSubcommand extends SignSubcommand {
@@ -28,11 +28,12 @@ public class VersionSignSubcommand extends SignSubcommand {
         super(context);
     }
 
+    @NotNull
     @Override
-    public SignEditInteraction execute() {
+    public SubcommandResult execute() {
         String version = context().services().plugin().getDescription().getVersion();
         ChatComms comms = context().services().chatCommsFactory().create(player());
         comms.tell(comms.t("version", version));
-        return null;
+        return SubcommandResult.noInteraction();
     }
 }

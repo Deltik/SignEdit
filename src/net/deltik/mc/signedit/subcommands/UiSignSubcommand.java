@@ -21,8 +21,10 @@ package net.deltik.mc.signedit.subcommands;
 
 import net.deltik.mc.signedit.Configuration;
 import net.deltik.mc.signedit.CraftBukkitReflector;
-import net.deltik.mc.signedit.interactions.InteractionFactory;
+import net.deltik.mc.signedit.interactions.BookUiSignEditInteraction;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
+import net.deltik.mc.signedit.interactions.UiSignEditInteraction;
+import org.jetbrains.annotations.NotNull;
 
 @SignSubcommandInfo(name = "ui")
 public class UiSignSubcommand extends SignSubcommand {
@@ -36,28 +38,29 @@ public class UiSignSubcommand extends SignSubcommand {
         super(context);
     }
 
+    @NotNull
     @Override
-    public SignEditInteraction execute() {
+    public SubcommandResult execute() {
         Configuration config = context().services().config();
         CraftBukkitReflector reflector = context().services().reflector();
-        String interactionName = getImplementationName(config, reflector);
-        return context().services().interactionFactory()
-                .create(interactionName, context());
+        Class<? extends SignEditInteraction> interactionClass = getInteractionClass(config, reflector);
+        return SubcommandResult.requestInteraction(interactionClass);
     }
 
-    public static String getImplementationName(Configuration config, CraftBukkitReflector reflector) {
+    public static Class<? extends SignEditInteraction> getInteractionClass(
+            Configuration config, CraftBukkitReflector reflector) {
         String value = config.getSignUi().toLowerCase();
 
         if ("editablebook".equals(value)) {
-            return InteractionFactory.UI_EDITABLE_BOOK;
+            return BookUiSignEditInteraction.class;
         } else if ("native".equals(value)) {
-            return InteractionFactory.UI_NATIVE;
+            return UiSignEditInteraction.class;
         }
 
         // Auto mode
         if (QUIRKY_BUKKIT_SERVER_VERSION.compareTo(reflector.BUKKIT_SERVER_VERSION) == 0) {
-            return InteractionFactory.UI_EDITABLE_BOOK;
+            return BookUiSignEditInteraction.class;
         }
-        return InteractionFactory.UI_NATIVE;
+        return UiSignEditInteraction.class;
     }
 }

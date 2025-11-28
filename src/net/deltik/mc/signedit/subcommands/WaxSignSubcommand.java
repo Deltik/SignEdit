@@ -19,9 +19,9 @@
 
 package net.deltik.mc.signedit.subcommands;
 
-import net.deltik.mc.signedit.interactions.InteractionFactory;
-import net.deltik.mc.signedit.interactions.SignEditInteraction;
+import net.deltik.mc.signedit.interactions.WaxSignEditInteraction;
 import net.deltik.mc.signedit.shims.SignHelpers;
+import org.jetbrains.annotations.NotNull;
 
 @SignSubcommandInfo(name = "wax")
 public class WaxSignSubcommand extends SignSubcommand {
@@ -29,11 +29,11 @@ public class WaxSignSubcommand extends SignSubcommand {
         super(context);
     }
 
+    @NotNull
     @Override
-    public SignEditInteraction execute() {
+    public SubcommandResult execute() {
         context().signText().setShouldBeEditable(false);
-        return context().services().interactionFactory()
-                .create(InteractionFactory.INTERACTION_WAX, context());
+        return SubcommandResult.requestInteraction(WaxSignEditInteraction.class);
     }
 
     @Override

@@ -20,8 +20,8 @@
 package net.deltik.mc.signedit.subcommands;
 
 import net.deltik.mc.signedit.exceptions.NullClipboardException;
-import net.deltik.mc.signedit.interactions.InteractionFactory;
-import net.deltik.mc.signedit.interactions.SignEditInteraction;
+import net.deltik.mc.signedit.interactions.PasteSignEditInteraction;
+import org.jetbrains.annotations.NotNull;
 
 @SignSubcommandInfo(name = "paste")
 public class PasteSignSubcommand extends SignSubcommand {
@@ -29,13 +29,13 @@ public class PasteSignSubcommand extends SignSubcommand {
         super(context);
     }
 
+    @NotNull
     @Override
-    public SignEditInteraction execute() {
+    public SubcommandResult execute() {
         if (context().services().clipboardManager().getClipboard(player()) == null) {
             throw new NullClipboardException();
         }
 
-        return context().services().interactionFactory()
-                .create(InteractionFactory.INTERACTION_PASTE, context());
+        return SubcommandResult.requestInteraction(PasteSignEditInteraction.class);
     }
 }

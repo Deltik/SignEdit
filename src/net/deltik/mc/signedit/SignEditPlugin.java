@@ -22,6 +22,7 @@ package net.deltik.mc.signedit;
 import net.deltik.mc.signedit.commands.SignCommand;
 import net.deltik.mc.signedit.commands.SignCommandTabCompleter;
 import net.deltik.mc.signedit.integrations.SignEditValidatorModule;
+import net.deltik.mc.signedit.interactions.BookUiSignEditInteraction;
 import net.deltik.mc.signedit.interactions.InteractionFactory;
 import net.deltik.mc.signedit.interactions.SignEditInteractionManager;
 import net.deltik.mc.signedit.listeners.BookUiSignEditListener;
@@ -156,17 +157,11 @@ public class SignEditPlugin extends JavaPlugin {
         Set<SignEditListener> listeners = new HashSet<>();
 
         // Core listener is always registered
-        listeners.add(new CoreSignEditListener(
-                clipboardManager,
-                historyManager,
-                interactionManager,
-                chatCommsFactory,
-                services.signEditValidator()
-        ));
+        listeners.add(new CoreSignEditListener(services));
 
         // Book UI listener is only registered when using EditableBook UI mode
-        String implementationName = UiSignSubcommand.getImplementationName(config, reflector);
-        if (InteractionFactory.UI_EDITABLE_BOOK.equals(implementationName)) {
+        Class<?> uiInteractionClass = UiSignSubcommand.getInteractionClass(config, reflector);
+        if (BookUiSignEditInteraction.class.equals(uiInteractionClass)) {
             listeners.add(new BookUiSignEditListener(interactionManager));
         }
 

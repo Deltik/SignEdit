@@ -21,6 +21,7 @@ package net.deltik.mc.signedit.subcommands;
 
 import net.deltik.mc.signedit.ChatComms;
 import net.deltik.mc.signedit.interactions.SignEditInteraction;
+import org.jetbrains.annotations.NotNull;
 
 @SignSubcommandInfo(name = "cancel")
 public class CancelSignSubcommand extends SignSubcommand {
@@ -28,8 +29,9 @@ public class CancelSignSubcommand extends SignSubcommand {
         super(context);
     }
 
+    @NotNull
     @Override
-    public SignEditInteraction execute() {
+    public SubcommandResult execute() {
         ChatComms comms = context().services().chatCommsFactory().create(player());
 
         SignEditInteraction interaction = context().services().interactionManager()
@@ -40,6 +42,6 @@ public class CancelSignSubcommand extends SignSubcommand {
             interaction.cleanup();
             comms.tell(comms.t("cancelled_pending_action"));
         }
-        return null;
+        return SubcommandResult.noInteraction();
     }
 }

@@ -20,11 +20,9 @@
 package net.deltik.mc.signedit.interactions;
 
 import net.deltik.mc.signedit.ChatComms;
-import net.deltik.mc.signedit.ChatCommsFactory;
-import net.deltik.mc.signedit.SignText;
-import net.deltik.mc.signedit.SignTextHistoryManager;
 import net.deltik.mc.signedit.shims.SideShim;
 import net.deltik.mc.signedit.shims.SignShim;
+import net.deltik.mc.signedit.subcommands.SubcommandContext;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -34,30 +32,14 @@ import org.bukkit.event.player.PlayerEditBookEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.BookMeta;
-import org.bukkit.plugin.Plugin;
 
-public class BookUiSignEditInteraction implements SignEditInteraction {
-    private final Plugin plugin;
-    private final SignEditInteractionManager interactionManager;
-    private final ChatCommsFactory chatCommsFactory;
-    private final SignText signText;
-    private final SignTextHistoryManager historyManager;
+public class BookUiSignEditInteraction extends SignEditInteraction {
     protected ItemStack originalItem;
     protected int originalItemIndex;
     protected Player player;
 
-    public BookUiSignEditInteraction(
-            Plugin plugin,
-            SignEditInteractionManager interactionManager,
-            ChatCommsFactory chatCommsFactory,
-            SignText signText,
-            SignTextHistoryManager historyManager
-    ) {
-        this.plugin = plugin;
-        this.interactionManager = interactionManager;
-        this.chatCommsFactory = chatCommsFactory;
-        this.signText = signText;
-        this.historyManager = historyManager;
+    public BookUiSignEditInteraction(SubcommandContext context) {
+        super(context);
     }
 
     @Override
@@ -67,43 +49,43 @@ public class BookUiSignEditInteraction implements SignEditInteraction {
 
     @Override
     public void interact(Player player, SignShim sign, SideShim side) {
-        interactionManager.setPendingInteraction(player, this);
+        interactionManager().setPendingInteraction(player, this);
 
         if (originalItem == null) {
-            signText.setTargetSign(sign, side);
-            signText.importSign();
-            formatSignTextForEdit(signText);
+            signText().setTargetSign(sign, side);
+            signText().importSign();
+            formatSignTextForEdit();
             openSignEditor(player);
             return;
         }
 
-        ChatComms comms = chatCommsFactory.create(player);
+        ChatComms comms = chatCommsFactory().create(player);
         comms.tell(comms.t("right_click_air_to_open_sign_editor"));
     }
 
     @Override
     public String getActionHint(ChatComms comms) {
         if (originalItem == null) {
-            return SignEditInteraction.super.getActionHint(comms);
+            return super.getActionHint(comms);
         }
         return comms.t("right_click_air_to_apply_action_hint");
     }
 
     protected void openSignEditor(Player player) {
         this.player = player;
-        ChatComms comms = chatCommsFactory.create(player);
+        ChatComms comms = chatCommsFactory().create(player);
         PlayerInventory inventory = player.getInventory();
         ItemStack book = new ItemStack(Material.WRITABLE_BOOK, 1);
         BookMeta bookMeta = (BookMeta) book.getItemMeta();
         bookMeta.setDisplayName(comms.t("sign_editor_item_name"));
-        bookMeta.setPages(String.join("\n", signText.getLines()));
+        bookMeta.setPages(String.join("\n", signText().getLines()));
         book.setItemMeta(bookMeta);
         originalItem = inventory.getItemInMainHand();
         originalItemIndex = inventory.getHeldItemSlot();
         inventory.setItemInMainHand(book);
         comms.tell(comms.t("right_click_air_to_open_sign_editor"));
-        interactionManager.removePendingInteraction(player);
-        interactionManager.setPendingInteraction(player, this);
+        interactionManager().removePendingInteraction(player);
+        interactionManager().setPendingInteraction(player, this);
     }
 
     @Override
@@ -120,7 +102,7 @@ public class BookUiSignEditInteraction implements SignEditInteraction {
         PlayerEditBookEvent editBookEvent = (PlayerEditBookEvent) event;
         editBookEvent.setCancelled(true);
         Bukkit.getScheduler().scheduleSyncDelayedTask(
-                plugin,
+                plugin(),
                 () -> player.getInventory().setItem(originalItemIndex, originalItem),
                 0
         );
@@ -132,35 +114,35 @@ public class BookUiSignEditInteraction implements SignEditInteraction {
         } else {
             newLines = new String[]{};
         }
-        for (int i = 0; i < signText.getLines().length; i++) {
+        for (int i = 0; i < signText().getLines().length; i++) {
             String newLine;
             if (i >= newLines.length) {
                 newLine = "";
             } else {
                 newLine = newLines[i];
             }
-            signText.setLine(i, newLine);
+            signText().setLine(i, newLine);
         }
-        ChatComms comms = chatCommsFactory.create(player);
+        ChatComms comms = chatCommsFactory().create(player);
 
-        signText.applySignAutoWax(player, comms, signText::applySign);
-        if (signText.signTextChanged()) {
-            historyManager.getHistory(player).push(signText);
+        signText().applySignAutoWax(player, comms, signText()::applySign);
+        if (signText().signTextChanged()) {
+            historyManager().getHistory(player).push(signText());
         }
 
-        comms.compareSignText(signText);
+        comms.compareSignText(signText());
     }
 
     private void cleanupInventoryClickEvent(InventoryClickEvent event) {
         if (originalItemIndex == event.getSlot()) {
-            interactionManager.setPendingInteraction(player, this);
+            interactionManager().setPendingInteraction(player, this);
             event.setCancelled(true);
         }
     }
 
-    protected void formatSignTextForEdit(SignText signText) {
+    protected void formatSignTextForEdit() {
         for (int i = 0; i < 4; i++) {
-            signText.setLineLiteral(i, signText.getLineParsed(i));
+            signText().setLineLiteral(i, signText().getLineParsed(i));
         }
     }
 

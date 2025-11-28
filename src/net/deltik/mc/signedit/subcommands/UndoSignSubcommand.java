@@ -22,7 +22,7 @@ package net.deltik.mc.signedit.subcommands;
 import net.deltik.mc.signedit.ChatComms;
 import net.deltik.mc.signedit.SignText;
 import net.deltik.mc.signedit.SignTextHistory;
-import net.deltik.mc.signedit.interactions.SignEditInteraction;
+import org.jetbrains.annotations.NotNull;
 
 @SignSubcommandInfo(name = "undo")
 public class UndoSignSubcommand extends SignSubcommand {
@@ -30,12 +30,13 @@ public class UndoSignSubcommand extends SignSubcommand {
         super(context);
     }
 
+    @NotNull
     @Override
-    public SignEditInteraction execute() {
+    public SubcommandResult execute() {
         SignTextHistory history = context().services().historyManager().getHistory(player());
         ChatComms comms = context().services().chatCommsFactory().create(player());
         SignText undoneSignText = history.undo(comms);
         comms.compareSignText(undoneSignText);
-        return null;
+        return SubcommandResult.noInteraction();
     }
 }

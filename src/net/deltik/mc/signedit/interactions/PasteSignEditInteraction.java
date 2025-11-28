@@ -19,47 +19,33 @@
 
 package net.deltik.mc.signedit.interactions;
 
-import net.deltik.mc.signedit.*;
+import net.deltik.mc.signedit.ChatComms;
+import net.deltik.mc.signedit.SignText;
 import net.deltik.mc.signedit.shims.SideShim;
 import net.deltik.mc.signedit.shims.SignShim;
 import net.deltik.mc.signedit.subcommands.SubcommandContext;
 import org.bukkit.entity.Player;
 
-import java.util.function.Supplier;
-
-public class PasteSignEditInteraction implements SignEditInteraction {
-    private final SignTextClipboardManager clipboardManager;
-    private final Supplier<SignText> signTextSupplier;
-    private final SignTextHistoryManager historyManager;
-    private final ChatCommsFactory chatCommsFactory;
-
-    public PasteSignEditInteraction(
-            SignTextClipboardManager clipboardManager,
-            SubcommandContext context,
-            SignTextHistoryManager historyManager,
-            ChatCommsFactory chatCommsFactory
-    ) {
-        this.clipboardManager = clipboardManager;
-        this.signTextSupplier = context::createSignText;
-        this.historyManager = historyManager;
-        this.chatCommsFactory = chatCommsFactory;
+public class PasteSignEditInteraction extends SignEditInteraction {
+    public PasteSignEditInteraction(SubcommandContext context) {
+        super(context);
     }
 
     @Override
     public void interact(Player player, SignShim sign, SideShim side) {
-        SignText clipboard = clipboardManager.getClipboard(player);
-        SignText signText = signTextSupplier.get();
+        SignText clipboard = clipboardManager().getClipboard(player);
+        SignText signText = context().createSignText();
         signText.setTargetSign(sign, side);
 
         for (int i = 0; i < clipboard.getLines().length; i++) {
             signText.setLineLiteral(i, clipboard.getLine(i));
         }
 
-        ChatComms comms = chatCommsFactory.create(player);
+        ChatComms comms = chatCommsFactory().create(player);
 
         signText.applySignAutoWax(player, comms, signText::applySign);
         if (signText.signTextChanged()) {
-            historyManager.getHistory(player).push(signText);
+            historyManager().getHistory(player).push(signText);
         }
 
         comms.compareSignText(signText);

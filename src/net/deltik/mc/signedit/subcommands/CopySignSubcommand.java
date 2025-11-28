@@ -19,8 +19,8 @@
 
 package net.deltik.mc.signedit.subcommands;
 
-import net.deltik.mc.signedit.interactions.InteractionFactory;
-import net.deltik.mc.signedit.interactions.SignEditInteraction;
+import net.deltik.mc.signedit.interactions.CopySignEditInteraction;
+import org.jetbrains.annotations.NotNull;
 
 @SignSubcommandInfo(name = "copy", supportsLineSelector = true)
 public class CopySignSubcommand extends SignSubcommand {
@@ -28,9 +28,9 @@ public class CopySignSubcommand extends SignSubcommand {
         super(context);
     }
 
+    @NotNull
     @Override
-    public SignEditInteraction execute() {
-        return context().services().interactionFactory()
-                .create(InteractionFactory.INTERACTION_COPY, context());
+    public SubcommandResult execute() {
+        return SubcommandResult.requestInteraction(CopySignEditInteraction.class);
     }
 }
