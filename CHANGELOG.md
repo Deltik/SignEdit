@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-* When using `/sign set` or `/sign clear`, sign text modifications were not applied due to a state tracking bug. This bug did not affect native sign text edits with `/sign ui`.
+* When using `/sign set` or `/sign clear`, sign text modifications made by other plugins (via `SignChangeEvent`) were not detected due to a state tracking bug. This bug did not affect `/sign ui`.
 
 ### Under the Hood
 
